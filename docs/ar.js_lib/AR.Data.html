@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: Data</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Namespace: Data</h1>
+    
+    
+
+
+
+<section>
+    
+<header>
+    <h2>
+        <span class="ancestors"><a href="AR.html">AR</a>.</span>
+    
+    
+        Data
+    
+    </h2>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+    
+        
+            <div class="description">Data communication library space.</div>
+        
+        
+        
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+        
+        
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="cacheUrlResource"><span class="type-signature">&lt;static> </span>cacheUrlResource<span class="signature">(_url, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Save the resources of the specified URL to offline storage. There will be an error if the application is in offline or standalone mode.Only support http(s) Protocol. Use it to enable the offline storage .When the network communication is starting the onSuccess function will be called.If the communication failed or there is no resource under the URL, an error message popup dialog will appear.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_url</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">resource URL</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if cache URL resource was successful.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if cache URL resource failed.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul><ul>  <b>When an IO error occurs in a native application</b>  <li>status {string} "ARIO_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};var url = "http://192.0.2.0/sample.pdf";AR.Data.cacheUrlResource(url, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="clearResourceStorage"><span class="type-signature">&lt;static> </span>clearResourceStorage<span class="signature">(_onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Clears all data saved in offline storage. The AR overlay definition data and resource files are cleared.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if successful.Specify Function(AR.Native.Result). The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called upon failure.Specify Function(AR.Native.Result). The argument passed when a native application fails is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Data.clearResourceStorage(onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="deleteArServerData"><span class="type-signature">&lt;static> </span>deleteArServerData<span class="signature">(_query, _version, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sends a data deletion (DELETE) request to the AR processing server. This cannot be run offline.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_query</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Query string for AR processing server API. The string length must be between 0 and 4096 characters.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_version</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Version of the data to be deleted. The value range is between 1 and 2147483647.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if data removal was successful.Specify Function(AR.Native.Result). The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if data removal failed.Specify Function(AR.Native.Result). The argument passed when a native application fails is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul><ul>  <b>When an IO error occurs in a native application</b>  <li>status {string} "ARIO_EXCEPTION"  <li>value {string} Error message</ul><ul>  <b>When an HTTP exception occurs in a native application</b>  <li>status {string} "AR_HTTP_EXCEPTION"  <li>value {Object} Object type with the following properties:    <ul>      <li>status {number} HTTP response status code      <li>statusText {string} HTTP response status string      <li>responseText {string} HTTP response body string    </ul></ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  if(_result.getStatus() == "AR_HTTP_EXCEPTION"){    alert(_result.getStatus() + "\n" +           _result.getValue().status + " : " + _result.getValue().statusText + "\n" +          _result.getValue().responseText);  } else{    alert(_result.getStatus() + "\n" + _result.getValue());  }};var query = "qentities/arpoiarmk_default/12345";var version = 1;AR.Data.deleteArServerData(query, version, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getArServerData"><span class="type-signature">&lt;static> </span>getArServerData<span class="signature">(_query, _isSuperReload, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sends a request to the AR processing server to acquire (GET) data. If offline storage has been set, query strings are used as a key when saving acquisition results to the offline storage. For the second and later data acquisition attempts using the same query, the data is obtained from the offline storage. If forced reading is specified, or if the results do not exist in the offline storage, the data will be acquired from the AR processing server.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_query</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Query string for the AR processing server API. The string length must be between 0 and 4096 characters.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_isSuperReload</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Specifies whether to perform forced reading from the AR processing server without acquiring data from offline storage. Set to "true" to perform forced reading, or "false" otherwise.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if data acquisition was successful.Specify Function(AR.Native.Result). The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} AR processing server response </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if data acquisition failed.Specify Function(AR.Native.Result). The argument passed when a native application fails is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul><ul>  <b>When an IO error occurs in a native application:</b>  <li>status {string} "ARIO_EXCEPTION"  <li>value {string} Error message</ul><ul>  <b>When an HTTP exception occurs in a native application:</b>  <li>status {string} "AR_HTTP_EXCEPTION"  <li>value {Object} Object type with the following properties:    <ul>      <li>status {number} HTTP response status code      <li>statusText {string} HTTP response status string      <li>responseText {string} HTTP response body string    </ul></ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());  var quads = _result.getValue();  var records = quads.records;  for(var i=0;i&ltrecords.length; i++){    var qvalues = records[i].qvalues;    var quad = "";    for(var j=0;j&ltqvalues.length;j++){      quad += qvalues[j].qattributeName + " : ";      if(qvalues[j].stringValue !== null) quad += qvalues[j].stringValue + "\n";      if(qvalues[j].longValue !== null) quad += qvalues[j].longValue + "\n";      if(qvalues[j].floatValue !== null) quad += qvalues[j].floatValue + "\n";    }    alert(quad);  }};onError = function(_result){  if(_result.getStatus() == "AR_HTTP_EXCEPTION"){    alert(_result.getStatus() + "\n" +           _result.getValue().status + " : " + _result.getValue().statusText + "\n" +          _result.getValue().responseText);  } else {    alert(_result.getStatus() + "\n" + _result.getValue());  }};var query = "quads?type=RECORDSANDCOUNT&limitRange={\"start\":1,\"end\":10}&whereExpressions=[{\"qattributeNameRanges\":[{\"start\":\"age\",\"end\":\"age\"}],\"qvalueType\":\"LONG\",\"qvalueRanges\":[{\"start\":10,\"end\":30}]}]"AR.Data.getArServerData(query, true, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getArServerInfo"><span class="type-signature">&lt;static> </span>getArServerInfo<span class="signature">(_onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Get current AR server URL
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if get AR server URL was successful.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {string} AR server URL.�Will return null if there is no AR server set before. </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if get AR server URL failed.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){    alert("AR Server: " + _result.getValue());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Data.getArServerInfo(onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="postArServerData"><span class="type-signature">&lt;static> </span>postArServerData<span class="signature">(_query, _body, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sends a data registration (POST) request to the AR processing server. This cannot be run offline.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_query</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Query string for AR processing server API. The string length must be between 0 and 4096 characters.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_body</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Body string for AR processing server API. The string length must be between 0 and 1000000 characters.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called when data registration was successful.Specify Function(AR.Native.Result). The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} AR processing server response </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if data registration failed.Specify Function(AR.Native.Result). The argument passed when a native application fails is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul><ul>  <b>When an IO error occurs in a native application</b>  <li>status {string} "ARIO_EXCEPTION"  <li>value {string} Error message</ul><ul>  <b>When an HTTP exception occurs in a native application</b>  <li>status {string} "AR_HTTP_EXCEPTION"  <li>value {Object} Object type with the following properties:    <ul>      <li>status {number} HTTP response status code      <li>statusText {string} HTTP response status string      <li>responseText {string} HTTP response body string    </ul></ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus()+ "\n" +        _result.getValue());};onError = function(_result){  if(_result.getStatus() == "AR_HTTP_EXCEPTION"){    alert(_result.getStatus() + "\n" +           _result.getValue().status + " : " + _result.getValue().statusText + "\n" +          _result.getValue().responseText);  } else{    alert(_result.getStatus() + "\n" + _result.getValue());  }};var query = "quads";// create superimposedGraphic...var superimposedGraphic = new AR.Renderer.SuperimposedGraphic();// create bodyvar arId = {"qtypeName":"arpoiarmk_default", "qattributeName":"ar_id","stringValue":null, "longValue":1, "floatValue":null};var arName = {"qtypeName":"arpoiarmk_default", "qattributeName":"ar_name", "stringValue":"sample", "longValue":null, "floatValue":null};var arscnScenarioid = {"qtypeName":"arpoiarmk_default", "qattributeName":"arscn_scenarioid", "stringValue":null, "longValue":1, "floatValue":null};var arsenSceneid = {"qtypeName":"arpoiarmk_default", "qattributeName":"arsen_sceneid", "stringValue":null, "longValue":1, "floatValue":null};var armkMarkerid = {"qtypeName":"arpoiarmk_default", "qattributeName":"armk_markerid", "stringValue":null, "longValue":1, "floatValue":null};var arpoiSuperimposedgraphic = {"qtypeName":"arpoiarmk_default", "qattributeName":"arpoi_superimposedgraphic", "stringValue":JSON.stringify(superimposedGraphic), "longValue":null, "floatValue":null};var body = JSON.stringify({"qtypeName":"arpoiarmk_default", "qvalues":[arId, arName, arscnScenarioid, arsenSceneid, armkMarkerid, arpoiSuperimposedgraphic]});AR.Data.postArServerData(query, body, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setArServerInfo"><span class="type-signature">&lt;static> </span>setArServerInfo<span class="signature">(_url, _id, _password, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sets information (such as URL and authentication information) for the connected AR processing server. If not using basic authentication, specify null for the ID and password.An existing URL is overwritten if a different URL is set. The following characters are allowed for the ID and password: Halfwidth alphanumeric characters, space ( ), exclamation mark (!), question mark (?), at symbol (@), backslash (\), number sign (#), dollar sign ($), percent (%), ampersand (&), opening parenthesis ((), closing parenthesis ()), opening curly bracket ({), closing curly bracket (}), opening square bracket ([), closing square bracket, (]), plus (+), hyphen (-), equals (=), slash (/), vertical bar (|), underscore (_), double quotation mark ("), single quotation mark ('), colon (:), semicolon (;), comma (,), period (.), caret (^), grave accent (`) and tilde (~).
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_url</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Specify between 0 and 256 characters for the AR processing server URL. Only http(s) is supported.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Specify between 0 and 256 characters for the basic authentication ID.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_password</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Specify between 0 and 256 characters for the basic authentication password.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if AR processing server information setup was successful.Specify Function(AR.Native.Result). The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if AR processing server information setup failed.Specify Function(AR.Native.Result). The argument passed when a native application fails is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};var url = "http://192.0.2.0:9102";var id = "aruser";var password = "aruser";AR.Data.setArServerInfo(url, id, password, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="useOfflineStorage"><span class="type-signature">&lt;static> </span>useOfflineStorage<span class="signature">(_useStorage, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Sets whether to use offline storage. Always ensure to use storage if working in an offline environment. Offline storage can save up to the capacity of the terminal's internal storage.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_useStorage</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Set to "true" to use storage, or "false" otherwise.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if storage setup was successful.Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if storage setup failed.Specify Function(AR.Native.Result). The argument passed when a native application fails is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Data.useOfflineStorage(true, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+</article>
+
+</section>  
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Namespaces</h3><ul><li><a href="AR.html">AR</a></li><li><a href="AR.Barcode.html">Barcode</a></li><li><a href="AR.Bluetooth.html">Bluetooth</a></li><li><a href="AR.Camera.html">Camera</a></li><li><a href="AR.Data.html">Data</a></li><li><a href="AR.Error.html">Error</a></li><li><a href="AR.Geolocation.html">Geolocation</a></li><li><a href="AR.Log.html">Log</a></li><li><a href="AR.OS.html">OS</a></li><li><a href="AR.Renderer.html">Renderer</a></li></ul><h3>Classes</h3><ul><li><a href="AR.Bluetooth.BluetoothStatus.html">BluetoothStatus</a></li><li><a href="AR.Camera.ViewKind.html">ViewKind</a></li><li><a href="AR.Error.ErrorName.html">ErrorName</a></li><li><a href="AR.Geolocation.CameraOrientationStatus.html">CameraOrientationStatus</a></li><li><a href="AR.Geolocation.GeolocationStatus.html">GeolocationStatus</a></li><li><a href="AR.Geolocation.RadarColorMode.html">RadarColorMode</a></li><li><a href="AR.Log.LevelType.html">LevelType</a></li><li><a href="AR.Native.Result.html">Result</a></li><li><a href="AR.OS.DetectMode.html">DetectMode</a></li><li><a href="AR.Renderer.AbstractAction.html">AbstractAction</a></li><li><a href="AR.Renderer.AbstractBarcodeCoordinateSystem.html">AbstractBarcodeCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractBeaconCoordinateSystem.html">AbstractBeaconCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractBuiltinModelGraphic.html">AbstractBuiltinModelGraphic</a></li><li><a href="AR.Renderer.AbstractCoordinateSystem.html">AbstractCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractElement.html">AbstractElement</a></li><li><a href="AR.Renderer.AbstractGeolocationCoordinateSystem.html">AbstractGeolocationCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractGraphic.html">AbstractGraphic</a></li><li><a href="AR.Renderer.AbstractMarkerCoordinateSystem.html">AbstractMarkerCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractNamedElement.html">AbstractNamedElement</a></li><li><a href="AR.Renderer.AbstractOpenModelGraphic.html">AbstractOpenModelGraphic</a></li><li><a href="AR.Renderer.AbstractTexture.html">AbstractTexture</a></li><li><a href="AR.Renderer.FJARMarkerCoordinateSystem.html">FJARMarkerCoordinateSystem</a></li><li><a href="AR.Renderer.FJBarcodeCoordinateSystem.html">FJBarcodeCoordinateSystem</a></li><li><a href="AR.Renderer.FJBeaconCoordinateSystem.html">FJBeaconCoordinateSystem</a></li><li><a href="AR.Renderer.FJGeolocationCoordinateSystem.html">FJGeolocationCoordinateSystem</a></li><li><a href="AR.Renderer.HandwritingTexture.html">HandwritingTexture</a></li><li><a href="AR.Renderer.ImageTexture.html">ImageTexture</a></li><li><a href="AR.Renderer.ObjModelGraphic.html">ObjModelGraphic</a></li><li><a href="AR.Renderer.Point.html">Point</a></li><li><a href="AR.Renderer.ScriptAction.html">ScriptAction</a></li><li><a href="AR.Renderer.Size.html">Size</a></li><li><a href="AR.Renderer.SquareModelGraphic.html">SquareModelGraphic</a></li><li><a href="AR.Renderer.SuperimposedGraphic.html">SuperimposedGraphic</a></li><li><a href="AR.Renderer.SuperimposedGraphic.ProjectionType.html">ProjectionType</a></li><li><a href="AR.Renderer.TextTexture.html">TextTexture</a></li><li><a href="AR.Renderer.URLAction.html">URLAction</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Fri Dec 05 2014 14:11:14 GMT+0900 (JST)
+</footer>
+
+<script> prettyPrint(); </script>
+</body>
+</html>

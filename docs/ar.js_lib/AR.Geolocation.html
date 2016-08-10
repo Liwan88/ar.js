@@ -1,0 +1,2178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: Geolocation</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Namespace: Geolocation</h1>
+    
+    
+
+
+
+<section>
+    
+<header>
+    <h2>
+        <span class="ancestors"><a href="AR.html">AR</a>.</span>
+    
+    
+        Geolocation
+    
+    </h2>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+    
+        
+            <div class="description">AR geolocation control library space.</div>
+        
+        
+        
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+        
+        
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Classes</h3>
+        
+        <dl>
+            <dt><a href="AR.Geolocation.CameraOrientationStatus.html">CameraOrientationStatus</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Geolocation.GeolocationStatus.html">GeolocationStatus</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Geolocation.RadarColorMode.html">RadarColorMode</a></dt>
+            <dd></dd>
+        </dl>
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="addGeolocationListener"><span class="type-signature">&lt;static> </span>addGeolocationListener<span class="signature">(_onSuccess, _onError, _onSuccessListener, _onErrorListner)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Starts the native application geolocation information detection.The callback function specified in _onSuccessListener is called if a geolocation information was detected or was missing.A maximum of 10 geolocation detection event listeners can be registered.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if geolocation detection event listener registration was successful. Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {string} ListenerId </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if geolocation detection event listener registration failed. Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul><ul>  <b>When an attempt was made to register 11 or more Geolocation detection event listeners:</b>  <li>status {string} "INVALID_OPERATION_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccessListener</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if the geolocation detection state was changed. Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} Detection information </ul>    The detection information value is the following Object type: <ul>   <li>latitude {number} Latitude   <li>longitude {number} Longitude   <li>altitude {number} Altitude </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onErrorListner</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if geolocation detection failed.Specify Function(AR.Native.Result). The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert("Listener ID : " + _result.getValue());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};onSuccessListener = function(_result){  alert("Latitude:" + _result.getValue().latitude + "\n" +        "Longitude:"+_result.getValue().longitude + "\n" +        "Altitude:" + _result.getValue().altitude);};onErrorListener = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Geolocation.addGeolocationListener(onSuccess, onError, onSuccessListener, onErrorListener);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getCameraOrientation"><span class="type-signature">&lt;static> </span>getCameraOrientation<span class="signature">(_onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Get current camera orientation. The unit is radians. The returned value range is different on different devices.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if get camera orientation was successful.Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} Orientation information </ul>    Orientation information value type is {Object} with following attributes. <ul>   <li>pitch {number} Pitch value   <li>azimuth {number} Azimuth value   <li>roll {number} Roll value </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">function called if get camera orientation failed.Specify Function(AR.Native.Result). The argument passed when a native application fails is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert("Pitch:" + _result.getValue().pitch + "\n" +        "Azimuth:" + _result.getValue().azimuth + "\n" +        "Roll:" + _result.getValue().roll);};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Geolocation.getCameraOrientation(onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getCameraOrientationStatus"><span class="type-signature">&lt;static> </span>getCameraOrientationStatus<span class="signature">(_onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Get camera orientation status. Returned status is represent as {number} from <a href="AR.Geolocation.CameraOrientationStatus.html">AR.Geolocation.CameraOrientationStatus</a>.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if get camera orientation status was successful.Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {number} bitmap number from <a href="AR.Geolocation.CameraOrientationStatus.html">AR.Geolocation.CameraOrientationStatus</a> </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">function called if get camera orientation status failed.Specify Function(AR.Native.Result). The argument passed when a native application fails is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){    alert("Camera orientation status : " + _result.getValue());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Geolocation.getCameraOrientationStatus(onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getCurrentLocation"><span class="type-signature">&lt;static> </span>getCurrentLocation<span class="signature">(_onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Get current location.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if get current location was successful.Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} location information object </ul>      A location information value is an Object type, with the following properties: <ul>   <li>latitude {number} Latitude   <li>longitude {number} Longitude   <li>altitude {number} Altitude </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">function called if get current location failed.Specify Function(AR.Native.Result). The argument passed when a native application fails is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert("Latitude:" + _result.getValue().latitude + "\n" +        "Longitude:" + _result.getValue().longitude + "\n" +        "Altitude:" + _result.getValue().altitude);};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Geolocation.getCurrentLocation(onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getDetectArea"><span class="type-signature">&lt;static> </span>getDetectArea<span class="signature">(_onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Get the current object detect range. The unit is meters.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if get detect area was successful.Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} Object detect range </ul>    Object detect range value is stored as {Object} type. <ul>   <li>distance {number} Recognition maximum distance </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">function called if get detect area failed.Specify Function(AR.Native.Result). The argument passed when a native application fails is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert("Recognition maximum distance:" + _result.getValue().distance);};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Geolocation.getDetectArea(onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getGeolocationStatus"><span class="type-signature">&lt;static> </span>getGeolocationStatus<span class="signature">(_onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Get current geolocation status. Status to be acquired is <a href="AR.Geolocation.GeolocationStatus.html">AR.Geolocation.GeolocationStatus</a> as {number}.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if get current geolocation was successful.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {number} A {number} from <a href="AR.Geolocation.GeolocationStatus.html">AR.Geolocation.GeolocationStatus</a> </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if get current geolocation failed.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){    alert("Geolocation Status : " + _result.getValue());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Geolocation.getGeolocationStatus(onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="removeGeolocationListener"><span class="type-signature">&lt;static> </span>removeGeolocationListener<span class="signature">(_listenerId, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Removes the geolocation information detection event listener.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_listenerId</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Event listener ID that you wish to delete. Specify between 0 and 256 characters.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if a geolocation information detection event listener was successfully removed. Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if removal of an geolocation information detection event listener failed.Specify Function(AR.Native.Result). The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul><ul>  <b>When an unexpected exception occurs:</b>  <li>status {string} "UNEXPECTED_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Geolocation.removeGeolocationListener("geolocation123", onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setDetectArea"><span class="type-signature">&lt;static> </span>setDetectArea<span class="signature">(_distance, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Set the object detect range. Must be between 50 and 200000. The unit is meters.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_distance</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Recognition maximum distance. the detect distance range is 50 ~ 200000 (200,000m). The unit is meters.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if get detect area was successful.Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">function called if get detect area failed.Specify Function(AR.Native.Result). The argument passed when a native application fails is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};var distance = 1000;AR.Geolocation.setDetectArea(distance, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setRadarColorMode"><span class="type-signature">&lt;static> </span>setRadarColorMode<span class="signature">(_mode, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Set radar panel display color. Avaliable color can be found <a href="AR.Geolocation.RadarColorMode.html">AR.Geolocation.RadarColorMode</a>.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_mode</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Color name from <a href="AR.Geolocation.RadarColorMode.html">AR.Geolocation.RadarColorMode</a></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if set radar panel display color was successful.Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">function called if set radar panel display color failed.Specify Function(AR.Native.Result). The argument passed when a native application fails is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};var mode = AR.Geolocation.RadarColorMode.GRAY;AR.Geolocation.setRadarColorMode(mode, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setRadarLayout"><span class="type-signature">&lt;static> </span>setRadarLayout<span class="signature">(_centerX, _centerY, _radius, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Set radar panel display size and position
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_centerX</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">X Coordinate position</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_centerY</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Y Coordinate position</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_radius</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The size of the radar panel. The unit is in pixels. The minimum value of the Android version is 60 [dip]. The minimum value of the iOS version is 60 [pixel]. If the set value is less than minimum value, the minimum value will be set.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if set radar panel layout was successful.Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">function called if set radar panel layout failed.Specify Function(AR.Native.Result). The argument passed when a native application fails is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};adjustSize = function(_size) {    //Android dip size transfer to pixel.  if (navigator.userAgent.match(/(Android)/)) {    return _size * window.devicePixelRatio;  }    //iOS pixel value.  if (navigator.userAgent.match(/(iPad|iPhone|iPod)/i)) {    return _size;  }  return _size;};var radarMargin = Math.floor(adjustSize(10));var radarRadius = Math.floor(adjustSize(60));var centerX = radarRadius + radarMargin;var centerY = window.screen.height - radarRadius - (radarMargin * 6);AR.Geolocation.setRadarLayout(centerX, centerY, radius, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="useRadar"><span class="type-signature">&lt;static> </span>useRadar<span class="signature">(_useRadar, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Set whether or not AR application should show the radar panel
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_useRadar</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">true: use radar panel縲’alse: do not use radar panel.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if set use radar panel was successful.Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">function called if set use radar panel failed.Specify Function(AR.Native.Result). The argument passed when a native application fails is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};var useRadar = true;AR.Geolocation.useRadar(useRadar, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+</article>
+
+</section>  
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Namespaces</h3><ul><li><a href="AR.html">AR</a></li><li><a href="AR.Barcode.html">Barcode</a></li><li><a href="AR.Bluetooth.html">Bluetooth</a></li><li><a href="AR.Camera.html">Camera</a></li><li><a href="AR.Data.html">Data</a></li><li><a href="AR.Error.html">Error</a></li><li><a href="AR.Geolocation.html">Geolocation</a></li><li><a href="AR.Log.html">Log</a></li><li><a href="AR.OS.html">OS</a></li><li><a href="AR.Renderer.html">Renderer</a></li></ul><h3>Classes</h3><ul><li><a href="AR.Bluetooth.BluetoothStatus.html">BluetoothStatus</a></li><li><a href="AR.Camera.ViewKind.html">ViewKind</a></li><li><a href="AR.Error.ErrorName.html">ErrorName</a></li><li><a href="AR.Geolocation.CameraOrientationStatus.html">CameraOrientationStatus</a></li><li><a href="AR.Geolocation.GeolocationStatus.html">GeolocationStatus</a></li><li><a href="AR.Geolocation.RadarColorMode.html">RadarColorMode</a></li><li><a href="AR.Log.LevelType.html">LevelType</a></li><li><a href="AR.Native.Result.html">Result</a></li><li><a href="AR.OS.DetectMode.html">DetectMode</a></li><li><a href="AR.Renderer.AbstractAction.html">AbstractAction</a></li><li><a href="AR.Renderer.AbstractBarcodeCoordinateSystem.html">AbstractBarcodeCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractBeaconCoordinateSystem.html">AbstractBeaconCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractBuiltinModelGraphic.html">AbstractBuiltinModelGraphic</a></li><li><a href="AR.Renderer.AbstractCoordinateSystem.html">AbstractCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractElement.html">AbstractElement</a></li><li><a href="AR.Renderer.AbstractGeolocationCoordinateSystem.html">AbstractGeolocationCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractGraphic.html">AbstractGraphic</a></li><li><a href="AR.Renderer.AbstractMarkerCoordinateSystem.html">AbstractMarkerCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractNamedElement.html">AbstractNamedElement</a></li><li><a href="AR.Renderer.AbstractOpenModelGraphic.html">AbstractOpenModelGraphic</a></li><li><a href="AR.Renderer.AbstractTexture.html">AbstractTexture</a></li><li><a href="AR.Renderer.FJARMarkerCoordinateSystem.html">FJARMarkerCoordinateSystem</a></li><li><a href="AR.Renderer.FJBarcodeCoordinateSystem.html">FJBarcodeCoordinateSystem</a></li><li><a href="AR.Renderer.FJBeaconCoordinateSystem.html">FJBeaconCoordinateSystem</a></li><li><a href="AR.Renderer.FJGeolocationCoordinateSystem.html">FJGeolocationCoordinateSystem</a></li><li><a href="AR.Renderer.HandwritingTexture.html">HandwritingTexture</a></li><li><a href="AR.Renderer.ImageTexture.html">ImageTexture</a></li><li><a href="AR.Renderer.ObjModelGraphic.html">ObjModelGraphic</a></li><li><a href="AR.Renderer.Point.html">Point</a></li><li><a href="AR.Renderer.ScriptAction.html">ScriptAction</a></li><li><a href="AR.Renderer.Size.html">Size</a></li><li><a href="AR.Renderer.SquareModelGraphic.html">SquareModelGraphic</a></li><li><a href="AR.Renderer.SuperimposedGraphic.html">SuperimposedGraphic</a></li><li><a href="AR.Renderer.SuperimposedGraphic.ProjectionType.html">ProjectionType</a></li><li><a href="AR.Renderer.TextTexture.html">TextTexture</a></li><li><a href="AR.Renderer.URLAction.html">URLAction</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Fri Dec 05 2014 14:11:14 GMT+0900 (JST)
+</footer>
+
+<script> prettyPrint(); </script>
+</body>
+</html>

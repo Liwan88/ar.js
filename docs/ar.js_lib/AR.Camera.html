@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: Camera</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Namespace: Camera</h1>
+    
+    
+
+
+
+<section>
+    
+<header>
+    <h2>
+        <span class="ancestors"><a href="AR.html">AR</a>.</span>
+    
+    
+        Camera
+    
+    </h2>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+    
+        
+            <div class="description">AR recognition control library space.</div>
+        
+        
+        
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+        
+        
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Classes</h3>
+        
+        <dl>
+            <dt><a href="AR.Camera.ViewKind.html">ViewKind</a></dt>
+            <dd></dd>
+        </dl>
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="addMarkerListener"><span class="type-signature">&lt;static> </span>addMarkerListener<span class="signature">(_onSuccess, _onError, _onSuccessListener, _onErrorListner)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Starts the native application marker detection. The callback function specified in _onSuccessListener is called if a marker was detected or was missing.A maximum of 10 marker detection event listeners can be registered.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if marker detection event listener registration was successful. Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {string} Listener ID </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if marker detection event listener registration failed. Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul><ul>  <b>When an attempt was made to register 11 or more marker detection event listeners:</b>  <li>status {string} "INVALID_OPERATION_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccessListener</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if the marker detection state was changed. Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} Detection information </ul>    The detection information value is the following Object type: <ul>   <li>markerId {number} Marker ID   <li>status {boolean} true (detected), or false (missing) </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onErrorListner</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if marker detection failed.Specify Function(AR.Native.Result). The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert("Listener ID : " + _result.getValue());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};onSuccessListener = function(_result){  if(_result.getValue().status == true){    alert("Marker"+_result.getValue().markerId + " was detected.");  } else if(_result.getValue().status == false){    alert("Marker"+_result.getValue().markerId + " was missing.") ;  }};onErrorListener = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Camera.addMarkerListener(onSuccess, onError, onSuccessListener, onErrorListener);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getCurrentMarkers"><span class="type-signature">&lt;static> </span>getCurrentMarkers<span class="signature">(_onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets the currently detected marker IDs and an array of rectangular frame-like shape (pixel) coordinates. Four markers are required to guarantee recognition.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if marker information acquisition was successful. Specify Function(AR.Native.Result) as the callback function. The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Array.&lt;Object&gt;} Detection information </ul>  A detection information value is an Object type array, with the following properties: <ul>   <li>value {number} Marker value   <li>rect {Object} Rectangular frame-like shape coordinates </ul>    A rectangular frame-like shape rect is an Object type, with the following properties: <ul>   <li>tl {Object} Marker rectangular frame-like shape coordinates - top-left XY coordinate   <li>tr {Object} Marker rectangular frame-like shape coordinates - top-right XY coordinate   <li>bl {Object} Marker rectangular frame-like shape coordinates - bottom-left XY coordinate   <li>br {Object} Marker rectangular frame-like shape coordinates - bottom-right XY coordinate </ul>    All XY coordinates (tl, tr, bl, and br) are Object types, with the following properties: <ul>   <li>x {number} pixel coordinate value   <li>y {number} pixel coordinate value </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if marker information acquisition failed.Specify Function(AR.Native.Result). The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  var markers = _result.getValue();  for(var i=0;i&ltmarkers.length; i++){    alert("Marker"+ markers[i].value + "\n" +          "{"+markers[i].rect.tl.x + "," + markers[i].rect.tl.y +"}," +           "{"+markers[i].rect.tr.x + "," + markers[i].rect.tr.y +"}," +           "{"+markers[i].rect.bl.x + "," + markers[i].rect.bl.y +"}," +           "{"+markers[i].rect.br.x + "," + markers[i].rect.br.y +"}");  }};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Camera.getCurrentMarkers(onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getPictureFile"><span class="type-signature">&lt;static> </span>getPictureFile<span class="signature">(_fileName, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Get saved picture file using <a href="AR.Camera.html#takePicture">AR.Camera.takePicture</a>.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_fileName</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The image file name that user wants to get.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if get picture file was successful.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {File} image file object </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if get picture file failed.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  var imageFile = _result.getValue();  document.getElementById("image" ).src = "data:image/png;base64," + imageFile;  }};onError = function(_result){  document.getElementById("image").style.display = "none";};var path = imageFile;AR.Camera.getPictureFile(path, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getZoom"><span class="type-signature">&lt;static> </span>getZoom<span class="signature">(_onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Get current camera zoom value.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if get camera zoom value was successful.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {number} Zoom value </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if get zoom value failed.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){    alert("Zoom value : " + _result.getValue());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Camera.getZoom(onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="isZoomSupported"><span class="type-signature">&lt;static> </span>isZoomSupported<span class="signature">(_onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Check if the device support change camera zoom level or not.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if check device zoom support was successful.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {boolean} true(support) | false(not support) </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if check device zoom support failed.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){    if (_result.getValue()){        alert("Support");    } else {        alert("Not Support");    }};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Camera.isZoomSupported(onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="removeMarkerListener"><span class="type-signature">&lt;static> </span>removeMarkerListener<span class="signature">(_listenerId, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Removes the marker detection event listener.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_listenerId</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Event listener ID that you wish to delete. Specify between 0 and 256 characters.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if a marker detection event listener was successfully removed. Specify Function(AR.Native.Result). The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if removal of an AR marker detection event listener failed.Specify Function(AR.Native.Result). The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul><ul>  <b>When an unexpected exception occurs:</b>  <li>status {string} "UNEXPECTED_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Camera.removeMarkerListener("camera123", onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setZoom"><span class="type-signature">&lt;static> </span>setZoom<span class="signature">(_zoom, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Set the zoom value for camera.Zoom value can be set in the range from 0 to 100 .If the value is outside the range , the closest max or min value is set.The zoom value will affect the hardware performance.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_zoom</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Zoom value</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if set camera zoom value was successful.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if set camera zoom value failed.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};var zoom = 20;AR.Camera.setZoom(zoom, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="startCameraView"><span class="type-signature">&lt;static> </span>startCameraView<span class="signature">(_onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Launches the camera. The camera runs when an overlay application is launched.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if the camera was successfully started. Specify Function(AR.Native.Result). The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if the camera failed to start.Specify Function(AR.Native.Result). The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <br><ul><b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>  <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined  <li>UnexpectedError: When generation of a request to a native application fails  <li>InvalidStateError: When a native application call fails</ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Camera.startCameraView(onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="stopCameraView"><span class="type-signature">&lt;static> </span>stopCameraView<span class="signature">(_onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Stops the camera. The camera runs when an overlay application is launched. If an application is aborted using a hardware button on the terminal while the camera is stopped, the camera will run when the application is launched again.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if the camera was successfully stopped. Specify Function(AR.Native.Result). The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if the camera failed to stop.
+ Specify Function(AR.Native.Result). The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>  <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined  <li>UnexpectedError: When generation of a request to a native application fails  <li>InvalidStateError: When a native application call fails</ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Camera.stopCameraView(onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="takePicture"><span class="type-signature">&lt;static> </span>takePicture<span class="signature">(_view, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Take the screen shot and save it for selected camera view type.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_view</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last"><a href="AR.Camera.ViewKind.html">AR.Camera.ViewKind</a> as {number}.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if take screen shot was successful.Specify Function(AR.Native.Result) as the callback function.The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {string} The saved image file name </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if take screen shot failed.Specify Function(AR.Native.Result).The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  var imageData = _result.getValue();  alert(_result.getStatus());  }};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};var view = AR.Camera.ViewKind.CAMERA | AR.Camera.ViewKind.RENDERING;AR.Camera.takePicture(view, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+</article>
+
+</section>  
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Namespaces</h3><ul><li><a href="AR.html">AR</a></li><li><a href="AR.Barcode.html">Barcode</a></li><li><a href="AR.Bluetooth.html">Bluetooth</a></li><li><a href="AR.Camera.html">Camera</a></li><li><a href="AR.Data.html">Data</a></li><li><a href="AR.Error.html">Error</a></li><li><a href="AR.Geolocation.html">Geolocation</a></li><li><a href="AR.Log.html">Log</a></li><li><a href="AR.OS.html">OS</a></li><li><a href="AR.Renderer.html">Renderer</a></li></ul><h3>Classes</h3><ul><li><a href="AR.Bluetooth.BluetoothStatus.html">BluetoothStatus</a></li><li><a href="AR.Camera.ViewKind.html">ViewKind</a></li><li><a href="AR.Error.ErrorName.html">ErrorName</a></li><li><a href="AR.Geolocation.CameraOrientationStatus.html">CameraOrientationStatus</a></li><li><a href="AR.Geolocation.GeolocationStatus.html">GeolocationStatus</a></li><li><a href="AR.Geolocation.RadarColorMode.html">RadarColorMode</a></li><li><a href="AR.Log.LevelType.html">LevelType</a></li><li><a href="AR.Native.Result.html">Result</a></li><li><a href="AR.OS.DetectMode.html">DetectMode</a></li><li><a href="AR.Renderer.AbstractAction.html">AbstractAction</a></li><li><a href="AR.Renderer.AbstractBarcodeCoordinateSystem.html">AbstractBarcodeCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractBeaconCoordinateSystem.html">AbstractBeaconCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractBuiltinModelGraphic.html">AbstractBuiltinModelGraphic</a></li><li><a href="AR.Renderer.AbstractCoordinateSystem.html">AbstractCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractElement.html">AbstractElement</a></li><li><a href="AR.Renderer.AbstractGeolocationCoordinateSystem.html">AbstractGeolocationCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractGraphic.html">AbstractGraphic</a></li><li><a href="AR.Renderer.AbstractMarkerCoordinateSystem.html">AbstractMarkerCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractNamedElement.html">AbstractNamedElement</a></li><li><a href="AR.Renderer.AbstractOpenModelGraphic.html">AbstractOpenModelGraphic</a></li><li><a href="AR.Renderer.AbstractTexture.html">AbstractTexture</a></li><li><a href="AR.Renderer.FJARMarkerCoordinateSystem.html">FJARMarkerCoordinateSystem</a></li><li><a href="AR.Renderer.FJBarcodeCoordinateSystem.html">FJBarcodeCoordinateSystem</a></li><li><a href="AR.Renderer.FJBeaconCoordinateSystem.html">FJBeaconCoordinateSystem</a></li><li><a href="AR.Renderer.FJGeolocationCoordinateSystem.html">FJGeolocationCoordinateSystem</a></li><li><a href="AR.Renderer.HandwritingTexture.html">HandwritingTexture</a></li><li><a href="AR.Renderer.ImageTexture.html">ImageTexture</a></li><li><a href="AR.Renderer.ObjModelGraphic.html">ObjModelGraphic</a></li><li><a href="AR.Renderer.Point.html">Point</a></li><li><a href="AR.Renderer.ScriptAction.html">ScriptAction</a></li><li><a href="AR.Renderer.Size.html">Size</a></li><li><a href="AR.Renderer.SquareModelGraphic.html">SquareModelGraphic</a></li><li><a href="AR.Renderer.SuperimposedGraphic.html">SuperimposedGraphic</a></li><li><a href="AR.Renderer.SuperimposedGraphic.ProjectionType.html">ProjectionType</a></li><li><a href="AR.Renderer.TextTexture.html">TextTexture</a></li><li><a href="AR.Renderer.URLAction.html">URLAction</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Fri Dec 05 2014 14:11:14 GMT+0900 (JST)
+</footer>
+
+<script> prettyPrint(); </script>
+</body>
+</html>

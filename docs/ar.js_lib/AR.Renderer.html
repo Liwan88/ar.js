@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: Renderer</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Namespace: Renderer</h1>
+    
+    
+
+
+
+<section>
+    
+<header>
+    <h2>
+        <span class="ancestors"><a href="AR.html">AR</a>.</span>
+    
+    
+        Renderer
+    
+    </h2>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+    
+        
+            <div class="description">AR rendering library space.</div>
+        
+        
+        
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+        
+        
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Classes</h3>
+        
+        <dl>
+            <dt><a href="AR.Renderer.AbstractAction.html">AbstractAction</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.AbstractBarcodeCoordinateSystem.html">AbstractBarcodeCoordinateSystem</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.AbstractBeaconCoordinateSystem.html">AbstractBeaconCoordinateSystem</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.AbstractBuiltinModelGraphic.html">AbstractBuiltinModelGraphic</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.AbstractCoordinateSystem.html">AbstractCoordinateSystem</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.AbstractElement.html">AbstractElement</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.AbstractGeolocationCoordinateSystem.html">AbstractGeolocationCoordinateSystem</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.AbstractGraphic.html">AbstractGraphic</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.AbstractMarkerCoordinateSystem.html">AbstractMarkerCoordinateSystem</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.AbstractNamedElement.html">AbstractNamedElement</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.AbstractOpenModelGraphic.html">AbstractOpenModelGraphic</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.AbstractTexture.html">AbstractTexture</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.FJARMarkerCoordinateSystem.html">FJARMarkerCoordinateSystem</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.FJBarcodeCoordinateSystem.html">FJBarcodeCoordinateSystem</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.FJBeaconCoordinateSystem.html">FJBeaconCoordinateSystem</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.FJGeolocationCoordinateSystem.html">FJGeolocationCoordinateSystem</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.HandwritingTexture.html">HandwritingTexture</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.ImageTexture.html">ImageTexture</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.ObjModelGraphic.html">ObjModelGraphic</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.Point.html">Point</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.ScriptAction.html">ScriptAction</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.Size.html">Size</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.SquareModelGraphic.html">SquareModelGraphic</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.SuperimposedGraphic.html">SuperimposedGraphic</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.TextTexture.html">TextTexture</a></dt>
+            <dd></dd>
+        
+            <dt><a href="AR.Renderer.URLAction.html">URLAction</a></dt>
+            <dd></dd>
+        </dl>
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="add"><span class="type-signature">&lt;static> </span>add<span class="signature">(_coordinateSystem, _superimposedGraphics, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Adds the AR overlay definition data to the specified coordinate system to the native AR display layer. If the AR overlay definition data already exists in the coordinate system, then it will be overwritten. Up to 100 AR content items can be added to the same scene.If AR content contains external URL for resources such as image textures or tap actions, then they will be downloaded when the AR content is added to the native AR display layer. A warning dialog box is displayed if there are no resources in the specified URL, or if there is no data in offline storage.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_coordinateSystem</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="AR.Renderer.AbstractCoordinateSystem.html">AR.Renderer.AbstractCoordinateSystem</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Coordinate system. <a href="AR.Renderer.FJARMarkerCoordinateSystem.html">AR.Renderer.FJARMarkerCoordinateSystem</a>, <a href="AR.Renderer.FJBarcodeCoordinateSystem.html">AR.Renderer.FJBarcodeCoordinateSystem</a>, <a href="AR.Renderer.FJBeaconCoordinateSystem.html">AR.Renderer.FJBeaconCoordinateSystem</a> and <a href="AR.Renderer.FJGeolocationCoordinateSystem.html">AR.Renderer.FJGeolocationCoordinateSystem</a>can be specified.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_superimposedGraphics</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="AR.Renderer.SuperimposedGraphic.html">AR.Renderer.SuperimposedGraphic</a>></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">AR overlay definition data array for AR content to be added.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if AR content addition was successful. Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if AR content addition failed.Specify Function(AR.Native.Result). The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul><ul>  <b>When an operation error occurs in a native application:</b>  <li>status {string} "INVALID_OPERATION_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};var superimposedGraphic = new AR.Renderer.SuperimposedGraphic();var squareModelGraphic = new AR.Renderer.SquareModelGraphic();var scale = new AR.Renderer.Point();scale.setX(1.0);scale.setY(1.0);scale.setZ(1.0);squareModelGraphic.setScale(scale);var texture = new AR.Renderer.TextTexture();texture.setColor(4289720046);texture.setText("text");squareModelGraphic.setTexture(texture);superimposedGraphic.setGraphic(squareModelGraphic);superimposedGraphic.setProjectionType(AR.Renderer.SuperimposedGraphic.ProjectionType.ORTHO2D);var rotation = new AR.Renderer.Point();rotation.setX(0.0);rotation.setY(0.0);rotation.setZ(0.0);superimposedGraphic.setRotation(rotation);var translation = new AR.Renderer.Point();translation.setX(1.0);translation.setY(1.0);translation.setZ(0.0);superimposedGraphic.setTranslation(translation);var coordinateSystem = new AR.Renderer.FJARMarkerCoordinateSystem();coordinateSystem.setValue(1);AR.Renderer.add(coordinateSystem, [superimposedGraphic], onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.1
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="clear"><span class="type-signature">&lt;static> </span>clear<span class="signature">(_onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Deletes all AR content set for the native AR display layer.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if AR content removal was successful.Specify Function(AR.Native.Result).The callback function argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if AR content deletion failed.Specify Function(AR.Native.Result). The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};AR.Renderer.clear(onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="get"><span class="type-signature">&lt;static> </span>get<span class="signature">(_coordinateSystem, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Gets AR overlay definition data for AR content set in the specified coordinate system from the native AR display layer.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_coordinateSystem</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="AR.Renderer.AbstractCoordinateSystem.html">AR.Renderer.AbstractCoordinateSystem</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Coordinate system. <a href="AR.Renderer.FJARMarkerCoordinateSystem.html">AR.Renderer.FJARMarkerCoordinateSystem</a>, <a href="AR.Renderer.FJBarcodeCoordinateSystem.html">AR.Renderer.FJBarcodeCoordinateSystem</a>, <a href="AR.Renderer.FJGeolocationCoordinateSystem.html">AR.Renderer.FJGeolocationCoordinateSystem</a> and <a href="AR.Renderer.FJBeaconCoordinateSystem.html">AR.Renderer.FJBeaconCoordinateSystem</a>, can be used.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if AR overlay definition data acquisition was successful.Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} value {string}JSON string of the AR overlay definition data array set in the coordinate system  </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if AR overlay definition data acquisition failed.Specify Function(AR.Native.Result). The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  var superimposedGraphics = _result.getValue();  alert(JSON.stringify(superimposedGraphics));};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};var coordinateSystem = new AR.Renderer.FJARMarkerCoordinateSystem();coordinateSystem.setValue(1);AR.Renderer.get(coordinateSystem, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="parseSuperimposedGraphic"><span class="type-signature">&lt;static> </span>parseSuperimposedGraphic<span class="signature">(_jsonString)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Converts the specified JSON string into an AR overlay definition data object.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_jsonString</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">JSON string to be converted into an object. Must be between 0 and 100000 characters.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    InvalidParameterError: When the argument is not the expected type, or is not a JSON string
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="put"><span class="type-signature">&lt;static> </span>put<span class="signature">(_coordinateSystem, _superimposedGraphics, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Adds to the native AR display layer the specified AR content in the specified coordinate system. If AR content already exists in the coordinate system, then it will be overwritten. Up to 100 AR content items can be added to the same scene.If AR content contains external URL for resources such as image textures or tap actions, then they will be downloaded when the AR content is added to the native AR display layer. A warning dialog box is displayed if there are no resources in the specified URL, or if there is no data in offline storage.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_coordinateSystem</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="AR.Renderer.AbstractCoordinateSystem.html">AR.Renderer.AbstractCoordinateSystem</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Coordinate system object. <a href="AR.Renderer.FJARMarkerCoordinateSystem.html">AR.Renderer.FJARMarkerCoordinateSystem</a>, <a href="AR.Renderer.FJBarcodeCoordinateSystem.html">AR.Renderer.FJBarcodeCoordinateSystem</a>, <a href="AR.Renderer.FJGeolocationCoordinateSystem.html">AR.Renderer.FJGeolocationCoordinateSystem</a> and <a href="AR.Renderer.FJBeaconCoordinateSystem.html">AR.Renderer.FJBeaconCoordinateSystem</a>, can be specified.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_superimposedGraphics</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="AR.Renderer.SuperimposedGraphic.html">AR.Renderer.SuperimposedGraphic</a>></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">AR overlay definition data array for AR content to be added.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if AR content addition was successful. Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if AR content addition failed.Specify Function(AR.Native.Result). The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul><ul>  <b>When an operation error occurs in a native application:</b>  <li>status {string} "INVALID_OPERATION_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or is null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};var superimposedGraphic = new AR.Renderer.SuperimposedGraphic();var squareModelGraphic = new AR.Renderer.SquareModelGraphic();var scale = new AR.Renderer.Point();scale.setX(1.0);scale.setY(1.0);scale.setZ(1.0);squareModelGraphic.setScale(scale);var texture = new AR.Renderer.TextTexture();texture.setColor(4289720046);texture.setText("text");squareModelGraphic.setTexture(texture);superimposedGraphic.setGraphic(squareModelGraphic);superimposedGraphic.setProjectionType(AR.Renderer.SuperimposedGraphic.ProjectionType.ORTHO2D);var rotation = new AR.Renderer.Point();rotation.setX(0.0);rotation.setY(0.0);rotation.setZ(0.0);superimposedGraphic.setRotation(rotation);var translation = new AR.Renderer.Point();translation.setX(1.0);translation.setY(1.0);translation.setZ(0.0);superimposedGraphic.setTranslation(translation);var coordinateSystem = new AR.Renderer.FJARMarkerCoordinateSystem();coordinateSystem.setValue(1);AR.Renderer.put(coordinateSystem, [superimposedGraphic], onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="remove"><span class="type-signature">&lt;static> </span>remove<span class="signature">(_coordinateSystem, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Removes from the native AR display layer AR content in the specified coordinate system.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_coordinateSystem</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="AR.Renderer.AbstractCoordinateSystem.html">AR.Renderer.AbstractCoordinateSystem</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Coordinate system object. <a href="AR.Renderer.FJARMarkerCoordinateSystem.html">AR.Renderer.FJARMarkerCoordinateSystem</a>, <a href="AR.Renderer.FJBarcodeCoordinateSystem.html">AR.Renderer.FJBarcodeCoordinateSystem</a>, <a href="AR.Renderer.FJGeolocationCoordinateSystem.html">AR.Renderer.FJGeolocationCoordinateSystem</a> and <a href="AR.Renderer.FJBeaconCoordinateSystem.html">AR.Renderer.FJBeaconCoordinateSystem</a>, can be specified.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if AR content removal was successful. Specify Function(AR.Native.Result).The argument passed from a native application upon successful completion is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if AR content deletion failed.Specify Function(AR.Native.Result). The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};var coordinateSystem = new AR.Renderer.FJARMarkerCoordinateSystem();coordinateSystem.setValue(1);AR.Renderer.remove(coordinateSystem, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+</article>
+
+</section>  
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Namespaces</h3><ul><li><a href="AR.html">AR</a></li><li><a href="AR.Barcode.html">Barcode</a></li><li><a href="AR.Bluetooth.html">Bluetooth</a></li><li><a href="AR.Camera.html">Camera</a></li><li><a href="AR.Data.html">Data</a></li><li><a href="AR.Error.html">Error</a></li><li><a href="AR.Geolocation.html">Geolocation</a></li><li><a href="AR.Log.html">Log</a></li><li><a href="AR.OS.html">OS</a></li><li><a href="AR.Renderer.html">Renderer</a></li></ul><h3>Classes</h3><ul><li><a href="AR.Bluetooth.BluetoothStatus.html">BluetoothStatus</a></li><li><a href="AR.Camera.ViewKind.html">ViewKind</a></li><li><a href="AR.Error.ErrorName.html">ErrorName</a></li><li><a href="AR.Geolocation.CameraOrientationStatus.html">CameraOrientationStatus</a></li><li><a href="AR.Geolocation.GeolocationStatus.html">GeolocationStatus</a></li><li><a href="AR.Geolocation.RadarColorMode.html">RadarColorMode</a></li><li><a href="AR.Log.LevelType.html">LevelType</a></li><li><a href="AR.Native.Result.html">Result</a></li><li><a href="AR.OS.DetectMode.html">DetectMode</a></li><li><a href="AR.Renderer.AbstractAction.html">AbstractAction</a></li><li><a href="AR.Renderer.AbstractBarcodeCoordinateSystem.html">AbstractBarcodeCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractBeaconCoordinateSystem.html">AbstractBeaconCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractBuiltinModelGraphic.html">AbstractBuiltinModelGraphic</a></li><li><a href="AR.Renderer.AbstractCoordinateSystem.html">AbstractCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractElement.html">AbstractElement</a></li><li><a href="AR.Renderer.AbstractGeolocationCoordinateSystem.html">AbstractGeolocationCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractGraphic.html">AbstractGraphic</a></li><li><a href="AR.Renderer.AbstractMarkerCoordinateSystem.html">AbstractMarkerCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractNamedElement.html">AbstractNamedElement</a></li><li><a href="AR.Renderer.AbstractOpenModelGraphic.html">AbstractOpenModelGraphic</a></li><li><a href="AR.Renderer.AbstractTexture.html">AbstractTexture</a></li><li><a href="AR.Renderer.FJARMarkerCoordinateSystem.html">FJARMarkerCoordinateSystem</a></li><li><a href="AR.Renderer.FJBarcodeCoordinateSystem.html">FJBarcodeCoordinateSystem</a></li><li><a href="AR.Renderer.FJBeaconCoordinateSystem.html">FJBeaconCoordinateSystem</a></li><li><a href="AR.Renderer.FJGeolocationCoordinateSystem.html">FJGeolocationCoordinateSystem</a></li><li><a href="AR.Renderer.HandwritingTexture.html">HandwritingTexture</a></li><li><a href="AR.Renderer.ImageTexture.html">ImageTexture</a></li><li><a href="AR.Renderer.ObjModelGraphic.html">ObjModelGraphic</a></li><li><a href="AR.Renderer.Point.html">Point</a></li><li><a href="AR.Renderer.ScriptAction.html">ScriptAction</a></li><li><a href="AR.Renderer.Size.html">Size</a></li><li><a href="AR.Renderer.SquareModelGraphic.html">SquareModelGraphic</a></li><li><a href="AR.Renderer.SuperimposedGraphic.html">SuperimposedGraphic</a></li><li><a href="AR.Renderer.SuperimposedGraphic.ProjectionType.html">ProjectionType</a></li><li><a href="AR.Renderer.TextTexture.html">TextTexture</a></li><li><a href="AR.Renderer.URLAction.html">URLAction</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Fri Dec 05 2014 14:11:14 GMT+0900 (JST)
+</footer>
+
+<script> prettyPrint(); </script>
+</body>
+</html>

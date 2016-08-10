@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: Log</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Namespace: Log</h1>
+    
+    
+
+
+
+<section>
+    
+<header>
+    <h2>
+        <span class="ancestors"><a href="AR.html">AR</a>.</span>
+    
+    
+        Log
+    
+    </h2>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+    
+        
+            <div class="description">Log library space.</div>
+        
+        
+        
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+        
+        
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Classes</h3>
+        
+        <dl>
+            <dt><a href="AR.Log.LevelType.html">LevelType</a></dt>
+            <dd></dd>
+        </dl>
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="log"><span class="type-signature">&lt;static> </span>log<span class="signature">(_level, _code, _message, _onSuccess, _onError)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        A string with the log output format is output to a log file. A log is not output if the log output state of the terminal is "false".The upper limit for log file size is 2MB x 10 generations, which is a total of 20 MB. If the upper limit is exceeded, files are overwritten in sequence, starting from the oldest file.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>_level</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="AR.Log.LevelType.html">AR.Log.LevelType</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Log output level</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_code</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Message code. Specify between 1 and 99999.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_message</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Log message body. Specify between 0 and 1024 characters - if this limit is exceeded, then only the first 1024 characters are output.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onSuccess</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if log output was successful. Specify Function(AR.Native.Result). The argument passed from a native application upon successful completion of log output is the following <a href="AR.Native.Result.html">AR.Native.Result</a>: <ul>   <li>status {string} "OK"   <li>value {Object} null </ul></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>_onError</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Callback function called if log output failed.Specify Function(AR.Native.Result). The argument passed from a native application upon failure is the following <a href="AR.Native.Result.html">AR.Native.Result</a>:<ul>  <b>When a parameter error occurs in a native application:</b>  <li>status {string} "INVALID_PARAMETER_EXCEPTION"  <li>value {string} Error message</ul></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+<div class="param-desc">
+    <ul>   <li>InvalidParameterError: When the argument is not the expected type, or null/undefined   <li>UnexpectedError: When generation of a request to a native application fails   <li>InvalidStateError: When a native application call fails </ul>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Error</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>onSuccess = function(_result){  alert(_result.getStatus());};onError = function(_result){  alert(_result.getStatus() + "\n" + _result.getValue());};var level = AR.Log.LevelType.INFO;var code = 999;var message = "This is log message.";AR.Log.log(level, code, message, onSuccess, onError);</code></pre>
+
+    
+    
+    
+<dl class="details">
+    
+    
+    
+
+    
+    
+    
+    
+    
+        <h5>Version:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+        <h5>Since:</h5>
+        <div class="param-desc">
+            AR Processing Server V1.0
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+</article>
+
+</section>  
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Namespaces</h3><ul><li><a href="AR.html">AR</a></li><li><a href="AR.Barcode.html">Barcode</a></li><li><a href="AR.Bluetooth.html">Bluetooth</a></li><li><a href="AR.Camera.html">Camera</a></li><li><a href="AR.Data.html">Data</a></li><li><a href="AR.Error.html">Error</a></li><li><a href="AR.Geolocation.html">Geolocation</a></li><li><a href="AR.Log.html">Log</a></li><li><a href="AR.OS.html">OS</a></li><li><a href="AR.Renderer.html">Renderer</a></li></ul><h3>Classes</h3><ul><li><a href="AR.Bluetooth.BluetoothStatus.html">BluetoothStatus</a></li><li><a href="AR.Camera.ViewKind.html">ViewKind</a></li><li><a href="AR.Error.ErrorName.html">ErrorName</a></li><li><a href="AR.Geolocation.CameraOrientationStatus.html">CameraOrientationStatus</a></li><li><a href="AR.Geolocation.GeolocationStatus.html">GeolocationStatus</a></li><li><a href="AR.Geolocation.RadarColorMode.html">RadarColorMode</a></li><li><a href="AR.Log.LevelType.html">LevelType</a></li><li><a href="AR.Native.Result.html">Result</a></li><li><a href="AR.OS.DetectMode.html">DetectMode</a></li><li><a href="AR.Renderer.AbstractAction.html">AbstractAction</a></li><li><a href="AR.Renderer.AbstractBarcodeCoordinateSystem.html">AbstractBarcodeCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractBeaconCoordinateSystem.html">AbstractBeaconCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractBuiltinModelGraphic.html">AbstractBuiltinModelGraphic</a></li><li><a href="AR.Renderer.AbstractCoordinateSystem.html">AbstractCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractElement.html">AbstractElement</a></li><li><a href="AR.Renderer.AbstractGeolocationCoordinateSystem.html">AbstractGeolocationCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractGraphic.html">AbstractGraphic</a></li><li><a href="AR.Renderer.AbstractMarkerCoordinateSystem.html">AbstractMarkerCoordinateSystem</a></li><li><a href="AR.Renderer.AbstractNamedElement.html">AbstractNamedElement</a></li><li><a href="AR.Renderer.AbstractOpenModelGraphic.html">AbstractOpenModelGraphic</a></li><li><a href="AR.Renderer.AbstractTexture.html">AbstractTexture</a></li><li><a href="AR.Renderer.FJARMarkerCoordinateSystem.html">FJARMarkerCoordinateSystem</a></li><li><a href="AR.Renderer.FJBarcodeCoordinateSystem.html">FJBarcodeCoordinateSystem</a></li><li><a href="AR.Renderer.FJBeaconCoordinateSystem.html">FJBeaconCoordinateSystem</a></li><li><a href="AR.Renderer.FJGeolocationCoordinateSystem.html">FJGeolocationCoordinateSystem</a></li><li><a href="AR.Renderer.HandwritingTexture.html">HandwritingTexture</a></li><li><a href="AR.Renderer.ImageTexture.html">ImageTexture</a></li><li><a href="AR.Renderer.ObjModelGraphic.html">ObjModelGraphic</a></li><li><a href="AR.Renderer.Point.html">Point</a></li><li><a href="AR.Renderer.ScriptAction.html">ScriptAction</a></li><li><a href="AR.Renderer.Size.html">Size</a></li><li><a href="AR.Renderer.SquareModelGraphic.html">SquareModelGraphic</a></li><li><a href="AR.Renderer.SuperimposedGraphic.html">SuperimposedGraphic</a></li><li><a href="AR.Renderer.SuperimposedGraphic.ProjectionType.html">ProjectionType</a></li><li><a href="AR.Renderer.TextTexture.html">TextTexture</a></li><li><a href="AR.Renderer.URLAction.html">URLAction</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Fri Dec 05 2014 14:11:14 GMT+0900 (JST)
+</footer>
+
+<script> prettyPrint(); </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+﻿CACHE MANIFEST
+
+#ver 20141001_0001
+
+# copyright Copyright 2014 FUJITSU LIMITED
+
+#キャッシュするリソースを指定します。
+CACHE:
+# ソース類
+ ar/ar.js
+ index.html
+ pre.html
+ main.html
+ tenken.js
+ tenkenconst.js
+ tenkenchecklistform.js
+ tenkenARdata.js
+ tenkenstorage.js
+ tenkendata.js
+ tenkengui.js
+ tenkengui.css
+ tenkenrendering.js
+
+# アイコン・イメージ
+ image/icon-dark/xdpi/manual.png
+ image/icon-dark/xdpi/maintenance-info.png
+ image/icon-dark/xdpi/stock-list.png
+ image/icon-dark/xdpi/graph-reference.png
+ image/icon-dark/xdpi/edit-check-list.png
+ image/icon-dark/xdpi/add-message.png
+ image/icon-dark/xdpi/graph-reference.png
+ image/line.gif
+ image/slash.png
+ image/icon-dark/mdpi/scenario-01.png
+ image/icon-dark/mdpi/user.png
+ image/icon-dark/mdpi/upload.png
+ image/icon-dark/mdpi/check-list.png
+ image/icon-dark/mdpi/message-list.png
+ image/icon-dark/mdpi/close.png
+ image/icon-dark/mdpi/list.png
+ image/icon-dark/mdpi/message-list.png
+ image/icon-dark/mdpi/caution.png
+ image/icon-dark/xdpi/pause.png
+ image/icon-dark/xdpi/live.png
+
+#サーバに接続する必要のあるリソースを指定します。
+NETWORK:
+  *
+ 
+
+#リソースにアクセスできない場合の代替リソースを指定します。
+FALLBACK:
+
