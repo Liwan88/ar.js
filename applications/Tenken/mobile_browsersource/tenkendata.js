@@ -1,42 +1,42 @@
 /**
- * @overview 点検業務向けJavaScript API群(データ管理)です。
+ * @overview JavaScript API (Data management) for Tenken Application
  * @copyright Copyright 2014 FUJITSU LIMITED
  */
 
 var TenkenData = {};
 
 //============================================================================
-// 共有部品定義
+// Common methods and valiables
 //============================================================================
 
-// 強制読み込みモード設定
+// Set force reload mode
 TenkenData.setSuperReloadMode = function(_mode)
 {
-	// 強制制読み込みモード
+	// Force reload mode
 	Tenken.config.SuperReload=_mode;
 }
-// 強制読み込みモード取得
+// Get force reload mode
 TenkenData.getSuperReloadMode = function()
 {
 	return(Tenken.config.SuperReload);
 }
 
 //============================================================================
-// シナリオのデータ管理
+// Scenario data management
 //============================================================================
 
-// データ管理クラス(シナリオ)
+// Data management class (Scenario)
 TenkenData.Scenario = {};
 
-// AR実行サーバのデータ送受信用TenkenARdata作成
+// Create TenkenARdata to receive data from AR server
 TenkenData.Scenario.arScenario=new TenkenARdata(TenkenConst.TableName.scenario);
-// データ管理領域(シナリオ)
+// Memory region to manage data (Scenario)
 TenkenData.Scenario.ListAll = [];
 
-// 選択中シナリオ名
+// Current seleted scenario name
 TenkenData.Scenario.ScenarioName = null;
 
-// 取得したデータをTenkenDataの管理用データに加工してコピーします。
+// Process TenkenData obtained from the server and copy it. 
 TenkenData.Scenario.createDataList = function()
 {
 	try
@@ -54,23 +54,22 @@ TenkenData.Scenario.createDataList = function()
 			if ( null != dataValue )
 			{
 				var newObj=new Object();
-				// 対象のシナリオかチェック
+				// Check if it's target scenario
 				if ( dataValue.ar_description )
 				{
 					if ( -1 == dataValue.ar_description.indexOf("#tenken#")  )
 					{
-						// 対象外のシナリオのため、次のシナリオにスキップする
+						// Skip to next scenario since it's not the target
 						continue;
 					}
 				}
 				else
 				{
-					// 備考に記載が無いシナリオは、対象外のシナリオのため、
-					// 次のシナリオにスキップする
+					// Skip to next scenario as scenario without the description is not the target.
 					continue;
 				}
 
-				// 全データをコピー(QAttribute単位の処理)
+				// Cope all data (per QAttribute)
 				for ( var name in dataValue )
 				{
 					switch ( name )
@@ -100,25 +99,24 @@ TenkenData.Scenario.createDataList = function()
 	}
 }
 
-// データの取得成功時のコールバック（シナリオ)
+// Success callback method upon data retrieval (Scenario)
 TenkenData.Scenario.cbDataSuccessScenario = function(_result)
 {
 	try
 	{
-		// 取得したデータをコピーする。
+		// Copy obtained data
 		TenkenData.Scenario.ListAll.length = 0;
 		TenkenData.Scenario.createDataList();
 
 		if ( TenkenData.Scenario.ListAll.length <= 0 )
 		{
-			TenkenData.AllGet.abortInvalidData(null, null, null, "シナリオが登録されていないか、点検システムの対象となるシナリオが存在しませんでした。\n点検システム用のシナリオを登録してください。", null);
+			TenkenData.AllGet.abortInvalidData(null, null, null, "Scenario is not registered, or the scenario does not exist.\nPlease register scenario for Tenken.", null);
 			return;
 		}
 
 		TenkenData.AllGet.saveStorageScenario();
 
-		// シナリオデータが完了した場合、作業者選択画面の作業者リストと
-		// (登録されていれば)ダウンロード完了通知用コールバックを呼び出す
+		// Call download completion callback method (if registered), and operator list of operator selection dialog when scenario data download is complete.
 		var elm = document.getElementById("selectScenarioId");
 
 		if ( null != TenkenData.AllGet.downloadScenarioSuccessFunc )
@@ -133,10 +131,10 @@ TenkenData.Scenario.cbDataSuccessScenario = function(_result)
 	}
 }
 
-// データの取得失敗時のコールバック（シナリオ)
+// Error callback method upon data retrieval (Scenario)
 TenkenData.Scenario.cbDataErrorScenario = function(_result)
 {
-	var message = "AR実行サーバのデータ取得(シナリオ)に失敗しました。動作モードとネットワーク状況を確認して再度お試しください。";
+	var message = "Failed to obtain data (scenario) from AR server. Please check operation mode and network connectivity to try again.";
 	var detail="";
 	if(_result.getStatus() == "AR_HTTP_EXCEPTION")
 	{
@@ -149,14 +147,14 @@ TenkenData.Scenario.cbDataErrorScenario = function(_result)
 
 	if ( null != TenkenData.AllGet.downloadScenarioErrorFunc )
 	{
-		// 一度しか呼び出さないようにするためコールバックをクリアする
+		// Clear callback so that it only calls once
 		var func=TenkenData.AllGet.downloadScenarioErrorFunc;
 		TenkenData.AllGet.downloadScenarioErrorFunc=null;
 		func(detail);
 	}
 }
 
-// AR実行サーバからデータの取得を行います。(シナリオ)
+// Retrieve data from AR Server. (Scenario)
 TenkenData.Scenario.getScenario = function()
 {
 	try
@@ -167,29 +165,29 @@ TenkenData.Scenario.getScenario = function()
 		}
 		if ( TenkenData.Scenario.arScenario.getBusyStatus() == true )
 		{
-			alert("通信中です。\nしばらく時間をおいてから再度実行してください。");
+			alert("Communication in process.\nPlease retry again at later time.");
 			return;
 		}
 
-		// 強制読み込みモード設定
+		// Set force reload mode.
 		TenkenData.Scenario.arScenario.setReload(TenkenData.getSuperReloadMode());
 
-		// 検索条件:なし
-		// 検索条件を初期化
+		// Query param: none
+		// Initialize query parameter
 		TenkenData.Scenario.arScenario.clearWhere();
 
-		// ソート条件:シナリオID
-		// ソート条件を初期化
+		// Sort param: scenario ID
+		// Initialize sort parameter
 		TenkenData.Scenario.arScenario.clearSort();
-		// ソート方向に昇順を設定
+		// Set sort order
 		TenkenData.Scenario.arScenario.setSortDesc(false);
-		// ソート条件１：シーンID
-		// LONG型最大値9223372036854775807は、9223372036854776000に
-		// 丸められてエラーになるため、9223372036854775000を指定しています。
+		// Sort query: Scene ID
+		// JavaScript will round max long value of 9223372036854775807 to 9223372036854776000 that 
+		// will cause an error, hence hard coding 9223372036854776000 here.
 		TenkenData.Scenario.arScenario.addSort("ar_id", null, "0", "9223372036854775000", "LONG");
 
 
-		// データ取得
+		// Retrieve data
 		TenkenData.Scenario.arScenario.getArData(TenkenData.Scenario.cbDataSuccessScenario, TenkenData.Scenario.cbDataErrorScenario);
 	}
 	catch (e)
@@ -198,7 +196,7 @@ TenkenData.Scenario.getScenario = function()
 	}
 }
 
-// ローカルストレージにデータを保存(シナリオ)
+// Save data to local storage (Scenario)
 TenkenData.Scenario.saveStorage = function()
 {
 	Tenken.Storage.ScenarioList.set(JSON.stringify(TenkenData.Scenario.ListAll));
@@ -208,7 +206,7 @@ TenkenData.Scenario.saveStorage = function()
 	}
 };
 
-// ローカルストレージからデータをロード(シナリオ)
+// Load data from loacl storage (Scenario)
 TenkenData.Scenario.loadStorage = function()
 {
 	var data=Tenken.Storage.ScenarioList.get();
@@ -241,42 +239,41 @@ TenkenData.Scenario.loadStorage = function()
 };
 
 
-// 作業中のシナリオ名設定
+// Set current working scenario name
 TenkenData.Scenario.setScenarioName = function(_nameScenario)
 {
 	TenkenData.Scenario.ScenarioName=_nameScenario;
 };
 
-// 作業中のシナリオ名取得
+// Get current working scenario name
 TenkenData.Scenario.getScenarioName = function()
 {
 	return(TenkenData.Scenario.ScenarioName);
 };
 
-// シナリオIDからシナリオ名取得します。
+// Get Scenario name from Scenario ID
 TenkenData.Scenario.getScenarioNameFromId = function(_id)
 {
 	var nameScenario = null;
 
 	if ( !_id || _id <=0 )
 	{
-		// 無効なシナリオID、または全対象(=0)のためnullで復帰
+		// Return null since it's invalid scenario ID or everything is the target (=0)
 		return(null);
 	}
 
 	if ( null == TenkenData.Scenario.ListAll || 0 == TenkenData.Scenario.ListAll.length )
 	{
-		// シナリオデータが無い場合は、
-		// シナリオデータをローカルストレージから取得する
+		// If Scenario data is not present, load from local storage
 		TenkenData.Scenario.loadStorage();
 	}
 	if ( null == TenkenData.Scenario.ListAll || 0 == TenkenData.Scenario.ListAll.length )
 	{
-		// シナリオデータが無いため、シナリオ名=nullで復帰
+		// return null as there is no scenario data
 		return(null);
 	}
 
-	// シナリオリストから検索
+	// Search from scenario list
 	var lenScenaio=TenkenData.Scenario.ListAll.length;
 	for ( var i=0 ; i < lenScenaio; i++ )
 	{
@@ -290,8 +287,7 @@ TenkenData.Scenario.getScenarioNameFromId = function(_id)
 	return(nameScenario);
 };
 
-// 指定されたselectタグのElementにダウンロードしたシナリオデータを
-// 選択肢として追加します。
+// Append downloaded scenario data as selection of the specified select tag element.
 TenkenData.Scenario.selectScenarioNameHTML = function(_select)
 {
 
@@ -324,22 +320,22 @@ TenkenData.Scenario.selectScenarioNameHTML = function(_select)
 };
 
 //============================================================================
-// シーンのデータ管理
+// Data management of Scenes
 //============================================================================
 
-// データ管理クラス(シーン)
+// Data management class (Scene)
 TenkenData.Scene = {};
 
-// AR実行サーバのデータ送受信用TenkenARdata作成
+// Create TenkenARdata to send and receive data from AR Server
 TenkenData.Scene.arScene=new TenkenARdata(TenkenConst.TableName.scene);
 
-// データ管理領域(シーン)
+// Data management region (Scene)
 TenkenData.Scene.ListAll = [];
 
-// ダウンロードしたシーン名リスト保存用
+// To store downloaded scene name list
 TenkenData.Scene.SceneNames = null;
 
-// 取得したデータをTenkenDataの管理用データに加工してコピーします。
+// Process and copy retrieved TenkenData 
 TenkenData.Scene.createDataList = function()
 {
 	try
@@ -357,7 +353,7 @@ TenkenData.Scene.createDataList = function()
 			if ( null != dataValue )
 			{
 				var newObj=new Object();
-				// 全データをコピー(QAttribute単位の処理)
+				// Copy entire data (per Qttribute)
 				for ( var name in dataValue )
 				{
 					switch ( name )
@@ -382,16 +378,17 @@ TenkenData.Scene.createDataList = function()
 					TenkenData.Scene.SceneNames = new Object();
 				}
 
-				// シーン名保存
+				// Save scene name
 				TenkenData.Scene.SceneNames[newObj.sceneid]=newObj.name;
 
-				// 申し送り表示、設備名表示を表示するシーンか判定。
-				// 説明(ar_description)に以下の文字列が定義されている場合は
-				// それぞれの表示対象シーンです。(大文字小文字区別あり)
+				// Determine to display messages and asset names.
+				// If following string is specified in the message (ar_description)
+				// we need to display them. (case-sensitive)
 				//
-				//   #MSG#   : 申し送り
-				//   #TENKEN# : 設備名表示
+				//   #MSG#   : messages
+				//   #TENKEN# : display asset names
 				//
+
 				if ( newObj.description )
 				{
 					if ( 0 <= newObj.description.indexOf("#MSG#") )
@@ -414,12 +411,12 @@ TenkenData.Scene.createDataList = function()
 	}
 }
 
-// データの取得成功時のコールバック（シーン)
+// Success callback method upon data retrieval
 TenkenData.Scene.cbDataSuccessScene = function(_result)
 {
 	try
 	{
-		// 取得したデータをコピーする。
+		// copy data retrieved
 		TenkenData.Scene.ListAll.length=0;
 		TenkenData.Scene.createDataList();
 
@@ -435,10 +432,10 @@ TenkenData.Scene.cbDataSuccessScene = function(_result)
 	}
 }
 
-// データの取得失敗時のコールバック（シーン)
+// Error callback handler upon data retrieval. (Scene)
 TenkenData.Scene.cbDataErrorScene = function(_result)
 {
-	var message = "AR実行サーバのデータ取得(シーン)に失敗しました。動作モードとネットワーク状況を確認して再度お試しください。";
+	var message = "Failed to download data (Scene) from AR server. Please check operation mode and network connectivity.";
 	var detail="";
 	if(_result.getStatus() == "AR_HTTP_EXCEPTION")
 	{
@@ -456,7 +453,7 @@ TenkenData.Scene.cbDataErrorScene = function(_result)
 	}
 }
 
-// AR実行サーバからデータの取得を行います。(シーン)
+// Get data from AR server (Scene)
 TenkenData.Scene.getScene = function()
 {
 	try
@@ -467,28 +464,28 @@ TenkenData.Scene.getScene = function()
 		}
 		if ( TenkenData.Scene.arScene.getBusyStatus() == true )
 		{
-			alert("通信中です。\nしばらく時間をおいてから再度実行してください。");
+			alert("Communication in progress.\nPlease retry at later time.");
 			return;
 		}
 
-		// 強制読み込みモード設定
+		// Set force reload
 		TenkenData.Scene.arScene.setReload(TenkenData.getSuperReloadMode());
 
-		// 検索条件:
-		// 検索条件を初期化
+		// Query param:
+		// Initialize query param
 		TenkenData.Scene.arScene.clearWhere();
-		// 検索条件１: 選択されたシナリオID指定
+		// Query 1: Set selected scenario ID
 		TenkenData.Scene.arScene.addWhere("arscn_scenarioid", null, Tenken.config.ScenarioId, null, "LONG");
 
-		// ソート条件：
+		// Sort param:
 		TenkenData.Scene.arScene.clearSort();
-		// ソート方向に昇順を設定
+		// Set sort order
 		TenkenData.Scene.arScene.setSortDesc(false);
-		// ソート条件１：シーンID
-		// LONG型最大値9223372036854775807は、9223372036854776000に
-		// 丸められてエラーになるため、9223372036854775000を指定しています。
+		// Sort query: Scene ID
+		// JavaScript will round max long value of 9223372036854775807 to 9223372036854776000 that 
+		// will cause an error, hence hard coding 9223372036854776000 here.
 		TenkenData.Scene.arScene.addSort("ar_id", null, "0", "9223372036854775000", "LONG");
-		// データ取得
+		// Retrieve data
 		TenkenData.Scene.arScene.getArData(TenkenData.Scene.cbDataSuccessScene, TenkenData.Scene.cbDataErrorScene);
 	}
 	catch (e)
@@ -497,7 +494,7 @@ TenkenData.Scene.getScene = function()
 	}
 }
 
-// ローカルストレージにデータを保存(シーン)
+// Store data to local storage (scene)
 TenkenData.Scene.saveStorage = function()
 {
 	Tenken.Storage.SceneList.set(JSON.stringify(TenkenData.Scene.ListAll));
@@ -507,7 +504,7 @@ TenkenData.Scene.saveStorage = function()
 	}
 };
 
-// ローカルストレージからデータをロード(シーン)
+// Load data from local storage (scene)
 TenkenData.Scene.loadStorage = function()
 {
 	var data=Tenken.Storage.SceneList.get();
@@ -540,7 +537,7 @@ TenkenData.Scene.loadStorage = function()
 	}
 };
 
-// シーン名の取得
+// Get scene name
 TenkenData.Scene.getSceneName = function(_sceneid)
 {
 	if ( null != TenkenData.Scene.SceneNames && null != TenkenData.Scene.SceneNames[_sceneid] )
@@ -552,24 +549,24 @@ TenkenData.Scene.getSceneName = function(_sceneid)
 
 
 //============================================================================
-// AR重畳表示定義データの管理
+// Manage AR overlay data
 //============================================================================
 
-// データ管理クラス(AR重畳表示定義データ)
+// Class to manage data (AR overlay data)
 TenkenData.SuperimposedGraphic = {};
 
-// AR実行サーバのデータ送受信用TenkenARdata作成
+// Create TenkenARdata to send/receive data from AR server
 TenkenData.SuperimposedGraphic.arSuperimposedGraphic=new TenkenARdata(TenkenConst.TableName.SuperimposedGraphic);
 ;
-// データ管理領域(AR重畳表示定義データ) Object型で使用
+// Data management region for AR overlay data. Use with object type.
 TenkenData.SuperimposedGraphic.objSuperimposedGraphics=null;
 
-// 指定されたシナリオID、シーンID、マーカーID保存用
+// To store selected scenario ID, scene ID, and marker ID
 TenkenData.SuperimposedGraphic.setSecenarioId = -1;
 TenkenData.SuperimposedGraphic.setSceneId = -1;
 TenkenData.SuperimposedGraphic.setMarkerId = -1;
 
-// 取得したデータをTenkenDataの管理用データに加工してコピーします。
+// Process and copy downloaded TenkenData
 TenkenData.SuperimposedGraphic.createDataList = function()
 {
 	try {
@@ -584,8 +581,7 @@ TenkenData.SuperimposedGraphic.createDataList = function()
 			var sd=datas[i];
 			if ( null != sd )
 			{
-				//AR重畳表示定義のシーンID、マーカーID、AR重畳表示定義データ
-				//がnullでないことを確認
+				// Check that AR overlay data of scene ID, marker ID is not null
 				var value=new Object();
 				if(sd.arsen_sceneid != null && sd.armk_markerid != null)
 				{
@@ -594,7 +590,7 @@ TenkenData.SuperimposedGraphic.createDataList = function()
 					var markerId=sd.armk_markerid
 
 					var value=new Object();
-					// JSON文字列のAR重畳表示定義データをオブジェクトに変換
+					// Transform JSON representation of AR overlay data definition to an object
 					if ( null != sd.arpoi_superimposedgraphic )
 					{
 						value = AR.Renderer.parseSuperimposedGraphic(sd.arpoi_superimposedgraphic);
@@ -613,8 +609,7 @@ TenkenData.SuperimposedGraphic.createDataList = function()
 			}
 		}
 
-		//抽出したAR重畳表示定義データをシーンID、マーカーID別に
-		//格納します。
+		// Store processed AR overlay data into per scene ID and marker ID
 		if ( null != contents )
 		{
 			for(scene in contents)
@@ -642,12 +637,12 @@ TenkenData.SuperimposedGraphic.createDataList = function()
 	}
 }
 
-// データの取得成功時のコールバック（AR重畳表示定義データ)
+// Success callback method upon data retrieval (AR overlay data)
 TenkenData.SuperimposedGraphic.cbDataSuccessSuperimposedGraphic = function(_result)
 {
 	try
 	{
-		// 取得したデータをコピーする。
+		// Copy retrieved data
 		TenkenData.SuperimposedGraphic.objSuperimposedGraphics=null;
 		TenkenData.SuperimposedGraphic.createDataList();
 
@@ -658,10 +653,10 @@ TenkenData.SuperimposedGraphic.cbDataSuccessSuperimposedGraphic = function(_resu
 	}
 }
 
-// データの取得失敗時のコールバック（AR重畳表示定義データ)
+// Error callback method upon data retrieval (AR overlay data)
 TenkenData.SuperimposedGraphic.cbDataErrorSuperimposedGraphic = function(_result)
 {
-	var message = "AR実行サーバのデータ取得(AR重畳定義データ)に失敗しました。動作モードとネットワーク状況を確認して再度お試しください。";
+	var message = "Failed to download data (AR overlay data) from AR server. Please check operation mode and network connectivity to try again.";
 	var detail="";
 	if(_result.getStatus() == "AR_HTTP_EXCEPTION")
 	{
@@ -679,7 +674,7 @@ TenkenData.SuperimposedGraphic.cbDataErrorSuperimposedGraphic = function(_result
 	}
 }
 
-// AR実行サーバからデータの取得を行います。(AR重畳表示定義データ)
+// Retrieve data from AR server (AR Overlay data)
 TenkenData.SuperimposedGraphic.getSuperimposedGraphic = function(_scenarioId, _sceneId, _markerId)
 {
 	try
@@ -690,39 +685,39 @@ TenkenData.SuperimposedGraphic.getSuperimposedGraphic = function(_scenarioId, _s
 		}
 		if ( TenkenData.SuperimposedGraphic.arSuperimposedGraphic.getBusyStatus() == true )
 		{
-			alert("通信中です。\nしばらく時間をおいてから再度実行してください。");
+			alert("Communication in progress.\nPlease try again at later time.");
 			return;
 		}
 
-		// 強制読み込みモード設定
+		// Set force reload mode.
 		TenkenData.SuperimposedGraphic.arSuperimposedGraphic.setReload(TenkenData.getSuperReloadMode());
 
-		// 検索条件:
-		// 検索条件を初期化
+		// Query parameter:
+		// Initialize query 
 		TenkenData.SuperimposedGraphic.arSuperimposedGraphic.clearWhere();
 
-		// 検索条件１：シナリオID
+		// Query 1: scenario ID
 		if ( null != _scenarioId )
 		{
 			TenkenData.SuperimposedGraphic.arSuperimposedGraphic.addWhere("arscn_scenarioid", null, _scenarioId, null, "LONG");
 		}
-		// 検索条件２：シーンID
+		// Query 2: scene ID
 		if ( null != _sceneId )
 		{
 			TenkenData.SuperimposedGraphic.arSuperimposedGraphic.addWhere("arsen_sceneid", null, _sceneId, null, "LONG");
 		}
-		// 検索条件３：マーカーID
+		// Query 3: marker ID
 		if ( null != _markerId )
 		{
 			TenkenData.SuperimposedGraphic.arSuperimposedGraphic.addWhere("armk_markerid", null, _markerId, null, "LONG");
 		}
 
-		// ソート条件:なし
-		// ソート条件を初期化
+		// Sort paramenter: none
+		// Initialize sort parameter
 		TenkenData.SuperimposedGraphic.arSuperimposedGraphic.clearSort();
-		// ソート方向に昇順を設定
+		// Set sort older to ascending
 		TenkenData.SuperimposedGraphic.arSuperimposedGraphic.setSortDesc(false);
-		// データ取得
+		// Retrieve data
 		TenkenData.SuperimposedGraphic.arSuperimposedGraphic.getArData(
 			TenkenData.SuperimposedGraphic.cbDataSuccessSuperimposedGraphic,
 			TenkenData.SuperimposedGraphic.cbDataErrorSuperimposedGraphic);
@@ -733,7 +728,7 @@ TenkenData.SuperimposedGraphic.getSuperimposedGraphic = function(_scenarioId, _s
 	}
 }
 
-// ローカルストレージにデータを保存(AR重畳表示定義データ)
+// Store data to local storage (AR Overlay data)
 TenkenData.SuperimposedGraphic.saveStorage = function()
 {
 	if(TenkenData.SuperimposedGraphic.objSuperimposedGraphics != null)
@@ -742,7 +737,7 @@ TenkenData.SuperimposedGraphic.saveStorage = function()
 	}
 };
 
-// ローカルストレージからデータをロード(AR重畳表示定義データ)
+// Load data from local storage (AR Overlay data)
 TenkenData.SuperimposedGraphic.loadStorage = function()
 {
 	var data=Tenken.Storage.SuperimposedGraphic.get();
@@ -757,18 +752,18 @@ TenkenData.SuperimposedGraphic.loadStorage = function()
 };
 
 //============================================================================
-// 各設備のデータ管理
+// Data management to each assets
 //============================================================================
-// データ管理クラス(設備データ)
+// Data managemet class (asset data)
 TenkenData.Asset = {};
 
-// AR実行サーバのデータ送受信用TenkenARdata作成
+// Create TenkenARdata to send/receive data from server
 TenkenData.Asset.arAsset=new TenkenARdata(TenkenConst.TableName.asset);
 
-// データ管理領域(設備データ)
+// Data management region (asset data)
 TenkenData.Asset.ListAll = [];
 
-// 取得したデータをTenkenDataの管理用データに加工してコピーします。
+// Process and copy downloaded TenkenData 
 TenkenData.Asset.createDataList = function()
 {
 	try
@@ -786,14 +781,14 @@ TenkenData.Asset.createDataList = function()
 			if ( null != dataValue )
 			{
 				var newObj=new Object();
-				// 全データをコピー(QAttribute単位の処理)
+				// Copy entire data (per QAttribute)
 				for ( var name in dataValue )
 				{
 					switch ( name )
 					{
 					case "msgICON":
-						// 申送追加アイコン情報 
-						//	(形式:  "アイコン名;アイコンイメージファイル名")
+						// additional message icon information
+						//  (format: "icon name;icon image file")
 						if ( null != dataValue[name] )
 						{
 							var iconInfo = dataValue[name].split(";");
@@ -802,8 +797,8 @@ TenkenData.Asset.createDataList = function()
 						}
 						break
 					case "tenkenICON":
-						// 点検入力アイコン情報 
-						//	(形式:  "アイコン名;アイコンイメージファイル名")
+						// check input icon information
+						//  (format: "icon name;icon image file")
 						if ( null != dataValue[name] )
 						{
 							var iconInfo = dataValue[name].split(";");
@@ -812,8 +807,8 @@ TenkenData.Asset.createDataList = function()
 						}
 						break
 					case "graphURL":
-						// 点検グラフアイコン情報 
-						//	(形式:  "アイコン名;グラフURL")
+						// Check graph icon information
+						//  (format: "icon name;graph URL")
 						if ( null != dataValue[name] )
 						{
 							var iconInfo = dataValue[name].split(";");
@@ -822,8 +817,8 @@ TenkenData.Asset.createDataList = function()
 						}
 						break
 					default:
-						// 追加アイコン情報 
-						//	(形式:  "アイコン名;アイコンイメージファイル名;タップ時オープンファイル名")
+						// Additional icon information
+						//  (format: "icon name;icon image file;file name to open when tapped")
 						if ( null != dataValue[name] && name.substr(0,4) == "icon" )
 						{
 							var iconInfo = dataValue[name].split(";");
@@ -839,10 +834,10 @@ TenkenData.Asset.createDataList = function()
 					}
 				}
 
-				// 必須項目・重複データのチェック
+				// Check duplicate and mandatory data
 				TenkenData.Asset.checkData(newObj);
 
-				// 新規追加
+				// Add new
 				TenkenData.Asset.ListAll.push(newObj);
 			}
 		}
@@ -853,18 +848,18 @@ TenkenData.Asset.createDataList = function()
 	}
 }
 
-// データの取得成功時のコールバック（設備データ)
+// Success callback method upon data retrieval (Asset data)
 TenkenData.Asset.cbDataSuccessAsset = function(_result)
 {
 	try
 	{
-		// 取得したデータをコピーする。
+		// Copy retrieved data
 		TenkenData.Asset.ListAll.length=0;
 		TenkenData.Asset.createDataList();
 
 		if ( TenkenData.Asset.ListAll.length <= 0 )
 		{
-			TenkenData.AllGet.abortInvalidData(TenkenConst.TableName.asset, null, null, null, "有効な設備データが登録されていません。\n設備データを登録してください。\n", null);
+			TenkenData.AllGet.abortInvalidData(TenkenConst.TableName.asset, null, null, null, "None of valid asset data is registered.\nPlease register asset data.\n", null);
 			return;
 		}
 
@@ -879,10 +874,10 @@ TenkenData.Asset.cbDataSuccessAsset = function(_result)
 	}
 }
 
-// データの取得失敗時のコールバック（設備データ)
+// Error callback method upon data retrieval (Asset data)
 TenkenData.Asset.cbDataErrorAsset = function(_result)
 {
-	var message = "AR実行サーバのデータ取得(設備一覧)に失敗しました。動作モードとネットワーク状況を確認して再度お試しください。";
+	var message = "Failed to download data (Asset list) from AR server. Please check operation mode and network connectivity to try again.";
 	var detail="";
 	if(_result.getStatus() == "AR_HTTP_EXCEPTION")
 	{
@@ -900,7 +895,7 @@ TenkenData.Asset.cbDataErrorAsset = function(_result)
 	}
 }
 
-// AR実行サーバからデータの取得を行います。(設備データ)
+// Retrieve data from AR Server (Asset data)
 TenkenData.Asset.getLastData = function()
 {
 	try
@@ -911,30 +906,28 @@ TenkenData.Asset.getLastData = function()
 		}
 		if ( TenkenData.Asset.arAsset.getBusyStatus() == true )
 		{
-			alert("通信中です。\nしばらく時間をおいてから再度実行してください。");
+			alert("Communication in progress.\nPlease try again at later time.");
 			return;
 		}
 
-		// 強制読み込みモード設定
+		// Set force reload mode
 		TenkenData.Asset.arAsset.setReload(TenkenData.getSuperReloadMode());
 
-		// 検索条件:なし
-		// 検索条件を初期化
+		// Query parameter:none
+		// Initialize query parameter
 		TenkenData.Asset.arAsset.clearWhere();
 
-		// ソート条件:
-		// ソート条件を初期化
+		// Sort parameter:
+		// Initialize sort parameter
 		TenkenData.Asset.arAsset.clearSort();
-		// ソート方向に昇順を設定
+		// Set sort order to ascdending
 		TenkenData.Asset.arAsset.setSortDesc(false);
-		// ソート条件１：マーカーID
-		// マーカーID=0はARには存在しないが、
-		// 点検システム内でマーカーを利用しない設備をマーカーID=0として
-		// 扱うためソート値に含めています。
-		// LONG型最大値9223372036854775807は、9223372036854776000に
-		// 丸められてエラーになるため、9223372036854775000を指定しています。
+		// Sort query: marker ID
+		// Marker ID of 0 do not exist in AR, but is specified here to use marker ID of 0 as an asset that do not use markers
+		// JavaScript will round max long value of 9223372036854775807 to 9223372036854776000 that 
+		// will cause an error, hence hard coding 9223372036854776000 here.
 		TenkenData.Asset.arAsset.addSort("markerid", null, "0", "9223372036854775000", "LONG")
-		// データ取得
+		// Retrieve data
 		TenkenData.Asset.arAsset.getArData(TenkenData.Asset.cbDataSuccessAsset, TenkenData.Asset.cbDataErrorAsset);
 	}
 	catch (e)
@@ -943,16 +936,15 @@ TenkenData.Asset.getLastData = function()
 	}
 }
 
-// 受信データの必須データの有無、重複をチェックします。
-// データ異常があった場合は、データ定義異常を出力し、
-// 初画面に戻ります。
+// Check mandatory and duplicate data of received data.
+// If there is an issue in data, output data error and return to initial screen.
 //
-// チェック内容
-// QAttribute名 : チェック項目
-// assetid       : null  重複
-// assetname     : null  重複
-// markerid      : null  重複
-// markername    : null  重複
+// Check item
+// QAttribute name : Check item
+// assetid       : null  duplicate
+// assetname     : null  duplicate
+// markerid      : null  duplicate
+// markername    : null  duplicate
 TenkenData.Asset.checkData = function(_data)
 {
 	try
@@ -964,7 +956,7 @@ TenkenData.Asset.checkData = function(_data)
 
 		if ( null == _data ) return;
 
-		// nullチェック(値指定必須で値なし)
+		// Check null (value is mandatory)
 		if ( null == _data.assetid )
 		{
 			err=true;
@@ -987,11 +979,11 @@ TenkenData.Asset.checkData = function(_data)
 		}
 		if ( true == err )
 		{
-			errMsg="必須項目が未定義のデータがあります。";
+			errMsg="Mandatory data is missing.";
 		}
 		else
 		{
-			// 重複チェック
+			// Check duplicate
 			var len=TenkenData.Asset.ListAll.length;
 			for ( var i = 0 ; i < len ; i++ )
 			{
@@ -1023,11 +1015,11 @@ TenkenData.Asset.checkData = function(_data)
 			}
 			if ( true == err )
 			{
-				errMsg="重複したデータ定義があります。";
+				errMsg="Duplicate data found.";
 			}
 		}
 
-		// データに異常がある場合は、エラーを出力し初画面に戻る
+		// If error exist in data, output message and return to the initial screen.
 		if ( true == err )
 		{
 			TenkenData.AllGet.abortInvalidData(TenkenConst.TableName.asset, errName, errValue, null, errMsg);
@@ -1039,13 +1031,13 @@ TenkenData.Asset.checkData = function(_data)
 	}
 }
 
-// ローカルストレージにデータを保存(設備データ)
+// Storage data into local storage (Asset data)
 TenkenData.Asset.saveStorage = function()
 {
 	Tenken.Storage.lastAssetData.set(JSON.stringify(TenkenData.Asset.ListAll));
 };
 
-// ローカルストレージからデータをロード(設備データ)
+// Load data from local storage (Asset data)
 TenkenData.Asset.loadStorage = function()
 {
 	var data=Tenken.Storage.lastAssetData.get();
@@ -1067,7 +1059,7 @@ TenkenData.Asset.loadStorage = function()
 	}
 };
 
-// 指定assetidから設備データ(Object型)を取得します。
+// Get asset data (object type) from matching asset ID
 TenkenData.Asset.getDatafromAssetId = function(_assetid)
 {
 	if ( null == _assetid || "" == _assetid )
@@ -1086,7 +1078,7 @@ TenkenData.Asset.getDatafromAssetId = function(_assetid)
 	return(qvalue);
 }
 
-// 指定assetidと一致する設備データのマーカーIDを取得します。
+// Get marker ID of the matching asset ID
 TenkenData.Asset.getMarkerIdfromAssetId = function(_assetid)
 {
 	if ( null == _assetid || "" == _assetid )
@@ -1105,7 +1097,7 @@ TenkenData.Asset.getMarkerIdfromAssetId = function(_assetid)
 	return(markerid);
 }
 
-// 指定マーカーIDと一致する設備データの設備名を取得します。
+// Get asset name from the matching marker ID
 TenkenData.Asset.getAssetNamefromMarkerId = function(_markerid)
 {
 	if ( 0 >= TenkenData.Asset.ListAll.length )
@@ -1125,7 +1117,7 @@ TenkenData.Asset.getAssetNamefromMarkerId = function(_markerid)
 	return(assetname);
 }
 
-// 指定マーカーIDと一致する設備データ(Object型)を取得します。
+// Get Asset data (object type) of the matching marker ID
 TenkenData.Asset.getDatafromMarkerId = function(_markerid)
 {
 	var qvalue=null;
@@ -1140,7 +1132,7 @@ TenkenData.Asset.getDatafromMarkerId = function(_markerid)
 	return(qvalue);
 }
 
-// 指定マーカーIDと一致する設備データ(Object型)すべてを配列型で取得します。
+// Get entire asset data (object type) array of the matching marker ID
 TenkenData.Asset.getDataListfromMarkerId = function(_markerid)
 {
 	var ret = [];
@@ -1155,10 +1147,10 @@ TenkenData.Asset.getDataListfromMarkerId = function(_markerid)
 }
 
 
-// 指定されたassetidのデータを削除します。
+// Delete data of specified asset ID
 TenkenData.Asset.deleteAsset = function(_assetid)
 {
-	// 後ろから順に対象のassetid検索して削除します。
+	// Search asset id from the bottom, and delete.
 	var lenList = TenkenData.Asset.ListAll.length;
 	for ( i = (lenList - 1) ; i >= 0 ; i-- )
 	{
@@ -1171,26 +1163,26 @@ TenkenData.Asset.deleteAsset = function(_assetid)
 
 
 //============================================================================
-// 申し送りデータ管理
+// Data management for message data
 //============================================================================
 
-// データ管理クラス(申し送りデータ)
+// Data management class (Message data)
 TenkenData.MsgEvent = {};
 
-// AR実行サーバのデータ送受信用TenkenARdata作成(今回値と前回値用)
+// Create TenkenARdata for send/retrieve data from the server (for current and previous values)
 TenkenData.MsgEvent.arMessageEventLast=new TenkenARdata(TenkenConst.TableName.messageevent);
 TenkenData.MsgEvent.arMessageEventCurrent=new TenkenARdata(TenkenConst.TableName.messageevent);
 
-// データ管理領域(申し送りデータ)。今回値と前回値用
+// Data management region (Message Data). For current and previous values
 TenkenData.MsgEvent.Last = [];
 TenkenData.MsgEvent.Current = [];
 
-// 取得したデータをTenkenDataの管理用データに加工してコピーします。
+// Process and copy downloaded TenkenData
 TenkenData.MsgEvent.createDataList = function()
 {
-	// 申し送りデータの構造は変更せず、そのままの構造でコピーする。
-	// ただし、申し送りの表示位置が重ならないようにマーカーID単位で
-	// 表示位置(X,Y,Z)の座標をずらして再設定する処理を追加する。
+	// Message data will not be transformed, and copied as-is.
+	// Although, add process that will move display coordinate to (X,Y,Z)
+	// per marker ID, so that it will not overlap with message context on the display
 	try
 	{
 		if ( null == TenkenData.MsgEvent.arMessageEventLast || null == TenkenData.MsgEvent.Last ) return;
@@ -1210,7 +1202,7 @@ TenkenData.MsgEvent.createDataList = function()
 			{
 				var newObj=new Object();
 
-				// 全データをコピー(QAttribute単位の処理)
+				// Copy entire data (per QAttribute)
 				for ( var name in dataValue )
 				{
 					newObj[name]=dataValue[name];
@@ -1224,17 +1216,16 @@ TenkenData.MsgEvent.createDataList = function()
 				{
 					if ( null == MsgList[markerid] ) MsgList[markerid]= new Array();
 			;
-					// マーカー単位で申し送りの表示位置を自動設定する際に
-					// ソート順が変わってしまうためソート順の順番も保存します。
+					// Store sort order as automated message display logic per marker will change the order
 					newObj.saveIndex=saveIndex++;
 					MsgList[markerid].push(newObj);
 				}
 			}
 		}
 
-		// データを登録します。
-		// また、マーカーID毎の申し送りデータの表示位置を自動的に変更します。
-		// (X=Y=Zが0の場合だけで、値が設定されている場合は、その座標で表示)
+		// Register data.
+		// Also, automatically change the display coordinate of messages per markers.
+		// (Display as-is only if data is at X=Y=Z=0)
 		var sX = window.screen.width;
 		var sY = window.screen.height;
 		sizeX = sX / 5120;
@@ -1243,11 +1234,11 @@ TenkenData.MsgEvent.createDataList = function()
 		if ( sizeY < 0.2 || sizeY > 1.0 ) sizeY = 0.5;
 		sizeZ = sizeX;
 
-		// X=0.7固定で、マーカーID毎にY=0.7から-0.2ずつ表示
+		// Fix X=0.7, and change each Y by -0.2 starting from 0.7 per Marker ID
 		var LX=0.7;
 		var LY=0.6;
 		var LZ=0.0;
-		var L_STEP = - 0.2; // 固定
+		var L_STEP = - 0.2; // fixed
 		var index=0;
 
 		for ( var markerid in  MsgList )
@@ -1279,12 +1270,12 @@ TenkenData.MsgEvent.createDataList = function()
 	}
 }
 
-// データの取得成功時のコールバック（申し送りデータ)
+// Success callback method upon data retrieval (message data)
 TenkenData.MsgEvent.cbDataSuccessMessageEvent = function(_result)
 {
 	try
 	{
-		// 取得したデータをコピーする。
+		// Copy data
 		TenkenData.MsgEvent.Last.length=0;
 		TenkenData.MsgEvent.createDataList();
 
@@ -1300,10 +1291,10 @@ TenkenData.MsgEvent.cbDataSuccessMessageEvent = function(_result)
 	}
 }
 
-// データの取得失敗時のコールバック（申し送りデータ)
+// Error callback method upon data retrieval (message data)
 TenkenData.MsgEvent.cbDataErrorMessageEvent = function(_result)
 {
-	var message = "AR実行サーバのデータ取得(申し送り)に失敗しました。動作モードとネットワーク状況を確認して再度お試しください。";
+	var message = "Failed to download data (Messages) from AR server. Please check the operation mode and network connectivity.";
 	var detail="";
 	if(_result.getStatus() == "AR_HTTP_EXCEPTION")
 	{
@@ -1321,7 +1312,7 @@ TenkenData.MsgEvent.cbDataErrorMessageEvent = function(_result)
 	}
 }
 
-// AR実行サーバからデータの取得を行います。(申し送りデータ)
+// Get data from AR server. (Message data)
 TenkenData.MsgEvent.getLastData = function()
 {
 	try
@@ -1332,35 +1323,35 @@ TenkenData.MsgEvent.getLastData = function()
 		}
 		if ( TenkenData.MsgEvent.arMessageEventLast.getBusyStatus() == true )
 		{
-			alert("通信中です。\nしばらく時間をおいてから再度実行してください。");
+			alert("Communication in progress.\nPlease try again at later time.");
 			return;
 		}
 
-		// 強制読み込みモード設定
+		// Set force reload mode
 		TenkenData.MsgEvent.arMessageEventLast.setReload(TenkenData.getSuperReloadMode());
 
-		// 検索条件:なし
-		// 検索条件を初期化
+		// Query parameter: none
+		// Initialize query parameter
 		TenkenData.MsgEvent.arMessageEventLast.clearWhere();
-		// 検索条件１: 選択されたシナリオID指定と0の(OR条件)
-		//             マーカーID=0は、マーカーを利用しない共通設備等です。
+		// Query 1: OR query of selected scenario ID and 0
+		//             Marker ID=0 means that it's shared asset that do not use markers
 		TenkenData.MsgEvent.arMessageEventLast.addWhere("ScenarioId", null, [0, Tenken.config.ScenarioId], null, "LONG");
-		// 検索条件２: Enableがtrueの申し送り。
-		//             (true=有効なもの、かつ完了報告が行われていない申し送り)
+		// Query 2: Messages that has Enabled=true.
+		//             (true=valid, and message that has not yet been marked as reporting complete)
 		TenkenData.MsgEvent.arMessageEventLast.addWhere("Enable", null, "true",  null, "STRING");
 
-		// ソート条件：
-		// ソート条件を初期化
+		// Sort paramenter:
+		// Initialize sort parameter
 		TenkenData.MsgEvent.arMessageEventLast.clearSort();
-		// ソート方向に降順を設定
+		// Set sort order as ascending
 		TenkenData.MsgEvent.arMessageEventLast.setSortDesc(true);
 
-		// ソート条件１：点検日時でソート
-		// LONG型最大値9223372036854775807は、9223372036854776000に
-		// 丸められてエラーになるため、9223372036854775000を指定しています。
+		// Sort parameter 1: Sort by checked datetime
+		// JavaScript will round max long value of 9223372036854775807 to 9223372036854776000 that 
+		// will cause an error, hence hard coding 9223372036854776000 here.
 		TenkenData.MsgEvent.arMessageEventLast.addSort("occurrencetime", null, "0", "9223372036854775000", "LONG");
 
-		// データ取得
+		// Retrieve data
 		TenkenData.MsgEvent.arMessageEventLast.getArData(TenkenData.MsgEvent.cbDataSuccessMessageEvent, TenkenData.MsgEvent.cbDataErrorMessageEvent);
 	}
 	catch (e)
@@ -1369,14 +1360,14 @@ TenkenData.MsgEvent.getLastData = function()
 	}
 }
 
-// ローカルストレージにデータを保存(申し送りデータ)
+// Save to local storage (Message data)
 TenkenData.MsgEvent.saveStorage = function()
 {
 	Tenken.Storage.currentMessageEventData.set(JSON.stringify(TenkenData.MsgEvent.Current));
 	Tenken.Storage.lastMessageEventData.set(JSON.stringify(TenkenData.MsgEvent.Last));
 };
 
-// ローカルストレージからデータをロード(申し送りデータ)
+// Load from local storage (Message data)
 TenkenData.MsgEvent.loadStorage = function()
 {
 	var data=Tenken.Storage.lastMessageEventData.get();
@@ -1410,18 +1401,17 @@ TenkenData.MsgEvent.loadStorage = function()
 	}
 };
 
-// カレントの申し送りをクリア
+// Clear current messages
 TenkenData.MsgEvent.clearCurrentMsgEvent = function()
 {
 	TenkenData.MsgEvent.Current.length = 0;
 	Tenken.Storage.currentMessageEventData.remove();
 }
 
-// 指定されたマーカーIDと一致する今回値および前回値の申し送りデータ(Object型)
-// を配列型で取得します。
+// Get current and previous message data (Object type) in array that matches with the marker ID
 TenkenData.MsgEvent.getMsgEventListFromMarkerId = function(_markerid)
 {
-	// カレントおよびダウンロードした申し送りデータを対象にします。
+	// Have current and downloaded message data as the target
 	var targetList = [];
 	if ( 0 < TenkenData.MsgEvent.Current.length )
 	{
@@ -1451,11 +1441,10 @@ TenkenData.MsgEvent.getMsgEventListFromMarkerId = function(_markerid)
 	return(msgeventlist);
 }
 
-// 指定されたassetidと一致する今回値および前回値の申し送りデータ(Object型)
-// を配列型で取得します。
+// Get current and previous message data (Object type) in array that matches with the asset ID
 TenkenData.MsgEvent.getMsgEventListFromAssetId = function(_assetid)
 {
-	// カレントおよびダウンロードした申し送りデータを対象にします。
+	// Have current and downloaded message data as the target
 	var targetList = [];
 	if ( 0 < TenkenData.MsgEvent.Current.length )
 	{
@@ -1484,14 +1473,12 @@ TenkenData.MsgEvent.getMsgEventListFromAssetId = function(_assetid)
 	return(msgeventlist);
 }
 
-// 指定されたmsgidおよびoccurrencetimeと一致する今回値および前回値の
-// 申し送りデータ(Object型)を配列型で取得します。
-// msgidはユニークで運用するため、複数あった場合も１個目に見つかったもの
-// を返します。
+// Get current and previous message data (Object type) in array that matches with msgid and occurrencetime
+// msgid should be unique id. the method will only return the first one found.
 TenkenData.MsgEvent.getMsgEventFromMsgIdTime = function(_msgid,_occurrencetime)
 {
 
-	// カレントおよびダウンロードした申し送りデータを対象にします。
+	// Have current and downloaded message data as the target
 	var targetList = [];
 	if ( 0 < TenkenData.MsgEvent.Current.length )
 	{
@@ -1522,7 +1509,7 @@ TenkenData.MsgEvent.getMsgEventFromMsgIdTime = function(_msgid,_occurrencetime)
 	return(msgevent);
 }
 
-// 指定されたmsgidの申し送りデータを返します。(カレント）
+// Get Message data of msgid (Current data)
 TenkenData.MsgEvent.getMsgEventFromMsgIdCurrent = function(_msgid)
 {
 	var msgevent = null;
@@ -1540,7 +1527,7 @@ TenkenData.MsgEvent.getMsgEventFromMsgIdCurrent = function(_msgid)
 	return(msgevent);
 }
 
-// 指定されたmsgidの申し送りデータを返します。（過去の申し送り)
+// Get Message data of msgid (Previous data)
 TenkenData.MsgEvent.getMsgEventFromMsgIdLast = function(_msgid)
 {
 	var msgevent = null;
@@ -1558,10 +1545,10 @@ TenkenData.MsgEvent.getMsgEventFromMsgIdLast = function(_msgid)
 	return(msgevent);
 }
 
-// 指定されたmsgidの申し送りデータを削除します。(カレント)
+// Delete Message data of msgid (Current data)
 TenkenData.MsgEvent.deleteMsgEventCurrent = function(_msgid)
 {
-	// 後ろから順に対象のmsgidを削除します。(カレント)
+	// delete from back (Current)
 	var lenList = TenkenData.MsgEvent.Current.length;
 	for ( i = (lenList - 1) ; i >= 0 ; i-- )
 	{
@@ -1572,10 +1559,10 @@ TenkenData.MsgEvent.deleteMsgEventCurrent = function(_msgid)
 	}
 }
 
-// Enable="true"以外の申し送りデータを削除します。(Lastのみ)
+// Delete Message data that are other than Enabled="true" (Only previous)
 TenkenData.MsgEvent.deleteMsgEventDisable = function()
 {
-	// 後ろから順に検索・削除します。
+	// Search from back and delete.
 	var lenList = TenkenData.MsgEvent.Last.length;
 	for ( i = (lenList - 1) ; i >= 0 ; i-- )
 	{
@@ -1586,7 +1573,7 @@ TenkenData.MsgEvent.deleteMsgEventDisable = function()
 	}
 }
 
-// 申し送りデータ(カレント)を追加します
+// Add new message data (current)
 TenkenData.MsgEvent.addCurrentMsgEvent = function(_msg)
 {
 	try {
@@ -1616,7 +1603,7 @@ TenkenData.MsgEvent.addCurrentMsgEvent = function(_msg)
 		if ( null != _msg.Enable ) MsgEvent.Enable = _msg.Enable;
 		if ( null != _msg.Answer ) MsgEvent.Answer =  _msg.Answer;
 
-		// 追加
+		// add
 		TenkenData.MsgEvent.Current.push(MsgEvent);
 		return(MsgEvent);
 	}
@@ -1627,70 +1614,67 @@ TenkenData.MsgEvent.addCurrentMsgEvent = function(_msg)
 }
 
 
-// 申し送りのCurrentからLastへ移動する
+// Switch from Current to Last (Previous) of Message data
 TenkenData.MsgEvent.moveCurrentDataToLastData = function()
 {
-	// カレントの申し送りすべてをLastリストに移動する
+	// Move entire current messages to last (previous) list
 	for ( var  i=TenkenData.MsgEvent.Current.length - 1 ; 0 <= i ; i-- )
 	{
 		if ( null != TenkenData.MsgEvent.Current[i]  )
 		{
-			// 先頭から加えていく
+			// add from top
 			TenkenData.MsgEvent.Last.unshift(TenkenData.MsgEvent.Current[i]);
 		}
 	}
 
-	// カレントの申し送りをクリア
+	// Clear current messages
 	TenkenData.MsgEvent.clearCurrentMsgEvent();
 
-	// 移動した申し送りをローカルストレージに保存
+	// Store moved messages to local storage
 	TenkenData.MsgEvent.saveStorage();
 }
 
 
 //============================================================================
-// 点検データ管理
+// Checklist data management
 //============================================================================
-// 点検結果データは、各設備の各点検項目の最新の値のみ(各項目最新１レコード分)
-// 前回値としてダウンロードします。
-// 今回値は、点検している端末内のローカルストレージ内のローカルデータを使用
-// します。今回値は、ダウンロード直後は値なしの状態です。
-// 点検データ取得は、設備毎にデータ取得必要なため、TenkenARDataを利用せず
-// 直接ARからデータを取得しています。
+// Only the latest value of each checklist item per asset (latest one record) will be downloaded as previous data.
+// The current checklist data will be used from the data stored in local storage. This makes that current value do not have any data right after download.
+// As checklist need to obtain data per assets, we're not using TenkenARData, but retrieving data directly from AR server.
 
-// データ管理クラス(点検結果データ)
+// Data management class (Checklist result)
 TenkenData.TenkenEvent = {};
 
-// AR実行サーバのデータ送受信用TenkenARdata作成
+// Create TenkenARdata to send/retrieve from server
 TenkenData.TenkenEvent.arTenkenEventCurrent=new TenkenARdata(TenkenConst.TableName.tenkenevent);
 
-// データ管理領域(点検結果データ)。今回値と前回値用。
+// Data management region (checklist result data). For current and previous data
 TenkenData.TenkenEvent.Last = [];
 TenkenData.TenkenEvent.Current = [];
 
-// データ取得中状態フラグ
+// Flag to store if data retrieval is in progress
 TenkenData.TenkenEvent.getphase = false;
 
-// データ取得時のインターバルタイマーID
+// Interval timer ID of data retrieval
 TenkenData.TenkenEvent.IntervalTenkenEventId = null;
-// データ取得時の受信済数
+// Total data count of retrieval data
 TenkenData.TenkenEvent.downloadCount = 0;
-// データ取得時の最大受信数
+// Maximum data count of retrieval data
 TenkenData.TenkenEvent.downloadMaxCount = 0;
-// データ取得時の次の受信数
+// Next retrival data count to retrieve data
 TenkenData.TenkenEvent.NextCnt = 0;
 
-// 点検結果データ取得時のインターバルタイマー
+// Interval timer used when retrieving checklist data
 TenkenData.TenkenEvent.IntervalGetTenkenEvent = function()
 {
 	try
 	{
 		if ( TenkenData.TenkenEvent.downloadCount >= TenkenData.TenkenEvent.downloadMaxCount )
 		{
-			// 最後まで受信したので終了
+			// End as processed finished
 			TenkenData.TenkenEvent.stopIntervalGetTenkenEvent();
 
-			// すべてのデータを読み込んだら終了
+			// Finish when all data is read.
 			TenkenData.TenkenEvent.getphase=false;
 			if ( TenkenData.AllGet.getPhase() == false )
 			{
@@ -1702,8 +1686,7 @@ TenkenData.TenkenEvent.IntervalGetTenkenEvent = function()
 
 		if ( TenkenData.TenkenEvent.NextCnt <= TenkenData.TenkenEvent.downloadCount )
 		{
-			// 次のカウントまでダウンロードが完了したため、
-			// 次のデータのダウンロードを実行する
+			// Finished downloading to the next count. Proceed with next download.
 			var startCnt = TenkenData.TenkenEvent.NextCnt;
 			if ( ( TenkenData.TenkenEvent.downloadMaxCount - TenkenData.TenkenEvent.NextCnt ) < Tenken.config.DownloadStep )
 			{
@@ -1714,7 +1697,7 @@ TenkenData.TenkenEvent.IntervalGetTenkenEvent = function()
 				TenkenData.TenkenEvent.NextCnt += Tenken.config.DownloadStep;
 			}
 
-			// 定義されている点検項目の数だけデータを取得する。
+			// Retrieve data only for checklist items that are defined.
 			var targetList=TenkenData.TenkenTable.getTenkenTargetList();
 
 			var strLog= "download=" + TenkenData.TenkenEvent.downloadCount
@@ -1728,66 +1711,63 @@ TenkenData.TenkenEvent.IntervalGetTenkenEvent = function()
 			{
 				var target=targetList[i];
 
-				//検索クエリオブジェクトを作成します。
+				//Create query object
 
 				var query = new TenkenARvalue.QuadQuery();
 				query.type = "RECORDSANDCOUNT";
-				// 検索数の上限 (各データの最新の１つのみ取得する）
+				// Max limit to query (obtain only the latest of each data)
 				query.limitRange = new TenkenARvalue.Range(1);
 				query.qattributeOrderIndexRange = new TenkenARvalue.Range(1,100);
 
-				//利用者定義データが登録されているqtypeを指定します。
+				// Set qtype of retistered operator data
 				query.qtypeNameRanges = new Array(new TenkenARvalue.Range(TenkenConst.TableName.tenkenevent));
 
 				query.whereExpressions = new Array();
 
-				// 検索条件:
-				// 検索条件１: 選択されたシナリオID指定と0の(OR条件)
-				//             マーカーID=0は、マーカーを利用しない共通設備等です。
+				// Query parameter:
+				// Query 1: OR query of selected scenario ID and 0
+				//             marker ID=0 is for shared assets that do not use markers
 				var cond = new Array();
 				cond.push(new TenkenARvalue.Range(0))
 				cond.push(new TenkenARvalue.Range(Tenken.config.ScenarioId));
 				query.whereExpressions.push(new TenkenARvalue.QuadQueryExpression(new TenkenARvalue.Range("ScenarioId"), cond, "LONG"));
 
-				// 検索条件２: 設備ID(assetid)
+				// Query 1: Asset ID (assetid)
 				if( null != target.assetid )
 				{
 					query.whereExpressions.push(new TenkenARvalue.QuadQueryExpression(new TenkenARvalue.Range("targetassetid"), new TenkenARvalue.Range(target.assetid), "STRING"));
 				}
-				// 検索条件３: 点検タイプ(type)
+				// Query 3: Check type (type)
 				if( null != target.type )
 				{
 					query.whereExpressions.push(new TenkenARvalue.QuadQueryExpression(new TenkenARvalue.Range("type"), new TenkenARvalue.Range(target.type), "STRING"));
 				}
 
-				// 停止中(STOP)の設備の前回値を対象外とする場合
+				// If we're going to skip assets that is in stopped state.
 				if ( true == Tenken.config.skipStopLastData )
 				{
-					// 検索条件４: 起動状態(assetstatus)=START
-					//             assetstatus="START"を指定します。
-					//             停止中は点検値が無いため、稼働中の最後の点検値
-					//             を取得します。
+					// Query 4: Initial State(assetstatus)=START
+					//             Set assetstatus="START"
+					//             Check value do not exist for assets that are in Stopped state. Get the last check value that was in start state.
 					query.whereExpressions.push(new TenkenARvalue.QuadQueryExpression(new TenkenARvalue.Range("assetstatus"), new TenkenARvalue.Range("START"), "STRING"));
 				}
 
-				// ソート条件：
-				// ソート条件１：登録日時(registrationtime)
-				//               登録日時を降順にソートして最新のデータを1件分を
-				//               取得します。
-				// LONG型最大値9223372036854775807は、9223372036854776000に
-				// 丸められてエラーになるため、9223372036854775000を指定して
-				// います。
+				// Sort parameter:
+				// Sort 1: Registered Date and time (registrationtime)
+				//               Obtain a single latest record by sorting with registration date desc.
+				// JavaScript will round max long value of 9223372036854775807 to 9223372036854776000 that 
+				// will cause an error, hence hard coding 9223372036854776000 here.
 				query.sortOrderExpressions = new Array(new TenkenARvalue.QuadQueryExpression(new TenkenARvalue.Range("registrationtime"), new TenkenARvalue.Range(0,9223372036854775000), "LONG", true));
 
-				//文字列に変換します。
+				// Transform to string
 				var getQuery = TenkenARvalue.makeQuadQuery(query);
 
 				Tenken.Util.logdebug("GET_DATA_REQUEST:TenkenEvent:" + i);
 
-				// 強制読み込みモード設定
+				// Set force reload mode
 				var mode=TenkenData.getSuperReloadMode();
 
-				//AR実行サーバから点検結果データを取得します。
+				// Retrieve check result data from AR server.
 				AR.Data.getArServerData(
 					getQuery,
 					mode,
@@ -1808,7 +1788,7 @@ TenkenData.TenkenEvent.IntervalGetTenkenEvent = function()
 	return;
 }
 
-// 点検結果データ取得時のインターバルタイマーを起動
+// Start interval timer to retrieve check results
 TenkenData.TenkenEvent.setIntervalGetTenkenEvent = function()
 {
 	if ( null == TenkenData.TenkenEvent.IntervalTenkenEventId )
@@ -1817,7 +1797,7 @@ TenkenData.TenkenEvent.setIntervalGetTenkenEvent = function()
 	}
 }
 
-// 点検結果データ取得時のインターバルタイマーを停止
+// Stop interval timer to retrieve check results
 TenkenData.TenkenEvent.stopIntervalGetTenkenEvent = function()
 {
 	if ( null != TenkenData.TenkenEvent.IntervalTenkenEventId )
@@ -1827,7 +1807,7 @@ TenkenData.TenkenEvent.stopIntervalGetTenkenEvent = function()
 	}
 }
 
-// AR実行サーバからデータの取得を行います。(点検結果データ)
+// Retrieve data from AR server (Check result data)
 TenkenData.TenkenEvent.getLastData = function()
 {
 	try
@@ -1837,12 +1817,12 @@ TenkenData.TenkenEvent.getLastData = function()
 			return;
 		}
 
-		// 定義されている点検項目テーブルの数だけデータを取得する。
+		// Retrieve only the number defined in checklist table
 		var targetList=TenkenData.TenkenTable.getTenkenTargetList();
 
 		if (  null == targetList || 0 >= targetList.length )
 		{
-			TenkenData.AllGet.abortInvalidData(TenkenConst.TableName.tenkentable, null, null, null, "点検結果データを取得するための点検結果テーブルの取得ができていません。\nデータが定義されていないか、取得に失敗しています。", null);
+			TenkenData.AllGet.abortInvalidData(TenkenConst.TableName.tenkentable, null, null, null, "Has not retrieved check result table to get check result data.\nEither data is not defined, or retrieval has failed.", null);
 			return;
 		}
 
@@ -1856,7 +1836,7 @@ TenkenData.TenkenEvent.getLastData = function()
 		TenkenData.TenkenEvent.downloadCount = 0;
 		TenkenData.TenkenEvent.downloadMaxCount =targetList.length;
 
-		// タイマーをセットし、その関数内で受信
+		// Set the timer and retrieve in the method.
 		TenkenData.TenkenEvent.setIntervalGetTenkenEvent();
 
 	} catch(e){
@@ -1865,27 +1845,27 @@ TenkenData.TenkenEvent.getLastData = function()
 };
 
 
-// データの取得成功時のコールバック（点検結果データ)
+// Success callback mothod upon data retrieval (check result data)
 TenkenData.TenkenEvent.getDataSuccess = function(_result)
 {
 	Tenken.Util.loginfo("GET_DATA_RESPONSE:SUCCESS:TenkenEvent:" + TenkenData.TenkenEvent.downloadCount);
 
 	if ( null != _result.getValue() )
 	{
-		//結果から必要なデータを抽出してTenkenData.TenkenEvent.Lastに格納します。
+		// Get necessary data and store into TenkenData.TenkenEvent.Last
 		TenkenData.TenkenEvent.extractData(_result.getValue());
 
 	}
 };
 
 
-// 受信したJSONオブジェクトから点検結果データを抽出します。
+// Get check result data from received JSON object
 TenkenData.TenkenEvent.extractData = function(_data)
 {
 	try {
 		if ( null == _data ) return;
 
-		//取得したレコード数です
+		// Record count received
 		var recordCount = _data.records.length;
 
 		TenkenData.TenkenEvent.downloadCount++;
@@ -1894,7 +1874,7 @@ TenkenData.TenkenEvent.extractData = function(_data)
 
 		for(var recordIndex = 0; recordIndex < recordCount; recordIndex++)
 		{
-			//レコードを一つずつ調べます。
+			// Search records one by one
 			var record = _data.records[recordIndex];
 			var valueLength = record.qvalues.length;
 			var value =new Object();
@@ -1902,7 +1882,7 @@ TenkenData.TenkenEvent.extractData = function(_data)
 			value.version = record.version;
 			value.qentityId = record.id;
 
-			//使用するqvalueの数だけ取得します。attributeNameで判断します。
+			// Retrieve only the number specified in qvalue. Define by attributeName
 			for(var valueIndex = 0; valueIndex < valueLength; valueIndex++)
 			{
 
@@ -1921,7 +1901,7 @@ TenkenData.TenkenEvent.extractData = function(_data)
 				}
 			}
 
-			// 新規追加(前回値)
+			// Add new (Previous value)
 			TenkenData.TenkenEvent.Last.push(value);
 		}
 	}
@@ -1931,10 +1911,10 @@ TenkenData.TenkenEvent.extractData = function(_data)
 	}
 };
 
-// データの取得失敗時のコールバック（点検結果データ)
+// Error callback method upon data retrieval (Check result data)
 TenkenData.TenkenEvent.getDataError = function(_result)
 {
-	var message = "AR実行サーバのデータ取得(点検結果)に失敗しました。動作モードとネットワーク状況を確認して再度お試しください。";
+	var message = "Failed to retrieve data (Check result) from AR server. Please check the operation mode and network connectivity.";
 	var detail="";
 	if(_result.getStatus() == "AR_HTTP_EXCEPTION")
 	{
@@ -1943,7 +1923,7 @@ TenkenData.TenkenEvent.getDataError = function(_result)
 	{
 		detail += _result.getStatus() + "\n"+ _result.getValue();
 	}
-	// タイマーをクリア
+	// Clear the timer
 	TenkenData.TenkenEvent.stopIntervalGetTenkenEvent();
 
 	TenkenData.TenkenEvent.getphase=false;
@@ -1955,30 +1935,30 @@ TenkenData.TenkenEvent.getDataError = function(_result)
 	}
 };
 
-// 点検結果データ取得中状態フラグの値を取得します。
+// Get if the data retrieval is in progress
 TenkenData.TenkenEvent.isGetPhase = function()
 {
 	return(TenkenData.TenkenEvent.getphase);
 }
 
-// 点検結果データをクリアします。(今回値のみ)
+// Clear check result data (Only the Current)
 TenkenData.TenkenEvent.clearCurrentTenkenEvent = function()
 {
 	TenkenData.TenkenEvent.Current.length = 0;
 	Tenken.Storage.currentTenkenEventData.remove();
 }
 
-// 指定マーカーIDと一致する点検結果データの値を初期化します。(今回値のみ)
+// Intialize check result data that matches the marker ID (Current only)
 TenkenData.TenkenEvent.resetCurrentTenkenEventTable = function(_markerid)
 {
-	// カレントおよびダウンロードした点検結果データを対象にします。
+	// Make current and downloaded check result data as the target.
 	for ( var i = 0 ; i < TenkenData.TenkenEvent.Current.length ; i++ )
 	{
 		var tenkendata=TenkenData.TenkenEvent.Current[i];
 		if ( _markerid == tenkendata.markerid )
 		{
-			// 初期化します
-			// 変更が無い設備データなどはそのまま利用します。
+			// Initialize
+			// Use as-is for the asset data those are not modified.
 			// (description,type,markerid,markername,targetassetid,assetstatus)
 			tenkendata.tenkenid=null;
 			tenkendata.tenkenname=null;
@@ -2003,8 +1983,7 @@ TenkenData.TenkenEvent.resetCurrentTenkenEventTable = function(_markerid)
 }
 
 
-// 指定されたassetid、TenkenType、DataEntryNameに一致する
-// 点検結果データ(Object型)を取得します。
+// Retrieve check result data (Object type) that matches with specified assetid, TenkenType, and DataEntryName
 TenkenData.TenkenEvent.getData = function(_targetList, _targetassetid, _tenkentype, _dataentryname)
 {
 	var tenken = null;
@@ -2035,7 +2014,7 @@ TenkenData.TenkenEvent.getData = function(_targetList, _targetassetid, _tenkenty
 	return tenken;
 }
 
-// 取得したデータをTenkenDataの管理用データに加工してコピーします。
+// Process and copy downloaded TenkenData
 TenkenData.TenkenEvent.createData = function(_targetList, _update, _tenken)
 {
 	try
@@ -2096,7 +2075,7 @@ TenkenData.TenkenEvent.createData = function(_targetList, _update, _tenken)
 	return(value);
 }
 
-// ローカルストレージにデータを保存(点検結果データ)
+// Store to local storage (check result data)
 TenkenData.TenkenEvent.saveStorage = function()
 {
 	if ( 0 < TenkenData.TenkenEvent.Last.length )
@@ -2109,7 +2088,7 @@ TenkenData.TenkenEvent.saveStorage = function()
 	}
 };
 
-// ローカルストレージからデータをロード(点検結果データ)
+// Load from local storage (check result data)
 TenkenData.TenkenEvent.loadStorage = function()
 {
 	var data=Tenken.Storage.lastTenkenEventData.get();
@@ -2142,19 +2121,18 @@ TenkenData.TenkenEvent.loadStorage = function()
 	}
 };
 
-// 今回値の点検結果データすべてを前回値へコピーする。
+// Copy entire current check results to previous values
 TenkenData.TenkenEvent.copyCurrentDataFromLastData = function()
 {
 	var rowFunc = function(_table, _group, _row, _poi2, _valueEntryName, _value, _assetstatus)
 	{
-		// 点検結果の前回値を今回値に自動設定する
-		// ただし、SetLastDataの値がない、またはtrue以外設定されている場合、
-        // およびPOIが存在しない場合は、設定しない。
+        // Automatically set previous check results to current values.
+        // Do not set if SetLastData is null, or value except true is set, or POI is not set.
 		if ( null == _row.SetLastData ||
              "true" !=_row.SetLastData.toLowerCase() ||
 				null == _poi2 )  return;
 
-		// カレント(今回値)POI2の登録または設定
+		// Set or register Current POI2 value
 		var tmpPOI2=TenkenData.TenkenEvent.getData(TenkenData.TenkenEvent.Current, _row.AssetId, _row.TenkenType, null);
 		if ( tmpPOI2 )
 		{
@@ -2162,7 +2140,7 @@ TenkenData.TenkenEvent.copyCurrentDataFromLastData = function()
 		}
 		else
 		{
-			// 新規登録
+			// Register new
 			var value =new Object();
 			value.version=_poi2.version;
 			value.qentityId=_poi2.qentityId;
@@ -2189,12 +2167,12 @@ TenkenData.TenkenEvent.copyCurrentDataFromLastData = function()
 	TenkenData.TenkenTable.foreachTables(TenkenData.TenkenEvent.Last, null, null, rowFunc);
 }
 
-// 指定されたtableidが含まれる点検結果データの値を初期化します。
+// Initialize check result that includeds specified tableid
 TenkenData.TenkenEvent.resetCurrentTenkenEventTableTableId = function(_tabledid)
 {
 
 
-	// 1. TenkenTable.TableIdと_tableidが一致するassetidのリストを作成
+	// 1. Create assetid list that matches TenkenTable.TableId and _tableid
 	var listAssetId=new Object();
 	var rowFunc = function(_table, _group, _row, _poi2, _valueEntryName, _value, _assetstatus)
 	{
@@ -2206,7 +2184,7 @@ TenkenData.TenkenEvent.resetCurrentTenkenEventTableTableId = function(_tabledid)
 
 	TenkenData.TenkenTable.foreachTables(null, null, null, rowFunc);
 
-	// 2. assetidのリストからasset.assetidと一致するmarkeridのリストを作成
+	// 2. Create markerid list that matches asset.assetid from assetid list
 	var listMarkerIds=new Object();
 	var markerid=-1;
 	for ( var assetid in listAssetId )
@@ -2218,7 +2196,7 @@ TenkenData.TenkenEvent.resetCurrentTenkenEventTableTableId = function(_tabledid)
 		}
 	}
 
-	// 3. markeridのリストでカレントの点検結果の値を初期化する。
+	// 3. Initialize current check results with markerid list.
 	for ( var markerid in listMarkerIds )
 	{
 		TenkenData.TenkenEvent.resetCurrentTenkenEventTable(markerid);
@@ -2227,18 +2205,18 @@ TenkenData.TenkenEvent.resetCurrentTenkenEventTableTableId = function(_tabledid)
 }
 
 //============================================================================
-// 作業者名のデータ管理
+// Data managenet for operators
 //============================================================================
 
-// データ管理クラス(作業者データ)
+// Data Management class (operator data)
 TenkenData.UserData = {};
 
-// AR実行サーバのデータ送受信用TenkenARdata作成
+// Create TenkenARdata to send/receive data from AR server.
 TenkenData.UserData.arUserData=new TenkenARdata(TenkenConst.TableName.userdata);
-// データ管理領域(作業者データ)
+// Data management region (operator data)
 TenkenData.UserData.ListAll = [];
 
-// 取得したデータをTenkenDataの管理用データに加工してコピーします。
+// Process and copy downloaded TenkenData.
 TenkenData.UserData.createDataList = function()
 {
 	try
@@ -2258,15 +2236,15 @@ TenkenData.UserData.createDataList = function()
 				var newObj=new Object();
 				if ( null != dataValue )
 				{
-					// 全データをコピー(QAttribute単位の処理)
+					// Copy entire data (per QAttribute)
 					for ( var name in dataValue )
 					{
 						newObj[name]=dataValue[name];
 					}
-					// 必須項目・重複データのチェック
+					// Check mandatory and duplicate data
 					TenkenData.UserData.checkData(newObj);
 
-					// 新規追加
+					// Add new
 					TenkenData.UserData.ListAll.push(newObj);
 				}
 			}
@@ -2278,12 +2256,12 @@ TenkenData.UserData.createDataList = function()
 	}
 }
 
-// データの取得成功時のコールバック（作業者データ)
+// Success callback handler upon data retrieval (operator data)
 TenkenData.UserData.cbDataSuccessUserData = function(_result)
 {
 	try
 	{
-		// 取得したデータをコピーする。
+		// Copy retrieved data
 		TenkenData.UserData.ListAll.length=0;
 		TenkenData.UserData.createDataList();
 
@@ -2304,10 +2282,10 @@ TenkenData.UserData.cbDataSuccessUserData = function(_result)
 	}
 }
 
-// データの取得失敗時のコールバック（作業者データ)
+// Error callback handler upon data retrieval (operator data)
 TenkenData.UserData.cbDataErrorUserData = function(_result)
 {
-	var message = "AR実行サーバのデータ取得(作業者一覧)に失敗しました。動作モードとネットワーク状況を確認して再度お試しください。";
+	var message = "Failed to obtain data (operator list) from AR server. Please check the operation mode and network connectivity.";
 	var detail="";
 	if(_result.getStatus() == "AR_HTTP_EXCEPTION")
 	{
@@ -2325,7 +2303,7 @@ TenkenData.UserData.cbDataErrorUserData = function(_result)
 	}
 }
 
-// AR実行サーバからデータの取得を行います。(作業者データ)
+// Retrieve data from AR server. (operator data)
 TenkenData.UserData.getData = function()
 {
 	try
@@ -2336,32 +2314,32 @@ TenkenData.UserData.getData = function()
 		}
 		if ( TenkenData.UserData.arUserData.getBusyStatus() == true )
 		{
-			alert("通信中です。\nしばらく時間をおいてから再度実行してください。");
+			alert("Communication in progress.\nPlease retry at later time.");
 			return;
 		}
 
-		// 強制読み込みモード設定
+		// Set force reload mode.
 		TenkenData.UserData.arUserData.setReload(TenkenData.getSuperReloadMode());
 
-		// 検索条件:
-		// 検索条件を初期化
+		// Query parameter:
+		// Initialize query parameter
 		TenkenData.UserData.arUserData.clearWhere();
-		// 検索条件１: 選択されたシナリオID指定と0の(OR条件)
-		//             マーカーID=0は、マーカーを利用しない共通設備等です。
+		// Query 1: OR query of selected scenario ID and 0
+		//             Marker ID=0 is for shared assets that do not use markers
 		TenkenData.UserData.arUserData.addWhere("ScenarioId", null, [0, Tenken.config.ScenarioId], null, "LONG");
-		// 条件２を指定
+		// Set query 2
 
-		// ソート条件：
-		// ソート条件を初期化
+		// Sort parameter：
+		// Initialize sort parameter
 		TenkenData.UserData.arUserData.clearSort();
-		// ソート方向に昇順を設定
+		// Set sort order as ascending
 		TenkenData.UserData.arUserData.setSortDesc(false);
-		// ソート条件１：ソートインデックス(SortIndex)
-		// LONG型最大値9223372036854775807は、9223372036854776000に
-		// 丸められてエラーになるため、9223372036854775000を指定しています。
+		// Sort 1: Sort index (SortIndex)
+		// JavaScript will round max long value of 9223372036854775807 to 9223372036854776000 that 
+		// will cause an error, hence hard coding 9223372036854776000 here.
 		TenkenData.UserData.arUserData.addSort("SortIndex", null, "0", "9223372036854775000", "LONG");
 
-		// データ取得
+		// Retrieve data
 		TenkenData.UserData.arUserData.getArData(TenkenData.UserData.cbDataSuccessUserData, TenkenData.UserData.cbDataErrorUserData);
 	}
 	catch (e)
@@ -2370,14 +2348,13 @@ TenkenData.UserData.getData = function()
 	}
 }
 
-// 受信データの必須データの有無、重複をチェックします。
-// データ異常があった場合は、データ定義異常を出力し、
-// 初画面に戻ります。
+// Check mandatory and duplicate data of received data.
+// If there is an issue in data, output data error and return to initial screen.
 //
-// チェック内容
-// QAttribute名 : チェック項目
-// userid       : null  重複
-// username     : null  重複
+// Check items
+// QAttribute name : Check items
+// userid       : null  duplicate
+// username     : null  duplicate
 // ScenarioId   : null
 TenkenData.UserData.checkData = function(_data)
 {
@@ -2390,7 +2367,7 @@ TenkenData.UserData.checkData = function(_data)
 
 		if ( null == _data ) return;
 
-		// nullチェック(値指定必須で値なし)
+		// check null
 		if ( null == _data.userid )
 		{
 			err=true;
@@ -2408,11 +2385,11 @@ TenkenData.UserData.checkData = function(_data)
 		}
 		if ( true == err )
 		{
-			errMsg="必須項目が未定義のデータがあります。";
+			errMsg="Mandatory data is not set.";
 		}
 		else
 		{
-			// 重複チェック
+			// Check duplicate
 			var len=TenkenData.UserData.ListAll.length;
 			for ( var i = 0 ; i < len ; i++ )
 			{
@@ -2432,11 +2409,11 @@ TenkenData.UserData.checkData = function(_data)
 			}
 			if ( true == err )
 			{
-				errMsg="重複したデータ定義があります。";
+				errMsg="Duplicate data exists.";
 			}
 		}
 
-		// データに異常がある場合は、エラーを出力し初画面に戻る
+		// If there is an issue in data, output error and move to initial screen.
 		if ( true == err )
 		{
 			TenkenData.AllGet.abortInvalidData(TenkenConst.TableName.userdata, errName, errValue, null, errMsg);
@@ -2448,13 +2425,13 @@ TenkenData.UserData.checkData = function(_data)
 	}
 }
 
-// ローカルストレージにデータを保存(作業者データ)
+// Store data to local storage (operator data)
 TenkenData.UserData.saveStorage = function()
 {
 	Tenken.Storage.UserData.set(JSON.stringify(TenkenData.UserData.ListAll));
 };
 
-// ローカルストレージからデータをロード(作業者データ)
+// Load data from local storage (operator data)
 TenkenData.UserData.loadStorage = function()
 {
 	var data=Tenken.Storage.UserData.get();
@@ -2476,7 +2453,7 @@ TenkenData.UserData.loadStorage = function()
 	}
 };
 
-// ダウンロードした作業者の一覧をHTMLのselectタグのoptionタグ形式で組み立てます
+// Construct downloaded operator list to HTML's select tag using option tag.
 TenkenData.UserData.getUserNameHTML = function()
 {
 	TenkenData.UserData.loadStorage();
@@ -2489,14 +2466,13 @@ TenkenData.UserData.getUserNameHTML = function()
 
 	if ( 0 >= TenkenData.UserData.ListAll.length )
 	{
-		str += '<option value="">(ダウンロードしてください)'
+		str += '<option value="">(Please download)'
 	}
 
 	return str;
 };
 
-// 指定されたselectタグのElementにダウンロードした作業者データを
-// 選択肢として追加します。
+// Add downloaded operator data as select tag of specified Element
 TenkenData.UserData.selectUserNameHTML = function(_select)
 {
 
@@ -2527,24 +2503,24 @@ TenkenData.UserData.selectUserNameHTML = function(_select)
 };
 
 //============================================================================
-// 点検項目テーブルのデータ管理
+// Data management of checklist table
 //============================================================================
 
-// データ管理クラス(点検項目データ)
+// Data management class (checklist data)
 TenkenData.TenkenTable = {};
 
-// AR実行サーバのデータ送受信用TenkenARdata作成
+// Create TenkenARdata to send/receive from AR server.
 TenkenData.TenkenTable.arTenkenTable=new TenkenARdata(TenkenConst.TableName.tenkentable);
 
-// データ管理領域(点検項目データ)
+// Data management region (Checklist data)
 TenkenData.TenkenTable.ListTables = [];
 
-// データの取得成功時のコールバック（点検項目データ)
+// Success callback handler upon data retrieval (Checklist data)
 TenkenData.TenkenTable.cbDataSuccessTenkenTable = function(_result)
 {
 	try
 	{
-		// 取得したデータをコピーする。
+		// Copy retrieved data
 		TenkenData.TenkenTable.ListTables.length = 0;
 		TenkenData.TenkenTable.createDataList();
 
@@ -2566,10 +2542,10 @@ TenkenData.TenkenTable.cbDataSuccessTenkenTable = function(_result)
 	}
 }
 
-// データの取得失敗時のコールバック（点検項目データ)
+// Error callback handler upon data retrieval (Checklist data)
 TenkenData.TenkenTable.cbDataErrorTenkenTable = function(_result)
 {
-	var message = "AR実行サーバのデータ取得(点検項目)に失敗しました。動作モードとネットワーク状況を確認して再度お試しください。";
+	var message = "Failed to download data (Checklist) from AR server. Please check operation mode and network connectivity.";
 	var detail="";
 	if(_result.getStatus() == "AR_HTTP_EXCEPTION")
 	{
@@ -2587,7 +2563,7 @@ TenkenData.TenkenTable.cbDataErrorTenkenTable = function(_result)
 	}
 }
 
-// AR実行サーバからデータの取得を行います。(点検項目データ)
+// Retrieve data from AR server (Checklist data)
 TenkenData.TenkenTable.getData = function()
 {
 	try
@@ -2602,33 +2578,33 @@ TenkenData.TenkenTable.getData = function()
 			return;
 		}
 
-		// 強制読み込みモード設定
+		// Set force reload mode.
 		TenkenData.TenkenTable.arTenkenTable.setReload(TenkenData.getSuperReloadMode());
 
-		// 検索条件:
-		// 検索条件を初期化
+		// Query paremeter:
+		// Initialize query parameter
 		TenkenData.TenkenTable.arTenkenTable.clearWhere();
 
-		// 検索条件１: 選択されたシナリオID指定と0の(OR条件)
-		//             マーカーID=0は、マーカーを利用しない共通設備等です。
+		// Query 1: OR query of selected scenario ID and 0
+		//             Marker ID=0 is shared assets that do not use markers
 		TenkenData.TenkenTable.arTenkenTable.addWhere("ScenarioId", null, [0, Tenken.config.ScenarioId], null, "LONG");
 
-		// ソート条件：
-		// ソート条件を初期化
+		// Sort parameter
+		// Initialize sort parameter
 		TenkenData.TenkenTable.arTenkenTable.clearSort();
-		// ソート方向に昇順を設定
+		// Set sort order as ascending
 		TenkenData.TenkenTable.arTenkenTable.setSortDesc(false);
 
-		// ソート条件１：ソート用テーブルインデックス値
-		// LONG型最大値9223372036854775807は、9223372036854776000に
-		// 丸められてエラーになるため、9223372036854775000を指定しています。
+		// Sort 1: Index value of sort table.
+		// JavaScript will round max long value of 9223372036854775807 to 9223372036854776000 that 
+		// will cause an error, hence hard coding 9223372036854776000 here.
 		TenkenData.TenkenTable.arTenkenTable.addSort("SortIndexOfTable", null, "0", "9223372036854775000", "LONG");
-		// ソート条件２：ソート用グループインデックス値
+		// Sort 2: Group index value of sort table
 		TenkenData.TenkenTable.arTenkenTable.addSort("SortIndexOfRowGroup", null, "0", "9223372036854775000", "LONG");
-		// ソート条件３：ソート用項目(Row)インデックス値
+		// Sort 3: Row index value of sort table
 		TenkenData.TenkenTable.arTenkenTable.addSort("SortIndexOfRow", null, "0", "9223372036854775000", "LONG");
 
-		// データ取得
+		// Retrieve data
 		TenkenData.TenkenTable.arTenkenTable.getArData(
 			TenkenData.TenkenTable.cbDataSuccessTenkenTable,
 			TenkenData.TenkenTable.cbDataErrorTenkenTable);
@@ -2639,7 +2615,7 @@ TenkenData.TenkenTable.getData = function()
 	}
 }
 
-// 指定されたテーブルIDと一致する点検項目データ(Object型)を取得します。
+// Retrieve Checklist data (Object type) that matches with selected table ID
 TenkenData.TenkenTable.getTable = function(_tableid)
 {
 	try {
@@ -2663,8 +2639,7 @@ TenkenData.TenkenTable.getTable = function(_tableid)
 	}
 }
 
-// 指定されたテーブルIDおよびグループIDと一致する
-// 点検項目データ(Object型)を取得します。
+// Retrieve Checklist data (Object type) that matches with select table ID and group ID.
 TenkenData.TenkenTable.getRowGroup = function(_tableid, _rowgroupid)
 {
 	try{
@@ -2695,8 +2670,7 @@ TenkenData.TenkenTable.getRowGroup = function(_tableid, _rowgroupid)
 	}
 }
 
-// 指定されたテーブルID、グループID、RowID全てと一致する
-// 点検項目データ(Object型)を取得します。
+// Retrieve Checklist data that matches with all the table ID, group ID, and Row ID.
 TenkenData.TenkenTable.getRow = function(_tableid, _rowgroupid, _rowid)
 {
 	try {
@@ -2711,7 +2685,7 @@ TenkenData.TenkenTable.getRow = function(_tableid, _rowgroupid, _rowid)
 			{
 				if ( null != _rowgroupid )
 				{
-					// RowGroupに値が指定されている場合は、RowGroupから検索
+					// Search from RowGroup if RowGroup value is specified.
 					for ( var j = 0 ; j < table.listRowGroups.length ; j++ )
 					{
 						var rowgroup=table.listRowGroups[j];
@@ -2730,7 +2704,7 @@ TenkenData.TenkenTable.getRow = function(_tableid, _rowgroupid, _rowid)
 				}
 				else
 				{
-					// RowGroupに値が指定されていない場合は、Tableから検索
+					// Search from Table if RowGroup is not specified.
 					for ( var j = 0 ; j < table.listRowsTable.length ; j++ )
 					{
 						var row=table.listRowsTable[j];
@@ -2750,8 +2724,7 @@ TenkenData.TenkenTable.getRow = function(_tableid, _rowgroupid, _rowid)
 	}
 }
 
-// 指定されたテーブルリスト(配列)の中でグループIDと一致する
-// 点検項目データのグループデータ(配列)を取得します。
+// Retrieve group data (an array) of Checklist data that matches with group id of the specified table list (an array)
 TenkenData.TenkenTable.getRowGroupFromTable = function(_table, _rowgroupid)
 {
 	try {
@@ -2775,8 +2748,7 @@ TenkenData.TenkenTable.getRowGroupFromTable = function(_table, _rowgroupid)
 	}
 }
 
-// 指定されたグループリスト(配列)の中でRowIdと一致する
-// 点検項目データの点検項目Row(Object型)を取得します。
+// Retrieve Checklist row (Object type) data that matches with the RowId of specified group list (an array)
 TenkenData.TenkenTable.getRowFromRowGroup = function(_rowgroup, _rowid)
 {
 	try {
@@ -2800,8 +2772,7 @@ TenkenData.TenkenTable.getRowFromRowGroup = function(_rowgroup, _rowid)
 	}
 }
 
-// 指定されたテーブルリスト(配列)の中でRowIdと一致する
-// 点検項目データの点検項目Row(Object型)を取得します。
+// Retrieve checklist row data (Object type) that matches with RowId of specified table list (an array)
 TenkenData.TenkenTable.getRowFromTable = function(_table, _rowid)
 {
 	try {
@@ -2825,8 +2796,7 @@ TenkenData.TenkenTable.getRowFromTable = function(_table, _rowid)
 	}
 }
 
-// 指定されたRowIdと一致する点検項目データの
-// 点検項目Row(Object型)を取得します。
+// Retrieve checlist row data (Object type) that matches with the specified RowId
 TenkenData.TenkenTable.getRowFromRowId = function(_rowid)
 {
 	try {
@@ -2838,14 +2808,14 @@ TenkenData.TenkenTable.getRowFromRowId = function(_rowid)
 		{
 			var table=TenkenData.TenkenTable.ListTables[i];
 
-			// グループ設定あり。グループ内から検索
+			// Group is set. Search from Group
 			if ( null != table.listRowGroups &&  0 < table.listRowGroups.length )
 			{
-				// グループ設定あり
+				// Group is set.
 				for ( var j=0 ; j < table.listRowGroups.length ; j++ )
 				{
 					var group=table.listRowGroups[j];
-					// 点検項目(Row)表示
+					// Display checklist (Row)
 					for ( var k=0 ; k < group.listRows.length ; k++ )
 					{
 						var row=group.listRows[k];
@@ -2855,7 +2825,7 @@ TenkenData.TenkenTable.getRowFromRowId = function(_rowid)
 				}
 			}
 
-			// グループ設定なしの項目からも検索。
+			// Search from items that Group is not set.
 			for ( var k=0 ; k < table.listRowsTable.length ; k++ )
 			{
 				var row=table.listRowsTable[k];
@@ -2871,16 +2841,15 @@ TenkenData.TenkenTable.getRowFromRowId = function(_rowid)
 	}
 }
 
-// 指定されたassetidが含まれるtableidを取得します。
-// １つのTableIdで複数のAssetIdを持つことがあるため、
-// Row単位で検索します。
+// Retrieve table id that includes asset id.
+// Search per Row as there could be multiple AssetId in a single TableId
 TenkenData.TenkenTable.getTableIdFromAssetId = function(_assetid)
 {
 	var tableid=null;
 
 	var rowFunc = function(_table, _group, _row, _poi2, _valueEntryName, _value, _assetstatus) 
 	{
-		// 既にtableidが見つかっている場合は即復帰
+		// Return immediately if tableid is already found.
 		if ( null != tableid ) return;
 		if ( _row )
 		{
@@ -2896,13 +2865,13 @@ TenkenData.TenkenTable.getTableIdFromAssetId = function(_assetid)
 	return tableid;
 }
 
-// ローカルストレージにデータを保存(点検項目データ)
+// Save data to local storage (Checklist data)
 TenkenData.TenkenTable.saveStorage = function()
 {
 	Tenken.Storage.TenkenTable.set(JSON.stringify(TenkenData.TenkenTable.ListTables));
 };
 
-// ローカルストレージからデータをロード(点検項目データ)
+// Load data from local storage (Checklist data)
 TenkenData.TenkenTable.loadStorage = function()
 {
 	var data=Tenken.Storage.TenkenTable.get();
@@ -2924,8 +2893,7 @@ TenkenData.TenkenTable.loadStorage = function()
 	}
 };
 
-// 点検項目データ配列の各要素(テーブル、グループ、点検項目)毎に
-// 指定されたメソッドを呼び出すforeach定義
+// foreach method to call elements (table, group, checklist item) per checklist data array.
 TenkenData.TenkenTable.foreachTables = function(_targetlist, _tableFunc, _rowGroupFunc, _rowFunc)
 {
 	try
@@ -2938,7 +2906,7 @@ TenkenData.TenkenTable.foreachTables = function(_targetlist, _tableFunc, _rowGro
 
 			if ( null != table.listRowGroups )
 			{
-				// グループがある場合
+				// If there is a group
 				var lenRowGroups=table.listRowGroups.length;
 				for(var j = 0; j < lenRowGroups; j++)
 				{
@@ -2974,7 +2942,7 @@ TenkenData.TenkenTable.foreachTables = function(_targetlist, _tableFunc, _rowGro
 			}
 			if ( null != table.listRowsTable )
 			{
-				// グループが無い場合
+				// If there isn't a group
 				var lenRowsTable=table.listRowsTable.length;
 				for(var k = 0; k < lenRowsTable ; k++)
 				{
@@ -3007,7 +2975,7 @@ TenkenData.TenkenTable.foreachTables = function(_targetlist, _tableFunc, _rowGro
 	}
 };
 
-// 点検結果取得時に利用するテーブル名と点検設備名一覧を作成する
+// Create check target asset list and table name to use when retrieving check results
 TenkenData.TenkenTable.getTenkenTargetList = function()
 {
 	try
@@ -3020,7 +2988,7 @@ TenkenData.TenkenTable.getTenkenTargetList = function()
 
 			if ( null != table.listRowGroups )
 			{
-				// グループがある場合
+				// When there is a group
 				for(var j = 0; j < table.listRowGroups.length; j++)
 				{
 					var rowGroup = table.listRowGroups[j];
@@ -3052,7 +3020,7 @@ TenkenData.TenkenTable.getTenkenTargetList = function()
 			}
 			if ( null != table.listRowsTable )
 			{
-				// グループが無い場合
+				// When there is no group
 				for(var k = 0; k < table.listRowsTable.length; k++)
 				{
 					var row = table.listRowsTable[k];
@@ -3089,8 +3057,7 @@ TenkenData.TenkenTable.getTenkenTargetList = function()
 	return(tenkenTargetlist);
 };
 
-// 指定された点検項目(Object型)をTenkenDataの管理用データに加工して
-// コピーします。
+// Process and copy selected checklist (Object type) of TenkenData
 TenkenData.TenkenTable.createListTenkenTable = function(_value)
 {
 	try {
@@ -3098,11 +3065,11 @@ TenkenData.TenkenTable.createListTenkenTable = function(_value)
 
 		if ( null == tmptable )
 		{
-			// 新規作成
+			// Create new
 			var table=new Object();
 			table.listRowGroups=[];
-			// RowGroupがnullの場合は、Table直下にRowリストを作成する
-			// ここでは、無条件で作成する
+			// Create Row list directly under Table if RowGroup is null.
+			// We'll create unconditionally here.
 			table.listRowsTable=[];
 
 			table.TableId=_value.TableId;
@@ -3115,12 +3082,12 @@ TenkenData.TenkenTable.createListTenkenTable = function(_value)
 		}
 		else
 		{
-			// 既存テーブルを利用(値は上書きせず、最初の値を採用する)
-			// 既存値との矛盾チェックをする場合は、ここに追加
+			// Use existing table (Use initial value not overwriting the value)
+			// If we need to cross check with existing, add here.
 			var table=tmptable;
 		}
 
-		// RowGroupリストの作成
+		// Create RowGroup list
 		if (  null != table && _value.RowGroupId )
 		{
 		var tmpgroup=TenkenData.TenkenTable.getRowGroupFromTable(table, _value.RowGroupId);
@@ -3142,23 +3109,23 @@ TenkenData.TenkenTable.createListTenkenTable = function(_value)
 			}
 		}
 
-		// 上限値と下限値の設定範囲をチェックします。
+		// Check max and min range
 		var checkFloatLimit = function(_dataname, _value) 
 		{
 			if ( null != _value )
 			{
-				//数値ならARのFLOAT範囲(-9999999～9999999)の値かチェック
+				// If number, check that it's in the range of AR's FLOAT (-9999999～9999999)
 				if ( _value < -9999999 || 9999999 < _value )
 				{
-					TenkenData.AllGet.abortInvalidData(TenkenConst.TableName.tenkentable, _dataname, _value, null, "ARのFLOAT値範囲外の値が指定されました。\n-9999999～9999999の範囲で指定してください。");
+					TenkenData.AllGet.abortInvalidData(TenkenConst.TableName.tenkentable, _dataname, _value, null, "Number outside AR's FLOAT range specified.\nPlease specify number between -9999999 and 9999999.");
 				}
 			}
 		}
 
-		// Rowリストの作成
+		// Create Row list
 		if ( null != _value.RowId && null != table )
 		{
-			// RowGroupIdが設定されている場合は、RowGroupにRowを作成
+			// Create Row under RowGroup if RowGroupId is set.
 			if ( null != _value.RowGroupId && null != rowgroup)
 			{
 				var tmprow=TenkenData.TenkenTable.getRowFromRowGroup(rowgroup, _value.RowId);
@@ -3166,23 +3133,21 @@ TenkenData.TenkenTable.createListTenkenTable = function(_value)
 				{
 					var row=new Object();
 
-					// Rowには、テーブル、グループの情報も保存する
+					// Save Table and Group information into Row.
 					for ( dataname in _value )
 					{
-						// LimitValueで始まるQAttribute名の場合には上下限値と
-						// 基準値を保存する
-						// LimitHigh,LimitLow,LimitBase以外の２個目以上を定義する
-						// 場合に定義します。
+						// Store Max/Min and base value for QAttribute name that starts with LimitValue.
+						// Define for secondary value except for LimitHigh, LimitLow, and LimitBase.
 						if ( null != _value[dataname] && dataname.substr(0,10) == "LimitValue" )
 						{
-							// 追加(2個目以降)の下限値、上限値、基礎値情報 (形式 :  下限値;上限値;基礎値)
+							// Additional minimum, maximum, and base value (format: min;max;base)
 							var limitInfoTmp = _value[dataname].split(";");
 							var limitInfo = new Array(3);
-							// 下限値
+							// Minimum value.
 							limitInfo[0]=(Tenken.isNumber(limitInfoTmp[0]) == true) ? parseFloat(limitInfoTmp[0]) : null;
-							// 上限値
+							// Maximum value.
 							limitInfo[1]=(Tenken.isNumber(limitInfoTmp[1]) == true) ? parseFloat(limitInfoTmp[1]) : null;
-							// 基礎値または基礎RowId
+							// Base value or the base RowId
 							limitInfo[2] = limitInfoTmp[2];
 							if ( null == row.listLimit ) row.listLimit = new Array();
 
@@ -3193,12 +3158,12 @@ TenkenData.TenkenTable.createListTenkenTable = function(_value)
 								checkFloatLimit(dataname, limitInfo[2]);
 							}
 
-							// 新規追加
+							// Add new.
 							row.listLimit.push(limitInfo);
 						}
 						else
 						{
-							// 新規追加
+							// Add new.
 							row[dataname] = _value[dataname];
 						}
 					}
@@ -3207,34 +3172,32 @@ TenkenData.TenkenTable.createListTenkenTable = function(_value)
 				}
 				else
 				{
-					TenkenData.AllGet.abortInvalidData(TenkenConst.TableName.tenkentable, "RowId", _value.RowId, null, "グループに同じRowId(点検項目が存在します)");
+					TenkenData.AllGet.abortInvalidData(TenkenConst.TableName.tenkentable, "RowId", _value.RowId, null, "Same RowId exist in a group (Checklist item already exists)");
 				}
 			}
 			else
 			{
-				// RowGroupIdがnullの場合は、Table直下にRowを作成する。
+				// Create Row directly under Table if RowGroupId is null.
 				var tmprow=TenkenData.TenkenTable.getRowFromTable(table, _value.RowId);
 				if ( null == tmprow )
 				{
 					var row=new Object();
 
-					// Rowには、テーブル、グループの情報も保存する
+					// Save table and group information into Row.
 					for ( dataname in _value )
 					{
-						// LimitValueで始まるQAttribute名の場合には上下限値と
-						// 基準値を保存する
-						// LimitHigh,LimitLow,LimitBase以外の２個目以上を定義する
-						// 場合に定義します。
+						// Store Max/Min and base value for QAttribute name that starts with LimitValue.
+						// Define for secondary value except for LimitHigh, LimitLow, and LimitBase.
 						if ( null != _value[dataname] && dataname.substr(0,10) == "LimitValue" )
 						{
-							// 追加(2個目以降)の下限値、上限値、基礎値情報 (形式 :  下限値;上限値;基礎値)
+							// Additional minimum, maximum, and base value (format: min;max;base)
 							var limitInfoTmp = _value[dataname].split(";");
 							var limitInfo = new Array(3);
-							// 下限値
+							// minimum value
 							limitInfo[0]=(Tenken.isNumber(limitInfoTmp[0]) == true) ? parseFloat(limitInfoTmp[0]) : null;
-							// 上限値
+							// maximum value
 							limitInfo[1]=(Tenken.isNumber(limitInfoTmp[1]) == true) ? parseFloat(limitInfoTmp[1]) : null;
-							// 基礎値または基礎RowId
+							// base value or base RowId.
 							limitInfo[2] = limitInfoTmp[2];
 
 							checkFloatLimit(dataname, limitInfo[0]);
@@ -3258,7 +3221,7 @@ TenkenData.TenkenTable.createListTenkenTable = function(_value)
 				}
 				else
 				{
-					TenkenData.AllGet.abortInvalidData(TenkenConst.TableName.tenkentable, "RowId", _value.RowId, null, "テーブルに同じRowId(点検項目が存在します)");
+					TenkenData.AllGet.abortInvalidData(TenkenConst.TableName.tenkentable, "RowId", _value.RowId, null, "Same RowId exist in a table (Checklist item already exists)");
 				}
 			}
 		}
@@ -3269,25 +3232,24 @@ TenkenData.TenkenTable.createListTenkenTable = function(_value)
 	}
 }
 
-// 受信データの必須データの有無、指定誤りをチェックします。
-// データ異常があった場合は、データ定義異常を出力し、
-// 初画面に戻ります。
+// Check mandatory and duplicate data of received data.
+// If there is an issue in data, output data error and return to initial screen.
 //
-// チェック内容
-// QAttribute名 : チェック項目
+// Check items
+// QAttribute name : Check items
 // TableId              : null
 // TableName            : null
 // RowId                : null
 // RowName              : null
-// RowGoupName          : null (RowGroupIdに値が指定されている場合のみ)
+// RowGoupName          : null (Only when value is set in RowGroupId)
 // ValueType            : null
 // AssetId              : null
 // TenkenType           : null
 // DataEntryName        : null
 // ScenarioId           : null
-// 以下は必須チェックは行わず、指定なしはデフォルト動作を行う
-// AssetStatusStoppable : 指定無し時はtrue指定扱い
-// SetLastData          : 指定無し時はfalse指定扱い
+// We will not perform mandatory check for the follwing. When value is not set, set default.
+// AssetStatusStoppable : If not set, proceed as true.
+// SetLastData          : If not set, proceed as false.
 TenkenData.TenkenTable.checkData = function(_data)
 {
 	try
@@ -3324,18 +3286,18 @@ TenkenData.TenkenTable.checkData = function(_data)
 
 		if ( true == err )
 		{
-			errMsg="必須項目が未定義のデータがあります。";
+			errMsg="Mandatory field without data exists";
 		}
 		else
 		{
-			// 指定誤りのチェック
+			// Check if selection is wrong
 			if ( null != _data.ValueType )
 			{
 				switch(_data.ValueType)
 				{
 					case "NUMBER":
-						// 正常指定
-						// DataEntryNameに数値型の名前が指定されているかチェック
+						// Selection is correct.
+						// Check if DataEntryName has name with valid numbers
 						if ( _data.DataEntryName != "F01" &&
 							 _data.DataEntryName != "F02" &&
 							 _data.DataEntryName != "F03" &&
@@ -3345,15 +3307,15 @@ TenkenData.TenkenTable.checkData = function(_data)
 							err=true;
 							errName="DataEntryName";
 							errValue=_data.DataEntryName;
-							errMsg=_data.ValueType + "型のDataEntryNameがF01～F05ではありませんでした。\n";
+							errMsg=_data.ValueType + "F01 to F05 is not specified for the type of DataEntryName\n";
 						}
 						break;
 					case "WEATHER":
 					case "OKNG":
 					case "STRING":
 					case "MARUBATSU":
-						// 正常指定
-						// DataEntryNameに数値型の名前が指定されているかチェック
+						// Selection is correct.
+						// Check if DataEntryName has name with valid numbers
 						if ( _data.DataEntryName != "S01" &&
 							 _data.DataEntryName != "S02" &&
 							 _data.DataEntryName != "S03" &&
@@ -3363,20 +3325,20 @@ TenkenData.TenkenTable.checkData = function(_data)
 							err=true;
 							errName="DataEntryName";
 							errValue=_data.DataEntryName;
-							errMsg=_data.ValueType + "型のDataEntryNameがS01～S05ではありませんでした。\n";
+							errMsg=_data.ValueType + "S01 to S05 is not specified for the type of DataEntryName\n";
 						}
 						break;
 					default:
 						err=true;
 						errName="ValueType";
 						errValue=_data.ValueType;
-						errMsg="指定したタイプは利用できません。";
+						errMsg="Can not use specified type.";
 						break;
 				}
 			}
 		}
 
-		// データに異常がある場合は、エラーを出力し初画面に戻る
+		// If error exists in data, output error and return to initial screen.
 		if ( true == err )
 		{
 			TenkenData.AllGet.abortInvalidData(TenkenConst.TableName.tenkentable, errName, errValue, null, errMsg);
@@ -3388,7 +3350,7 @@ TenkenData.TenkenTable.checkData = function(_data)
 	}
 }
 
-// 取得したデータをTenkenDataの管理用データに加工してコピーします。
+// Process and copy downloaded TenkenData
 TenkenData.TenkenTable.createDataList = function()
 {
 	try {
@@ -3402,14 +3364,13 @@ TenkenData.TenkenTable.createDataList = function()
 			var dataValue=datas[i];
 			if ( null != dataValue )
 			{
-				// Disableに"true"が設定されていた場合には、無効な項目のため、
-				// 点検項目から除外して、次ぎの項目へ。
+				// Goto next item by removing from checklist, as it is invalid item if Disable="true" is set.
 				if ( null != dataValue.Disable && "true" == dataValue.Disable.toLowerCase() )
 				{
 					continue;
 				}
 
-				// 必須項目データのチェック
+				// Check mandatory data
 				TenkenData.TenkenTable.checkData(dataValue);
 
 				TenkenData.TenkenTable.createListTenkenTable(dataValue);
@@ -3423,34 +3384,34 @@ TenkenData.TenkenTable.createDataList = function()
 }
 
 //============================================================================
-// 全受信データの管理
+// Manage entire retrieve data
 //============================================================================
 
-// データ管理クラス(全受信データ管理)
+// Data management class (Entire data retrieval)
 TenkenData.AllGet = function() {};
 
-// シナリオのコールバック保存
+// Save scenario's callbacks
 TenkenData.AllGet.downloadScenarioSuccessFunc=null;
 TenkenData.AllGet.downloadScenarioErrorFunc=null;
 
-// 全データのコールバック保存（シナリオ以外受信時）
+// Save entire data callback (Except for scenario data)
 TenkenData.AllGet.downloadSuccessFunc=null;
 TenkenData.AllGet.downloadErrorFunc=null;
 
-// abort中を判定するフラグ
+// Flag to determine if it's abort state
 TenkenData.AllGet.abortON=false;
 
-// ダウンロード中か確認する
+// Confirm if download is in progress
 TenkenData.AllGet.getPhase = function()
 {
-	// abort中の場合には、ダウンロード中でも完了状態を返す
+	// Retrun status complete even if dowload is in progress if abort is set.
 	if ( true == TenkenData.AllGet.abortON )
 	{
-		// データ未受信または受信完了
+		// Data retrieve complete or not retrieved.
 		return(false);
 	}
 
-	// シナリオと点検結果(tenkenevent)以外を確認する
+	// Confirm other than scenario and check results (tenkenevent)
 	if ( (null != TenkenData.Asset.arAsset &&
 			TenkenData.Asset.arAsset.getBusyStatus() == true) ||
 		 (null != TenkenData.MsgEvent.arMessageEventLast &&
@@ -3465,17 +3426,17 @@ TenkenData.AllGet.getPhase = function()
 			TenkenData.TenkenTable.arTenkenTable.getBusyStatus() == true ) ||
 		 TenkenData.TenkenEvent.isGetPhase() == true )
 	{
-		// データ受信中
+		// Data retrieve in progress
 		return(true);
 	}
 	else
 	{
-		// データ未受信または受信完了
+		// Data retrieve complete or not retrieved
 		return(false);
 	}
 }
 
-// ダウンロード中か確認する。(シナリオデータのみ)
+// Check if download is in progress (Only Scenario data)
 TenkenData.AllGet.getPhaseScenario = function()
 {
 	if (null != TenkenData.Scenario.arScenario && TenkenData.Scenario.arScenario.getBusyStatus() == true )
@@ -3488,70 +3449,70 @@ TenkenData.AllGet.getPhaseScenario = function()
 	}
 }
 
-// 全データ(シナリオと点検結果以外)をダウンロード
+// Download entire data (except for scenario and check results)
 TenkenData.AllGet.download = function(_mode, _downloadSuccess, _downloadError)
 {
 	Tenken.Util.loginfo("GET_ALL_DATA1:START");
 
-	// 全ダウンロード後に呼ばれるコールバックを保存
+	// Save callback methods called after entire download
 	TenkenData.AllGet.downloadSuccessFunc=_downloadSuccess;
 	TenkenData.AllGet.downloadErrorFunc=_downloadError;
 
-	// 強制モード設定
+	// Set force reload mode
 	var mode=( false == _mode ) ? false : true;
 	TenkenData.setSuperReloadMode(mode);
 
-	// 各データをダウンロードする
+	// Download each data
 
-	// シーンデータ
+	// Scene data
 	TenkenData.Scene.getScene();
 
-	// AR重畳表示定義データ。ここではシーンIDとマーカーIDは指定しないでダウンロード。
+	// AR Overlay data. Download without specifying scene ID and marker ID here.
 	TenkenData.SuperimposedGraphic.getSuperimposedGraphic(Tenken.config.ScenarioId, null, null);
 
-	// 設備データ
+	// Asset data
 	TenkenData.Asset.getLastData();
 
-	// 点検項目テーブルデータ
+	// Checklist table data
 	TenkenData.TenkenTable.getData();
 
-	// 申し送りデータ
+	// Message data
 	TenkenData.MsgEvent.getLastData();
 
-	// 作業者データ
+	// Workder data
 	TenkenData.UserData.getData();
 
 }
 
-// 点検結果をダウンロード
+// Download check results
 TenkenData.AllGet.download2 = function()
 {
 	Tenken.Util.loginfo("GET_ALL_DATA2:START");
 
-	// 点検結果データ
+	// Check results
 	TenkenData.TenkenEvent.getLastData();
 }
 
 
-// シナリオをダウンロード
+// Download scenarios
 TenkenData.AllGet.downloadScenario = function(_mode, _downloadSuccess, _downloadError)
 {
 	Tenken.Util.loginfo("GET_ALL_DATA_SCENARIO:START");
 
-	// 全ダウンロード後に呼ばれるコールバックを保存
+	// Save callback called after entire download.
 	TenkenData.AllGet.downloadScenarioSuccessFunc=_downloadSuccess;
 	TenkenData.AllGet.downloadScenarioErrorFunc=_downloadError;
 
-	// 強制モード設定
+	// Set force reload mode.
 	var mode=( false == _mode ) ? false : true;
 	TenkenData.setSuperReloadMode(mode);
 
-	// シナリオデータ
+	// Scenario data
 	TenkenData.Scenario.getScenario();
 
 }
 
-// 各データをローカルストレージに保存(シナリオ以外)
+// Save each data into local storage (except for scenario)
 TenkenData.AllGet.saveStorage = function()
 {
 	TenkenData.Asset.saveStorage();
@@ -3563,7 +3524,7 @@ TenkenData.AllGet.saveStorage = function()
 	TenkenData.TenkenTable.saveStorage();
 }
 
-// 各データをローカルストレージからロード (シナリオ以外)
+// Load each data from local storage (except for scenario)
 TenkenData.AllGet.loadStorage = function()
 {
 	TenkenData.Asset.loadStorage();
@@ -3575,21 +3536,20 @@ TenkenData.AllGet.loadStorage = function()
 	TenkenData.TenkenTable.loadStorage();
 }
 
-// シナリオデータをローカルストレージに保存
+// Save scenario data into local storage
 TenkenData.AllGet.saveStorageScenario = function()
 {
 	TenkenData.Scenario.saveStorage();
 }
 
-// シナリオデータをローカルストレージからロード
+// Load scenario data from local storage
 TenkenData.AllGet.loadStorageScenario = function()
 {
 	TenkenData.Scenario.loadStorage();
 }
 
-// シナリオと点検結果以外全データのダウンロード完了後に呼ばれます。
-// 正常終了の場合には、全データをローカルストレージに保存し、
-// 作業者選択一覧にダウンロードした作業者を表示します。
+// The method will be called after download has completed except for scenario and check results.
+// If success, entire data will be stored in local storage and displays operator who downloaded in the operator list.
 TenkenData.AllGet.afterDownload = function()
 {
 	Tenken.Util.loginfo("GET_ALL_DATA1:END:SUCCESS");
@@ -3597,34 +3557,33 @@ TenkenData.AllGet.afterDownload = function()
 	TenkenData.AllGet.download2();
 }
 
-// 選択されたシナリオに必要のない項目を削除
-// (ScenariodIdが0または選択シナリオID以外を削除)
+// Delete items that is not needed for selected scenario
+// (Delete ScenarioId=0 or none selected scenario)
 TenkenData.AllGet.SkipDisableData = function()
 {
 	try {
 
 		//--------------------------------------------------
-		// 選択されているシナリオで有効な設備(asset)のみの
-		// リストに再作成します。
+		// Re-create list that are valid assets only for
+		// selected scenario.
 		//--------------------------------------------------
 
 		var tmpListAsset=[];
 
-		// 点検項目テーブルで有効な設備IDを抽出
+		// Retrieve valid asset ID inside checklist table
 		var listAssets=new Object();
 
 		var funcRow=function(_table, _group, _row, _poi, _valueEntryName, _value, _assetstatus)
 		{
 			if ( null == _row ) return;
-			// 有効な点検項目で指定されているassetidのみを保存します。
+			// Save selected assetid those are valid within the checklist
 			listAssets[_row.AssetId]=_row.AssetId;
 		}
 
 		TenkenData.TenkenTable.foreachTables(null, null, null, funcRow);
 
-		// 有効な点検項目で指定されているassetidのリストに指定されている
-		// 設備のみで設備リストを再作成します。
-		// 点検項目テーブルで利用されていないassetidを配列リストにします。
+		// Re-create asset list those checklist are only valid from selected assetid list.
+		// Make array list of assetid for items that is not used in checklist table.
 		var found=0;
 		var arrayDeleteAsset=[];
 		for ( var i = 0 ; i < TenkenData.Asset.ListAll.length ; i++ )
@@ -3652,10 +3611,10 @@ TenkenData.AllGet.SkipDisableData = function()
 		}
 
 		//--------------------------------------------------
-		// 選択されているシナリオで有効なマーカーIDのみの
-		// AR重畳表示データに再作成します。
+		// Re-create AR overlay data those are valid from
+		// Marker ID from selected scenario
 		//--------------------------------------------------
-		// 有効なマーカーIDリストを生成
+		// Create valid marker ID list
 		var listMarkerIds=new Object();
 		for ( var aid in listAssets )
 		{
@@ -3664,7 +3623,7 @@ TenkenData.AllGet.SkipDisableData = function()
 			listMarkerIds[mid]=mid;
 		}
 
-		// AR重畳表示データ中から無効マーカーIDのデータを削除する
+		// Delete invalid marker id data from AR overlay data
 		for(var scene in TenkenData.SuperimposedGraphic.objSuperimposedGraphics)
 		{
 			var listScenes=TenkenData.SuperimposedGraphic.objSuperimposedGraphics[scene];
@@ -3684,7 +3643,7 @@ TenkenData.AllGet.SkipDisableData = function()
 	}
 }
 
-// 全データダウンロード後の後処理
+// Post process after entire data download
 TenkenData.AllGet.afterDownload2 = function()
 {
 	Tenken.Util.loginfo("GET_ALL_DATA2:END:SUCCESS");
@@ -3693,11 +3652,10 @@ TenkenData.AllGet.afterDownload2 = function()
 
 	TenkenData.AllGet.saveStorage();
 
-	// 事前ダウンロード
+	// Pre download.
 	TenkenData.AllGet.PreloadData();
 
-	// 全データが完了した場合、作業者選択画面の作業者リストと
-	// (登録されていれば)ダウンロード完了通知用コールバックを呼び出す
+	// Call operator list in operator selection windows and download complete callback methods (if registered) after entire download is complete.
 	var elm = document.getElementById("operatorselect");
 	if ( null != elm )
 	{
@@ -3709,35 +3667,34 @@ TenkenData.AllGet.afterDownload2 = function()
 	}
 }
 
-// ダウンロード失敗時(全データ完了後)に呼ばれます。
-// エラーメッセージを表示して終了します。
+// Called when download failed (after completion of entire data).
+// End by displaying error message.
 TenkenData.AllGet.afterDownloadError = function(_errorMsg)
 {
 	Tenken.Util.logerr("GET_ALL_DATA1:END:ERROR:" + _errorMsg);
 
 	if ( null != TenkenData.AllGet.downloadErrorFunc )
 	{
-		// 一度しか呼び出さないようにするためコールバックをクリアする
+		// Clear callback so it will only be called once.
 		var func=TenkenData.AllGet.downloadErrorFunc;
 		TenkenData.AllGet.downloadErrorFunc=null;
 		func(_errorMsg);
 	}
 }
 
-// データ受信時に利用者定義データに誤りがある場合は、
-// データをクリアし、初画面(index.html)に戻る
+// If error exists on operator data when recieving data, clear the data and return to initial screen (index.html)
 TenkenData.AllGet.abortInvalidData = function(_table, _qattribute, _value, _msghead, _msg)
 {
-	// 既にabort処理中の場合は何もしない
+	// Do nothing while abort in progress.
 	if ( true == TenkenData.AllGet.abortON ) return;
 
 	TenkenData.AllGet.abortON=true;
 
-	// ストレージとARのオフラインストレージデータの削除
+	// Delete storage and AR's offline storage data
 	Tenken.Storage.clear();
 	AR.Data.clearResourceStorage(Tenken.Util.noop, Tenken.Util.noop);
 
-	// メッセージの出力
+	// Output message
 	var str="";
 	if ( null != _msghead )
 	{
@@ -3745,25 +3702,25 @@ TenkenData.AllGet.abortInvalidData = function(_table, _qattribute, _value, _msgh
 	}
 	else
 	{
-		str="データ定義に誤りがありました。\n\n";
+		str="Error in data.\n\n";
 	}
-	if ( _table ) str += "テーブル名=" + _table + "\n";
-	if ( _qattribute ) str += "QAttribute名=" + _qattribute + "\n";
-	if ( _value ) str += "値=" + _value + "\n";
+	if ( _table ) str += "Table name=" + _table + "\n";
+	if ( _qattribute ) str += "QAttribute name=" + _qattribute + "\n";
+	if ( _value ) str += "value=" + _value + "\n";
 	if ( _msg ) str += "\n" + _msg + "\n";
-	str += "\n処理を中止し初画面に戻ります\n";
+	str += "\nAboring process. Returning to initial screen.\n";
 	alert(str);
 
-	// 初画面へ移動
+	// Move to initial screen
 	location.replace(TenkenConst.PageName.top);
 }
 
 
-// 事前ダウンロード
+// Pre download
 TenkenData.AllGet.PreloadData = function()
 {
 
-	// 事前ロードの無効化指定チェック
+	// check if predownload is invalid.
 	var skipPreload=false;
 	var skipPreloadSG=false;
 	var skipPreloadAsset=false;
@@ -3778,18 +3735,17 @@ TenkenData.AllGet.PreloadData = function()
 			{
 				if ( 0 <= asset.description.indexOf("#unpreload#"))		
 				{
-					// 指定あり。選択シナリオの全事前ダウンロードを無効化
+					// Value set. Invalidate pre-download of selected scenario.
 					skipPreload=true;
 				}
 				if ( 0 <= asset.description.indexOf("#unpreloadsg#"))
 				{
-					// 指定あり。重畳表示データの事前ダウンロードを無効化
+					// Value set. Invalidate pre-download of AR overlay data.
 					skipPreloadSG=true;
 				}
 				if ( 0 <= asset.description.indexOf("#unpreloadasset#"))		
 				{
-					// 指定あり。assetテーブルの追加アイコンの 指定ファイル
-					// の事前ダウンロードを無効化
+					// Value set. Invalidate pre-download of files of additional icons in asset table.
 					skipPreloadAsset=true;
 				}
 			}
@@ -3797,12 +3753,12 @@ TenkenData.AllGet.PreloadData = function()
 	}
 	if ( false == Tenken.config.preloadFile || true == skipPreload )
 	{
-		return;  // 事前ダウンロードしない設定のため何もしない
+		return;  // Do nothing as we're skipping predownload.
 	}
 
 	preloadSuperimposedGraphics = [];
 
-	//AR重畳表示定義を事前ダウンロード
+	//Pre download AR overlay data
 	if ( true != skipPreloadSG )
 	{
 		var listSG=TenkenData.SuperimposedGraphic.objSuperimposedGraphics;
@@ -3837,12 +3793,10 @@ TenkenData.AllGet.PreloadData = function()
 		}
 	}
 
-	// assetの追加アイコンにURLが指定されている場合、
-	// 事前ダウンロードを実施します。
-
+	// Pre download if URL is specified for additional icon of assets.
 	if ( false == Tenken.config.preloadAssetFile || true == skipPreloadAsset )
 	{
-		return;  // 事前ダウンロードしない設定のため何もしない
+		return;  // Do nothing as we're skipping pre dowload.
 	}
 
 	if ( !AR.Data.cacheUrlResource ) return;
@@ -3861,8 +3815,8 @@ TenkenData.AllGet.PreloadData = function()
 				var iconInfo=asset.listICON[j];
 				if ( null == iconInfo[2] || "" == iconInfo[2] ) continue;
 
-				// 問い合わせ(?)があるもの、先頭がhttpで無いものは対象外。
-				// http://が先頭にない8文字に満たない場合も対象外。
+				// Remove non http value.
+				// Also remove value that do not start with http:// and minimum of 8 chars.
 				var strURL=iconInfo[2];
 				if (  strURL.length < 8 ) continue; 
 				if (  0 <= strURL.indexOf("?") ) continue;
@@ -3879,22 +3833,22 @@ TenkenData.AllGet.PreloadData = function()
 }
 
 //============================================================================
-// データ送信(点検結果:tenkenevent)
+// Data send (Check result: tenkenevent)
 //============================================================================
 
 
-// 点検結果送信時のコールバックおよびコールバックに渡すシーケンス値
+// Sequence value to hand over to callback upon sending check results
 TenkenData.TenkenEvent.onSuccess = null;
 TenkenData.TenkenEvent.onError = null;
 TenkenData.TenkenEvent.cbValue = null;
 
-// 点検データを作成します。
+// Create check data
 TenkenData.TenkenEvent.createTenkenDataQuad = function(_data)
 {
-	// QUADを作成します。
+	// Create QUAD
 	var quad = new TenkenARvalue.Quad(TenkenConst.TableName.tenkenevent);
 
-	// QUADのタイプネームを設定します。
+	// Set type name of QUAD
 	quad.qtypeName = TenkenConst.TableName.tenkenevent;
 
 	var Id       = ( null != _data.tenken_id ) ? new TenkenARvalue.QValue(quad.qtypeName,  "tenkenid", null, _data.tenken_id, null) : null;
@@ -3924,7 +3878,7 @@ TenkenData.TenkenEvent.createTenkenDataQuad = function(_data)
 	var S04 = ( null != _data.S04 ) ? new TenkenARvalue.QValue(quad.qtypeName,  "S04", _data.S04, null, null) : null;
 	var S05 = ( null != _data.S05 ) ? new TenkenARvalue.QValue(quad.qtypeName,  "S05", _data.S05, null, null) : null;
 
-	// 有効なQValueをQUADに設定します。
+	// Set valid QValue of QUAD.
 	var values =[];
 	if ( null != Id ) values.push(Id);
 	if ( null != Name ) values.push(Name);
@@ -3954,24 +3908,24 @@ TenkenData.TenkenEvent.createTenkenDataQuad = function(_data)
 	if ( null != S05 ) values.push(S05);
 	quad.qvalues=values;
 
-	//文字列に変換します。
+	// Transform to string.
 	var rtndata = JSON.stringify(quad);
 	return rtndata;
 };
 
 
-// アップロードに成功した場合のコールバック関数です。(点検結果データ)
+// Success callback method upon upload (Check result data)
 TenkenData.TenkenEvent.cbPostSuccess = function(_result)
 {
 	if ( null != TenkenData.TenkenEvent.onSuccess ) TenkenData.TenkenEvent.onSuccess(TenkenData.TenkenEvent.cbValue);
 };
 
-// アップロードに失敗した場合のコールバック関数です。(点検結果データ)
+// Error callback method upon upload (Check result data)
 TenkenData.TenkenEvent.cbPostError = function(_result)
 {
 	try
 	{
-		var message = "点検結果データのアップロードに失敗しました。動作モードとネットワーク状況を確認して再度お試しください。";
+		var message = "Failed to upload check results. Please check operation mode and network connectivity.";
 		var detail="";
 
 		if(_result.getStatus() == "AR_HTTP_EXCEPTION"){
@@ -3982,7 +3936,7 @@ TenkenData.TenkenEvent.cbPostError = function(_result)
 
 		Tenken.Util.logerr("POST_TENKENEVENT_RESPONSE:ERROR:" + message + ":" + detail);
 
-		alert("点検結果データのアップロードに失敗しました。\n\n動作モードとネットワーク状況を確認して再度お試しください。\n\nネットワークがオンライン状態の場合には、AR重畳表示アプリケーションを再起動してください。\n\n" + detail);
+		alert("Failed to upload check results.\n\nPlease check operation mode and network connectivity.\n\nPlease restart Tenken application if network is online.\n\n" + detail);
 
 
 	}
@@ -3994,11 +3948,11 @@ TenkenData.TenkenEvent.cbPostError = function(_result)
 	if ( null != TenkenData.TenkenEvent.onError ) TenkenData.TenkenEvent.onError(TenkenData.TenkenEvent.cbValue);
 };
 
-// 点検結果データの送信
-// _markerids : 送信対象のマーカーIDを指定します。配列指定。
-//              nullの場合は、すべて送信
-// _submitall : false:停止状態の設備の点検結果は送信しない。
-//              true またはその他:停止状態の設備の点検結果も送信する。
+// Send check results.
+// _markerids : Specify marker ID to send. Array.
+//              Send everything if null is set.
+// _submitall : false: Do not send check results for asset that is in STOP state.
+//              true or other: Send check results for asset that is even in STOP state.
 TenkenData.TenkenEvent.submitTenkenEvent = function(_markerids, _submitall, _onSuccess, _onError, _value)
 {
 	try
@@ -4008,7 +3962,7 @@ TenkenData.TenkenEvent.submitTenkenEvent = function(_markerids, _submitall, _onS
 		if ( null != _value ) TenkenData.TenkenEvent.cbValue = _value;
 
 		var tenkenlists = [];
-		// 登録時間は、送信日時に設定しなおして送信します。
+		// Change registered DateTime to send DateTime and send data.
 		var nowdatetime=new Date().getTime();
 
 		TenkenData.TenkenTable.foreachTables(
@@ -4021,19 +3975,17 @@ TenkenData.TenkenEvent.submitTenkenEvent = function(_markerids, _submitall, _onS
 
 				if ( false == _submitall && "STOP" == _assetstatus )
 				{
-					// 停止している設備の点検結果は送信しない
+					// Do not send check results for asset in STOP state.
 					return;
 				}
 
-				// 送信対象のマーカーID配列が指定されていれば
-				// 送信対象かチェックし、送信対象でない場合には送信しない。
+				// IF marker id array is specified, check if item are target to send, and if not, skip them.
 				if ( null != _markerids )
 				{
 					var targetid=false;
 					for ( var j = 0 ; j < _markerids.length ; j++ )
 					{
-						// 選択マーカーIDか、マーカーID=0の場合は、
-						// あれば送信対象とする
+						// Mark as send target if marker ID is selected or marker ID is 0.
 						if ( _markerids[j] == _poi2.markerid )
 						{
 							targetid=true;
@@ -4042,8 +3994,7 @@ TenkenData.TenkenEvent.submitTenkenEvent = function(_markerids, _submitall, _onS
 					}
 					if ( true != targetid )
 					{
-						// 送信対象の対象のマーカーIDでないため、
-						// 送信せず次ぎのデータへ
+						// Skip and proceed to next as it is not the target marker id.
 						return;
 					}
 				}
@@ -4080,7 +4031,7 @@ TenkenData.TenkenEvent.submitTenkenEvent = function(_markerids, _submitall, _onS
 					tenken.table_name = _table.TableName;
 					tenken.rowgroups_id = ( _group )  ? _group.RowGroupdId : null;
 					tenken.rowgroups_name = ( _group )  ? _group.RowGroupdName : null;
-					tenken.tenken_id = nowdatetime; // 現在時間をtenkenidとして利用する
+					tenken.tenken_id = nowdatetime; // Use current DateTime as tenkenid.
 					if ( null != _group && null != _group.RowGroupdName )
 					{
 						tenken.tenken_name = _table.TableName + "_" + _group.RowGroupdName;
@@ -4103,7 +4054,7 @@ TenkenData.TenkenEvent.submitTenkenEvent = function(_markerids, _submitall, _onS
 					tenken.operator = operator;
 					tenken.ScenarioId=Tenken.config.ScenarioId;
 				}
-				// 停止中設備の点検項目値F01～F05,S01～S05は設定しない。
+				// Do not set checklist value of F01-F05, and S01-S05 for stopped assets
 				if ( "STOP" != _assetstatus )
 				{
 					/* entryname: F01 F02 F03 F04 F05 S01 S02 S03 S04 S05 */
@@ -4123,10 +4074,10 @@ TenkenData.TenkenEvent.submitTenkenEvent = function(_markerids, _submitall, _onS
 
 		if ( tenkenlists.length <= 0  )
 		{
-			alert("有効な送信用データがありません。");
+			alert("No valid data to send.");
 
-			// １件も登録されてない場合は送信なし。
-			// 成功時コールバックを呼ぶ
+			// Do not send if there is nothing registered.
+			// Call success callback method.
 			if ( null != _onSuccess )
 			{
 				_onSuccess(_value);
@@ -4137,7 +4088,7 @@ TenkenData.TenkenEvent.submitTenkenEvent = function(_markerids, _submitall, _onS
 			}
 		}
 
-		// 送信用データを生成し格納する
+		// Create send data and store 
 		for ( var j = 0 ; j < tenkenlists.length ; j++ )
 		{
 			TenkenData.TenkenEvent.arTenkenEventCurrent.addPostData(
@@ -4149,30 +4100,30 @@ TenkenData.TenkenEvent.submitTenkenEvent = function(_markerids, _submitall, _onS
 			TenkenData.TenkenEvent.cbPostError);
 	}
 	catch(e) {
-		alert("点検結果データのアップロード中にエラーが発生しました。\n" + e);
+		alert("Error occured while uploading check results.\n" + e);
 		return false;
 	}
 }
 
 //============================================================================
-// データ送信(申し送り:messageevent)
+// Data send (Messages: messageevent)
 //============================================================================
 
-// 申し送り送信時のコールバックおよびコールバックに渡すシーケンス値
+// Sequence value to hand over to callback upon sending check results
 TenkenData.MsgEvent.onPostSuccess = null;
 TenkenData.MsgEvent.onPostError = null;
 TenkenData.MsgEvent.cbPostValue = null;
 
-// 登録用の利用者定義データを作成します。
+// Create operator data to register.
 TenkenData.MsgEvent.CreateCommentDataQuad = function(_data)
 {
-	// QUADを作成します。
+	// Create QUAD
 	var quad = new TenkenARvalue.Quad(TenkenConst.TableName.messageevent);
 
-	// QUADのタイプネームを設定します。
+	// Set type name of QUAD
 	quad.qtypeName = TenkenConst.TableName.messageevent;
 
-	// QUADの各属性の値を作成します。
+	// Create attributes of QUAD
 
 	var Id = ( null != _data.msgid ) ? new TenkenARvalue.QValue(quad.qtypeName,  "msgid", null, _data.msgid, null) : null;
 	var Name = ( null != _data.msgname ) ? new TenkenARvalue.QValue(quad.qtypeName,  "msgname", _data.msgname, null, null) : null;
@@ -4196,7 +4147,7 @@ TenkenData.MsgEvent.CreateCommentDataQuad = function(_data)
 	var Enable = ( null != _data.Enable ) ? new TenkenARvalue.QValue(quad.qtypeName,  "Enable", _data.Enable, null, null) : null;
 	var Answer = ( null != _data.Answer ) ? new TenkenARvalue.QValue(quad.qtypeName,  "Answer", _data.Answer, null, null) : null;
 
-	// 有効なQValueをQUADに設定します。
+	// Set valid QValue to QUAD
 	var values =[];
 	if ( null != Id ) values.push(Id);
 	if ( null != Name ) values.push(Name);
@@ -4221,22 +4172,22 @@ TenkenData.MsgEvent.CreateCommentDataQuad = function(_data)
 	if ( null != Answer ) values.push(Answer);
 	quad.qvalues=values;
 
-	//文字列に変換します。
+	// Transform into string.
 	var rtndata = JSON.stringify(quad);
 	return rtndata;
 };
 
-// アップロードに成功した場合のコールバック関数です。(申し送りデータ)
+// Success callback handler upon upload (Messages)
 TenkenData.MsgEvent.cbPostSuccess = function(_result)
 {
 	if ( null != TenkenData.MsgEvent.onPostSuccess ) TenkenData.MsgEvent.onPostSuccess(TenkenData.MsgEvent.cbPostValue);
 };
 
-// アップロードに失敗した場合のコールバック関数です。(申し送りデータ)
+// Error callback handler upon upload (Messages)
 TenkenData.MsgEvent.cbPostError = function(_result)
 {
 	try {
-		var message = "申し送りデータのアップロードに失敗しました。動作モードとネットワーク状況を確認して再度お試しください。";
+		var message = "Failed to upload messages. Please check operation mode and network connectivity.";
 		var detail="";
 		if(_result.getStatus() == "AR_HTTP_EXCEPTION"){
 			detail = _result.getValue().status + " : " + _result.getValue().statusText + "\n" + _result.getValue().responseText;
@@ -4246,7 +4197,7 @@ TenkenData.MsgEvent.cbPostError = function(_result)
 
 		Tenken.Util.logerr(message, detail);
 
-		alert("申し送りデータのアップロードに失敗しました。\n\n動作モードとネットワーク状況を確認して再度お試しください。\n\nネットワークがオンライン状態の場合には、AR重畳表示アプリケーションを再起動してください。\n\n" + detail);
+		alert("Failed to upload messages.\n\nPlease check operation mode and network connectivity.\n\nPlease restart Tenken application if network is online.\n\n" + detail);
 
 		Tenken.Util.logerr("POST_MSGEVENT_RESPONSE:ERROR:" + message + ":" + detail);
 	}
@@ -4257,7 +4208,7 @@ TenkenData.MsgEvent.cbPostError = function(_result)
 	if ( null != TenkenData.MsgEvent.onPostError ) TenkenData.MsgEvent.onPostError(TenkenData.MsgEvent.cbPostValue);
 };
 
-// 申し送りデータの送信
+// Send Messages
 TenkenData.MsgEvent.submitMsgEvent = function(_markerids, _onSuccess, _onError, _value)
 {
 	try
@@ -4266,14 +4217,14 @@ TenkenData.MsgEvent.submitMsgEvent = function(_markerids, _onSuccess, _onError, 
 		if ( null != _onError ) TenkenData.MsgEvent.onPostError = _onError;
 		if ( null != _value ) TenkenData.MsgEvent.cbPostValue = _value;
 
-		// 登録時間は、送信日時に設定しなおして送信します。
+		// Change registered DateTime to send DateTime and send data.
 		var nowdatetime=new Date().getTime();
 
-		// 申し送り（新規登録)
-		// １件も登録されてない場合は送信なし。
+		// Messages (New registration)
+		// Do not send if nothing is registered.
 		if ( TenkenData.MsgEvent.Current.length <= 0 )
 		{
-			// 成功時コールバックを呼ぶ
+			// Call success callback method.
 			if ( null != _onSuccess )
 			{
 				_onSuccess(_value);
@@ -4288,8 +4239,7 @@ TenkenData.MsgEvent.submitMsgEvent = function(_markerids, _onSuccess, _onError, 
 		{
 			var msgevent=TenkenData.MsgEvent.Current[i];
 
-			// 送信対象のマーカーID配列が指定されていれば
-			// 送信対象かチェックし、送信対象でない場合には送信しない。
+			// IF marker id array is specified, check if item are target to send, and if not, skip them.
 			if ( null != _markerids )
 			{
 				var targetid=false;
@@ -4303,13 +4253,12 @@ TenkenData.MsgEvent.submitMsgEvent = function(_markerids, _onSuccess, _onError, 
 				}
 				if ( true != targetid )
 				{
-					// 送信対象の対象のマーカーIDでないため、
-					// 送信せず次ぎのデータへ
+					// Skip and proceed to next as it is not the target marker id.
 					continue;
 				}
 			}
 
-			// 登録時間は、送信日時に設定しなおして送信します。
+			// Change registered DateTime to send DateTime and send data.
 			msgevent.registrationtime =nowdatetime;
 			msgevent.regDatetimeStr = new Tenken.DatetimeValue(nowdatetime).toStringFullTime();
 
@@ -4326,33 +4275,33 @@ TenkenData.MsgEvent.submitMsgEvent = function(_markerids, _onSuccess, _onError, 
 
 	}
 	catch(e) {
-		alert("申し送りデータのアップロード中にエラーが発生しました。\n" + e);
+		alert("Error occured uploading Messages.\n" + e);
 		return false;
 	}
 }
 
 //============================================================================
-// データ送信(完了報告:messageevent)
+// Data send (Completion report:messageevent)
 //============================================================================
 
-// 完了報告送信時のコールバックおよびコールバックに渡すシーケンス値
+// Sequence value to hand over to callback upon sending completion report
 TenkenData.MsgEvent.arCompleteMessageEvent=null;
 TenkenData.MsgEvent.onCompletePostSuccess = null;
 TenkenData.MsgEvent.onCompletePostError = null;
 TenkenData.MsgEvent.cbCompletePostValue = null;
 
-// アップロードに成功した場合のコールバック関数です。(完了報告)
+// Success callback method upon upload (Completion result)
 TenkenData.MsgEvent.completeMsgEventSuccess = function(_result)
 {
 	if ( null != TenkenData.MsgEvent.onCompletePostSuccess ) TenkenData.MsgEvent.onCompletePostSuccess(TenkenData.MsgEvent.cbCompletePostValue);
 };
 
-// アップロードに失敗した場合のコールバック関数です。(完了報告)
+// Error callback method upon upload (Completion result)
 TenkenData.MsgEvent.completeMsgEventError = function(_result)
 {
 	try
 	{
-		var message = "申し送り(完了報告)データのアップロードに失敗しました。\n\n動作モードとネットワーク状況を確認して再度お試しください。\n\nネットワークがオンライン状態の場合には、AR重畳表示アプリケーションを再起動してください。";
+		var message = "Failed to updalod Messages (Completion report)\n\nPlease check operation mode and network connectivity.\n\nPlease restart Tenken application if network is online.";
 		var detail="";
 
 		if(_result.getStatus() == "AR_HTTP_EXCEPTION"){
@@ -4374,7 +4323,7 @@ TenkenData.MsgEvent.completeMsgEventError = function(_result)
 	if ( null != TenkenData.MsgEvent.onCompletePostError ) TenkenData.MsgEvent.onCompletePostError(TenkenData.MsgEvent.cbCompletePostValue);
 };
 
-// 申し送りの完了報告データを送信します。(既存申し送りデータの更新)
+// Send completion report of messages (update exsting messages)
 TenkenData.MsgEvent.completeMsg = function(_onSuccess, _onError, _value)
 {
 	if ( null != _onSuccess ) TenkenData.MsgEvent.onCompletePostSuccess = _onSuccess;
@@ -4394,7 +4343,7 @@ TenkenData.MsgEvent.completeMsg = function(_onSuccess, _onError, _value)
 			TenkenData.MsgEvent.arCompleteMessageEvent.addPostData(
 				TenkenData.MsgEvent.CreateCommentDataQuad(msgevent));
 
-			// 削除リストに元の申し送りのversionとQentityIdを追加する
+			// Add original version and QentityId to delete list.
 			var deleteMsg=new Object();
 			deleteMsg.version=msgevent.version;
 			deleteMsg.qentityId=msgevent.qentityId;
@@ -4405,7 +4354,7 @@ TenkenData.MsgEvent.completeMsg = function(_onSuccess, _onError, _value)
 
 	if ( 0 == TenkenData.MsgEvent.deleteMsgEventDatas.length )
 	{
-		// 完了報告が０件のため、正常終了コールバックを呼び終了する
+		// End by calling success callback method as there is no completion report.
 		if ( null != _onSuccess ) _onSuccess(_value);
 		return;
 	}
@@ -4417,28 +4366,27 @@ TenkenData.MsgEvent.completeMsg = function(_onSuccess, _onError, _value)
 }
 
 //============================================================================
-// データ削除(完了報告完了分の旧データ:messageevent)
+// Data delete (Original data for completion report:messageevent)
 //============================================================================
 
-// 完了報告削除時のコールバックおよびコールバックに渡すシーケンス値
+// Sequence value to hand over to callback upon deleting completion report
 TenkenData.MsgEvent.arDeleteteMessageEvent=null;
 TenkenData.MsgEvent.onDeleteSuccess = null;
 TenkenData.MsgEvent.onDeleteError = null;
 TenkenData.MsgEvent.cbDeleteValue = null;
 
-// 完了報告リストを削除するためのリスト
+// List to delete completion report
 TenkenData.MsgEvent.deleteMsgEventDatas = [];
 
-// 完了報告の登録が完了した申し送りデータの削除に成功した場合の
-// コールバック関数です。
+// Success callback method when message deletion of completion report registration has ended
 TenkenData.MsgEvent.deleteMsgEventSuccess = function(_result)
 {
 	try
 	{
-		// 送信データをクリア
+		// Clear send data.
 		TenkenData.MsgEvent.deleteMsgEventDatas.length=0;
 
-		// 完了報告が設定されてる申し送りデータを削除
+		// Delete messages where completion report is set.
 		TenkenData.MsgEvent.deleteMsgEventDisable();
 
 		if ( null != TenkenData.MsgEvent.onDeleteSuccess ) TenkenData.MsgEvent.onDeleteSuccess(TenkenData.MsgEvent.cbDeleteValue);
@@ -4449,13 +4397,12 @@ TenkenData.MsgEvent.deleteMsgEventSuccess = function(_result)
 	}
 };
 
-// 完了報告の登録が完了した申し送りデータの削除に失敗した場合の
-// コールバック関数です。
+// Error callback method when message deletion of completion report registration has ended
 TenkenData.MsgEvent.deleteMsgEventError = function(_result)
 {
 	try
 	{
-		var message = "申し送り(完了報告更新)データのアップロードに失敗しました。\n\n動作モードとネットワーク状況を確認して再度お試しください。\n\nネットワークがオンライン状態の場合には、AR重畳表示アプリケーションを再起動してください。";
+		var message = "Failed to uplaod messages (modify completion report)\n\nPlease check operation mode and network connectivity.\n\nPlease restart Tenken application if network is online.";
 		var detail="";
 
 		var ErrorStatus=0;
@@ -4468,14 +4415,15 @@ TenkenData.MsgEvent.deleteMsgEventError = function(_result)
 
 		Tenken.Util.logerr(message, detail);
 
-		// 送信データをクリア
+		// Clear send data.
 		TenkenData.MsgEvent.deleteMsgEventDatas.length=0;
 
-		// deleteが404 Not Foundになる場合があるため、
-		// 404で終了時は正常時と同じ処理を行う。
+		// It sometimes return with 404 Not Found upon delete.
+		// When 404 is returned, process the same as success.
+
 		if ( 404 == ErrorStatus )
 		{
-			// 正常アップロードコールバックを呼ぶ
+			// Call upload success callback method
 			if ( null != TenkenData.MsgEvent.onDeleteSuccess ) TenkenData.MsgEvent.onDeleteSuccess(TenkenData.MsgEvent.cbDeleteValue);
 			return;
 		}
@@ -4493,7 +4441,7 @@ TenkenData.MsgEvent.deleteMsgEventError = function(_result)
 	if ( null != TenkenData.MsgEvent.onDeleteError ) TenkenData.MsgEvent.onDeleteError(TenkenData.MsgEvent.cbDeleteValue);
 };
 
-// 完了報告した申し送りデータの元のデータの削除
+// Delete original message that has completed report.
 TenkenData.MsgEvent.deleteMsgEvent = function(_onSuccess, _onError, _value)
 {
 	try {
@@ -4501,11 +4449,11 @@ TenkenData.MsgEvent.deleteMsgEvent = function(_onSuccess, _onError, _value)
 		if ( null != _onError ) TenkenData.MsgEvent.onDeleteError = _onError;
 		if ( null != _value ) TenkenData.MsgEvent.cbDeleteValue = _value;
 
-		// 完了報告後の削除データがあるかチェック
+		// Check if delete data exists after completion report.
 		var lenDeleteMsg=TenkenData.MsgEvent.deleteMsgEventDatas.length;
 		if ( lenDeleteMsg <= 0 )
 		{
-			// データが無いため、正常終了コールバックを呼ぶ
+			// Data not present. Call success callback method.
 			if ( null != _onSuccess ) _onSuccess(_value);
 			 return;
 		}

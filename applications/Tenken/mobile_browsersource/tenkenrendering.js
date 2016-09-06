@@ -1,31 +1,31 @@
 /**
- * @overview 点検業務向けJavaScript API群(ARレンダリング)です。
+ * @overview JavaScript API (AR rendering) for Tenken Application
  * @copyright Copyright 2014 FUJITSU LIMITED
  */
 
 /**
- * AR.Rendererを補足するライブラリ空間です。
+ * Namespace to supplement AR.Renderer
  */
 Tenken.ARRendering = new function() {
-	// 設備名と申し送り表示用の標準ポリゴン(四角形)のサイズ(Scale)。
-	// 利用端末の画面解像度に応じてサイズは変更。初期値は各0.5。
+	// Standard polygon (Square) and size (Scale) to display assets and messages.
+	// Size changes per devices screen resolution. Default value is 0.5.
 	var sizeX = 0.5;
 	var sizeY = 0.5;
 	var sizeZ = 0.5;
 
 	/**
-	 * AR.Renderer.AbstractElementの属性を設定します。
-	 * 以下のパラメータ以外は、AR.Renderer.AbstractElementを参照してください。
-	 * @param {AR.Renderer.AbstractElement} _elm 設定対象となるAR.Renderer.AbstractElement
+	 * Set attributes for AR.Renderer.AbstractElement.
+	 * Refer to AR.Renderer.AbstractElement api document for parameters
+	 * @param {AR.Renderer.AbstractElement} _elm Target AR.Renderer.AbstractElement
 	 */
 	function setAbstractElementProps(_elm, _id) {
 		_elm.setId(_id);
 	}
 
 	/**
-	 * AR.Renderer.AbstractNamedElementの属性を設定します。
-	 * 以下のパラメータ以外は、AR.Renderer.AbstractNamedElementを参照してください。
-	 * @param {AR.Renderer.AbstractNamedElement} _elm 設定対象となるAR.Renderer.AbstractNamedElement
+	 * Set attributes for AR.Renderer.AbstractNameElement.
+	 * Refer to AR.Renderer.AbstractNameElement api document for parameters
+	 * @param {AR.Renderer.AbstractNamedElement} _elm Target AR.Renderer.AbstractNamedElement
 	 */
 	function setAbstractNamedElementProps(_elm, _id, _name) {
 		setAbstractElementProps(_elm, _id);
@@ -33,26 +33,26 @@ Tenken.ARRendering = new function() {
 	}
 
 	/**
-	 * AR.Renderer.AbstractCoordinateSystemの属性を設定します。
-	 * 以下のパラメータ以外は、AR.Renderer.AbstractCoordinateSystemを参照してください。
-	 * @param {AR.Renderer.AbstractCoordinateSystem} _elm 設定対象となるAR.Renderer.AbstractCoordinateSystem
+	 * Set attributes for AR.Renderer.AbstractCoordinateSystem.
+	 * Refer to AR.Renderer.AbstractCoordinateSystem api document for parameters
+	 * @param {AR.Renderer.AbstractCoordinateSystem} _elm Target AR.Renderer.AbstractCoordinateSystem
 	 */
 	function setAbstractCoordinateSystemProps(_elm, _id, _name, _disabled, _detectAction) {
 		setAbstractNamedElementProps(_elm, _id, _name, _disabled);
 	}
 
 	/**
-	 * AR.Renderer.AbstractMarkerCoordinateSystemの属性を設定します。
-	 * 以下のパラメータ以外は、AR.Renderer.AbstractMarkerCoordinateSystemを参照してください。
-	 * @param {AR.Renderer.AbstractMarkerCoordinateSystem} _elm 設定対象となるAR.Renderer.AbstractMarkerCoordinateSystem
+	 * Set attributes for AR.Renderer.AbstractMarkerCoordinateSystem.
+	 * Refer to AR.Renderer.AbstractMarkerCoordinateSystem api document for parameters
+	 * @param {AR.Renderer.AbstractMarkerCoordinateSystem} _elm Target AR.Renderer.AbstractMarkerCoordinateSystem
 	 */
 	function setAbstractMarkerCoordinateSystemProps(_elm, _id, _name, _disabled, _detectAction) {
 		setAbstractCoordinateSystemProps(_elm, _id, _name, _disabled, _detectAction);
 	}
 
 	/**
-	 * AR.Renderer.Pointを生成して返します。
-	 * パラメータについては、AR.Renderer.Pointを参照してください。
+	 * Create and return AR.Render.Point object
+ 	 * Refer to AR.Renderer.Point api document for parameters
 	 */
 	function createPoint(_id, _x, _y, _z) {
 		var elm = new AR.Renderer.Point();
@@ -64,8 +64,8 @@ Tenken.ARRendering = new function() {
 	}
 
 	/**
-	 * AR.Renderer.Sizeを生成して返します。
-	 * パラメータについては、AR.Renderer.Sizeを参照してください。
+	 * Create and return AR.Render.Size object
+ 	 * Refer to AR.Renderer.Size api document for parameters
 	 */
 	function createSize(_id, _x, _y, _z) {
 		var elm = new AR.Renderer.Size();
@@ -77,8 +77,8 @@ Tenken.ARRendering = new function() {
 	}
 
 	/**
-	 * AR.Renderer.URLActionを生成して返します。
-	 * パラメータについては、AR.Renderer.URLActionを参照してください。
+	 * Create and return AR.Render.URLAction object
+ 	 * Refer to AR.Renderer.URLAction api document for parameters
 	 */
 	function createURLAction(_id, _url) {
 		var elm = new AR.Renderer.URLAction();
@@ -88,8 +88,8 @@ Tenken.ARRendering = new function() {
 	}
 
 	/**
-	 * AR.Renderer.DirectorActionを生成して返します。
-	 * パラメータについては、AR.Renderer.DirectorActionを参照してください。
+	 * Create and return AR.Render.DirectorAction object
+ 	 * Refer to AR.Renderer.DirectorAction api document for parameters
 	 */
 
 	function createDirectorAction(_id, _expression) {
@@ -100,8 +100,8 @@ Tenken.ARRendering = new function() {
 	}
 
 	/**
-	 * AR.Renderer.FJARMarkerCoordinateSystemを生成して返します。
-	 * パラメータについては、AR.Renderer.FJARMarkerCoordinateSystemを参照してください。
+	 * Create and return AR.Render.FJARMarkerCoordinateSystem object
+ 	 * Refer to AR.Renderer.FJARMarkerCoordinateSystem api document for parameters
 	 */
 	function createFJARMarkerCoordinateSystem(_id, _name, _disabled, _detectAction, _value) {
 		var elm = new AR.Renderer.FJARMarkerCoordinateSystem();
@@ -111,8 +111,8 @@ Tenken.ARRendering = new function() {
 	}
 
 	/**
-	 * AR.Renderer.SuperimposedGraphicを生成して返します。
-	 * パラメータについては、AR.Renderer.SuperimposedGraphicを参照してください。
+	 * Create and return AR.Render.SuperimposedGraphic object
+ 	 * Refer to AR.Renderer.SuperimposedGraphic api document for parameters
 	 */
 	function createSuperimposedGraphic(_id, _name, _disabled, _translation, _rotation, _projectionType, _clickAction, _graphic, _line) {
 		var elm = new AR.Renderer.SuperimposedGraphic();
@@ -133,8 +133,8 @@ Tenken.ARRendering = new function() {
 	}
 
 	/**
-	 * AR.Renderer.Imageを生成して返します。
-	 * パラメータについては、AR.Renderer.Imageを参照してください。
+	 * Create and return AR.Render.Image object
+ 	 * Refer to AR.Renderer.Image api document for parameters
 	 */
 	function createImage(_id, _url, _size) {
 		var elm = new AR.Renderer.ImageTexture();
@@ -143,8 +143,8 @@ Tenken.ARRendering = new function() {
 	}
 
 	/**
-	 * AR.Renderer.Textを生成して返します。
-	 * パラメータについては、AR.Renderer.Textを参照してください。
+	 * Create and return AR.Render.Text object
+ 	 * Refer to AR.Renderer.Text api document for parameters
 	 */
 	function createText(_id, _value, _fontSize, _color, _backgroundcolor, _wordWrap, _size) {
 		var elm = new AR.Renderer.TextTexture();
@@ -154,10 +154,10 @@ Tenken.ARRendering = new function() {
 		elm.setColor(_color);
 		elm.setBackgroundColor(_backgroundcolor);
 		elm.setWordWrap(_wordWrap);
-//      文字サイズはデフォルト
+//      Default charactor size
 //		if ( true == _wordWrap && null != _size)
 //		{
-//			/* ワードラップが有効の場合、サイズの設定を行う */
+//			/* If word wrap is enabled, set size */
 //			elm.setSize(_size);
 //		}
 		return elm;
@@ -180,8 +180,8 @@ Tenken.ARRendering = new function() {
 	function truncateString(_str, _len) {
 		var str = "";
 		if(null != _str) {
-			str = _str.substr(0, _len); // 指定サイズで切ってみて…
-			if(_len < _str.length) str = str.substr(0, _len -1) + "…"; // 元の文字列より短くなっていたら、最後の文字を「…」に置き換える
+			str = _str.substr(0, _len); // Truncate by specified length...
+			if(_len < _str.length) str = str.substr(0, _len -1) + "..."; // If shorter than original lengeth, append "..."
 		}
 		return str;
 	}
@@ -258,43 +258,43 @@ Tenken.ARRendering = new function() {
             )
 	};
 
-	/** ARコンテンツ削除のonErrorに設定するコールバック関数です。 */
+	/** Callback method for onError when deleting AR contents */
 	contentsRemoveError = function(_result){
 		var message = "ARコンテンツの削除に失敗しました。\n";
 		var detail = _result.getStatus() + "\n"+ _result.getValue();
 		Tenken.Util.logerr(message, detail);
 	};
 
-	/** AR重畳表示定義データ追加のonErrorに設定するコールバック関数です。 */
+	/** Callback method for onError when appending AR overlay data */
 	contenstPutError = function(_result){
 		var message = "AR重畳表示定義データの追加に失敗しました。\n";
 		var detail = _result.getStatus() + "\n"+ _result.getValue();
 		Tenken.Util.logerr(message, detail);
 	};
 
-	/** 指定したシーンID、マーカーIDのAR重畳表示定義データをネイティブの描画レイヤに設定します。 */
+	/** Set scene ID and AR overlay data of selected marker ID to native device's view layer */
 	this.createSuperimposedGraphics = function(_superimposedgraphics, _sceneId, _markerId){
-		if(_superimposedgraphics[_sceneId] != null){ // 指定したシーンIDのAR重畳表示定義データがある場合
-			if(_markerId == null){ // マーカーIDの指定がない場合、シーン全てのAR重畳表示定義データを設定します。
+		if(_superimposedgraphics[_sceneId] != null){ // If AR content data exists for selected scene ID
+			if(_markerId == null){ // Set every AR overlay data if marker ID is not specified.
 				for(marker in _superimposedgraphics[_sceneId]){
-					//ARマーカーの座標系を作成してマーカーIDを指定
+					// Set Marker ID after creating coordinate system of AR Marker
 					var coordinateSystem = new AR.Renderer.FJARMarkerCoordinateSystem();
 					coordinateSystem.setValue(parseInt(marker));
 					try{
-						//対象マーカーIDのARコンテンツを削除
-						//ネイティブAR表示層にAR重畳表示定義データを設定します。
+						// Delete AR contents of target Marker ID.
+						// Set AR overlay data to native device's AR rendering layer
 						AR.Renderer.put(coordinateSystem, _superimposedgraphics[_sceneId][parseInt(marker)], Tenken.Util.noop, contenstPutError);
 					} catch (e){
 						Tenken.Util.logerr(e);
 					}
 				}
-			} else if(_superimposedgraphics[_sceneId][_markerId] != null) { //指定したマーカーIDのAR重畳表示定義データがある場合
-				//ARマーカーの座標系を作成してマーカーIDを指定
+			} else if(_superimposedgraphics[_sceneId][_markerId] != null) { // If AR overlay data exists for selected marker ID
+				// Set Marker ID after creating coordinate system of AR Marker
 				var coordinateSystem = new AR.Renderer.FJARMarkerCoordinateSystem();
 				coordinateSystem.setValue(_markerId);
 				try{
-					//対象マーカーIDのARコンテンツを削除
-					//ネイティブAR表示層にAR重畳表示定義データを設定します。
+					// Delete AR contents of target Marker ID.
+					// Set AR overlay data to native device's AR rendering layer
 					AR.Renderer.put(coordinateSystem, _superimposedgraphics[_sceneId][_markerId], Tenken.Util.noop, contenstPutError);
 				} catch (e){
 					Tenken.Util.logerr(e);
@@ -304,26 +304,26 @@ Tenken.ARRendering = new function() {
 	};
 
   /**
-   * 指定されたシーンID、マーカーIDのAR重畳定義データ、設備名および
-   * 申し送りをAR表示層に追加します。
-   * @param {Object} _superimposedgraphics AR重畳定義データ
-   * @param {Number} _sceneId AR重畳定義データを登録するシーンID
-   * @param {Number} _markerId AR重畳定義データを登録するマーカーID
-   *                           nullの場合は全マーカーIDを登録。
-   * @param {Array} _assetlist 設備データ配列
-   *                           null指定または配列が0個の場合は登録しません。
-   * @param {Array} _msglists  申し送りデータ配列
-   *                           null指定または配列が0個の場合は登録しません。
-   * @param {function} _funcTapActionAsset 設備名タップ時起動Function
-   * @param {function} _funcTapActionMsg   申し送りップ時起動Function
+   * Append Scene ID, AR overlay data of the marker ID, Asset name, and 
+   * Messages to AR rendering layer.
+   * @param {Object} _superimposedgraphics AR overlay data.
+   * @param {Number} _sceneId Scene ID to register AR overlay data.
+   * @param {Number} _markerId Marker ID to register AR overlay data.
+   *                           Register entire marker ID if null is specified.
+   * @param {Array} _assetlist Array to hold asset data.
+   *                           Do not register any if null or array size is 0.
+   * @param {Array} _msglists  Array to hold messages.
+   *                           Do not register any if null or array size is 0.
+   * @param {function} _funcTapActionAsset Triggered function when asset name is tapped.
+   * @param {function} _funcTapActionMsg   Triggered function when message is tapped.
    * @return なし
    */
 	this.createSuperimposedGraphicsAssetAndMsg = function(_superimposedgraphics, _sceneId, _markerId, _assetlist, _msglists, _funcTapActionAsset, _funcTapActionMsg)
 	{
 	try
 	{
-		// 画面解像度から申し送り、設備名の重畳表示のサイズを求める。
-		// ただし、0.2～1.0の範囲に収める。
+		// Get size of Message and Asset Name to overlay from screen resolution.
+		// The range must be in 0.2 to 1.0
 		var sX = window.screen.width;
 		var sY = window.screen.height;
 		sizeX = sX / 5120;
@@ -332,22 +332,22 @@ Tenken.ARRendering = new function() {
 		if ( sizeY < 0.2 || sizeY > 1.0 ) sizeY = 0.5;
 		sizeZ = sizeX;
 
-		var coordsSyss = []; // 入れ物を用意するだけ。Scene#setCoordinateSystems()等は、graphic生成処理が成功してから実施する。そうでないと、空のcoordinateSystemができてしまうだめ
+		var coordsSyss = []; // Prepare variable to hold data. Scene#setCoordinateSystems() must be called after graphic content is created. If not empty coordinateSystem will be created.
 		var graphicsS = [];
 
-		// シナリオ･シーンの重畳定義データ
+		// Overlay data of scenario and scene
 		if ( null != _superimposedgraphics )
 		{
-			if(_superimposedgraphics[_sceneId] != null){ // 指定したシーンIDのAR重畳表示定義データがある場合
-				if(_markerId == null){ // マーカーIDの指定がない場合、シーン全てのAR重畳表示定義データを設定します。
+			if(_superimposedgraphics[_sceneId] != null){ // If AR overlay data exists for selected scene ID
+				if(_markerId == null){ // Set every AR overlay data if marker ID is not specified.
 					for(marker in _superimposedgraphics[_sceneId]){
-						//ARマーカーの座標系を作成してマーカーIDを指定
+						// Set Marker ID after creating coordinate system of AR Marker
 						var coordinateSystem = new AR.Renderer.FJARMarkerCoordinateSystem();
 						coordinateSystem.setValue(parseInt(marker));
 						graphicsS.push({markerid:parseInt(marker), graphics:_superimposedgraphics[_sceneId][parseInt(marker)]});
 					}
-				} else if(_superimposedgraphics[_sceneId][_markerId] != null) { //指定したマーカーIDのAR重畳表示定義データがある場合
-					//ARマーカーの座標系を作成してマーカーIDを指定
+				} else if(_superimposedgraphics[_sceneId][_markerId] != null) { // If AR overlay data exists for selected marker ID
+					// Set Marker ID after creating coordinate system of AR Marker
 					var coordinateSystem = new AR.Renderer.FJARMarkerCoordinateSystem();
 					coordinateSystem.setValue(_markerId);
 					graphicsS.push({markerid:_markerId, graphics:_superimposedgraphics[_sceneId][_markerId]});
@@ -356,13 +356,13 @@ Tenken.ARRendering = new function() {
 			}
 		}
 
-		// 設備
+		// Assets
 		if ( null != _assetlist )
 		{
 			for(var j = (_assetlist.length - 1); j >= 0; j--)
 			{
 				var asset = _assetlist[j];
-				if( null == asset.markerid || 1 > asset.markerid) continue; // markeridが無効なものは表示しない
+				if( null == asset.markerid || 1 > asset.markerid) continue; // Do not show for invalid markerid
 
 				var tmpgraphics = [];
 				var found = 0;
@@ -381,12 +381,12 @@ Tenken.ARRendering = new function() {
 				}
 				else
 				{
-					var graphics = []; // ここも、入れ物だけ用意
+					var graphics = []; // This also. Placeholder.
 					graphicsS.push({markerid:asset.markerid, graphics:graphics});
 				}
 				var funcAsset = _funcTapActionAsset + "(" + asset.markerid + ")";
 
-				// 設備の名前のgraphic
+				// graphic for asset name
 				graphics.push(
 					createEZSuperimposedGraphic(
 						"asset"/*_name*/,
@@ -401,15 +401,15 @@ Tenken.ARRendering = new function() {
 			}
 		}
 
-		// 申し送り
+		// Messages
 		if ( null != _msglists )
 		{
-			// 新しいものが最上位で描画されるよう、古いもの順に書いていく
+			// Write from oldest so the newest is rendered on top.
 			for(var i = (_msglists.length - 1); i >= 0; i--)
 			{
 				var msgs = _msglists[i];
 				if(null == msgs) continue;
-				// 新しいものが最上位で描画されるよう、古いもの順に書いていく
+				// Write from oldest so the newest is rendered on top.
 				for(var j = (msgs.length - 1); j >= 0; j--)
 				{
 					var msg = msgs[j];
@@ -431,7 +431,7 @@ Tenken.ARRendering = new function() {
 					}
 					else
 					{
-						var graphics = []; // ここも、入れ物だけ用意
+						var graphics = []; // This also. Placeholder.
 						graphicsS.push({markerid:msg.markerid, graphics:graphics});
 					}
 
@@ -459,7 +459,7 @@ Tenken.ARRendering = new function() {
 								createPoint(null, msg.x, msg.y, msg.z)/*_translation*/,
 								createDirectorAction(/*_clickAction*/
 									null/*_id*/,
-									funcMsg/*_expression*/), //申し送り一覧を表示
+									funcMsg/*_expression*/), //Display message list
  								createCautionGraphic(/*_graphic*/
 									new Tenken.DatetimeValue(msg.occurrencetime).toString()/*_datetime*/,
 									msg.operator/*_operator*/,
@@ -482,18 +482,18 @@ Tenken.ARRendering = new function() {
 		}
 		if ( 100 < lenSG )
 		{
-			var strOver="AR重畳表示定義データ登録警告\n\n同一シーンには100件までのAR重畳表示定義データしか表示できません\n";
+			var strOver="Warning registering AR overlay data.\n\nYou can only display up to 100 AR overlay data in a single scene.\n";
 		if ( null != _assetlist || null != _msglists )
 		{
-			strOver += "また、件数にはマーカーID(設備)毎の設備名と申し送りデータも含みます。\n";
+			strOver += "Also, asset name and message data per marker ID (Assets) is included for this count.\n";
 		}
-		strOver += "シナリオやシーンを分ける、AR重畳表示定義データを減らす、設備名を表示しない(シーン備考欄の#TENKEN#を削除する)。申し送りデータの完了報告する等を実施して表示数を減らしてださい。\n";
-		strOver += "\n登録処理を続行しますが、正常表示されない場合があります。\n件数=" + lenSG;
+		strOver += "Please reduce diplay items by separating scenario or scene, reduce AR overlay data, hide asset names(Delete #TENKEN# from scene's detail column), or by sending comletion report to all messages\n";
+		strOver += "\nRegisteration will proceed, but might not render correctly.\nCount=" + lenSG;
 
 			alert(strOver);
 		}
 
-		// 登録処理
+		// Registeration process
 		for(var k = 0; k < graphicsS.length ; k++)
 		{
 			var graphics = graphicsS[k].graphics;
@@ -503,7 +503,7 @@ Tenken.ARRendering = new function() {
 			{
 				var tmpGraphics = [];
 
-				//ネイティブAR表示層にAR重畳表示定義データを設定します。
+				// Set AR overlay data into native device's AR rendering layer.
 				AR.Renderer.put(coordsSys, Tenken.putEach(tmpGraphics, graphics, false), Tenken.Util.noop, contenstPutError );
 			}
 		}
@@ -513,23 +513,23 @@ Tenken.ARRendering = new function() {
 	}
 	};
 
-	/* 事前ロードが正常終了したら、AR重畳表示をクリアする */
+	/* Clear AR overlay display when pre-loading finishes successfully. */
 	successPreload = function(_result)
 	{
-		// AR重畳表示をクリア
+		// Clear AR overlay display
 		AR.Renderer.clear(Tenken.Util.noop,Tenken.Util.noop);
 	}
 
-	/** 事前にロードするAR重畳表示定義データをネイティブの描画レイヤに設定します。 */
+	/** Set pre-loading AR overlay data to native device's view layer */
 	this.createSuperimposedGraphicsPreload = function(_superimposedgraphics)
 	{
 		if ( 0 < _superimposedgraphics.length )
 		{
-			//ARマーカーの座標系を作成してマーカーID(ダミー用に99固定利用)を指定
+			// Set Marker ID (using hard coded 99 for dummy) after creating coordinate system of AR marker.
 			var coordinateSystem = new AR.Renderer.FJARMarkerCoordinateSystem();
 			coordinateSystem.setValue(99);
 			try{
-				//ネイティブAR表示層にAR重畳表示定義データを設定します。
+				// Set AR overlay data to native device's AR rendering layer.
 				AR.Renderer.put(coordinateSystem, _superimposedgraphics, successPreload, contenstPutError);
 			} catch (e){
 				alert("Exception:createSuperimposedGraphicsPreload\n" + e);

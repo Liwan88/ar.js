@@ -1,39 +1,39 @@
 /**
- * @overview 点検業務向けJavaScript API群(ストレージ)です。
+ * @overview JavaScript API of Storages used in Tenken
  * @copyright Copyright 2014 FUJITSU LIMITED
  */
 
 
 /**
- * 点検業務ストレージのライブラリ空間です。
+ * Namespace for Tenken storage
  */
 Tenken.Storage = {};
 
 
 /**
- * 点検業務ストレージのアクセサクラスです。
- * @param {Object} _key ストレージのキー
+ * Class to access Tenken storage
+ * @param {Object} _key key of a storage
  */
 Tenken.Storage.Accessor = function(_key) {
 	this._key = _key;
 };
 /**
- * 値を返します。
- * @return {Object} 値
+ * Returns value
+ * @return {Object} value
  */
 Tenken.Storage.Accessor.prototype.get = function() { return localStorage.getItem(this._key); };
 /**
- * 値を設定します。
- * @param {Object} _value 値
+ * Sets value
+ * @param {Object} _value value
  */
 Tenken.Storage.Accessor.prototype.set = function(_value) { localStorage.setItem(this._key, _value); };
 /**
- * 値を削除します。
+ * Deletes value
  */
 Tenken.Storage.Accessor.prototype.remove = function() { localStorage.removeItem(this._key); };
 /**
- * 値が存在するか否かを判定して返します。
- * @return {Boolean} 値が存在する場合はtrue、それ以外はfalse
+ * Return if the value exist or not
+ * @return {Boolean} true if value exists、false for other
  */
 Tenken.Storage.Accessor.prototype.isExist = function()
 {
@@ -48,59 +48,59 @@ Tenken.Storage.Accessor.prototype.isExist = function()
 };
 
 
-/** 点検開始日時アクセサ。*/
+/** access Time and Date when check (tenken) started */
 Tenken.Storage.startDatetime = new Tenken.Storage.Accessor(TenkenConst.StorageName.startDatatime);
 
 
-/** 点検作業者アクセサ。*/
+/** access operator data */
 Tenken.Storage.operator = new Tenken.Storage.Accessor(TenkenConst.StorageName.operator);
 
-/** Assetアクセサ。*/
+/** access assets and equipments */
 Tenken.Storage.lastAssetData = new Tenken.Storage.Accessor(TenkenConst.StorageName.asset);
 
-/** 前回の申し送りEventアクセサ。*/
+/** access to previous message events */
 Tenken.Storage.lastTenkenEventData = new Tenken.Storage.Accessor(TenkenConst.StorageName.lastMessageEvent);
 
-/** 前回の点検Eventアクセサ。*/
+/** access to previous check list events */
 Tenken.Storage.lastMessageEventData = new Tenken.Storage.Accessor(TenkenConst.StorageName.lastTenkenEvent);
 
-/** 今回の点検Eventアクセサ。*/
+/** access to current check list events */
 Tenken.Storage.currentTenkenEventData = new Tenken.Storage.Accessor(TenkenConst.StorageName.currentTenkenEevnt);
 
-/** 今回の申し送りEventアクセサ。*/
+/** access to current message events */
 Tenken.Storage.currentMessageEventData = new Tenken.Storage.Accessor(TenkenConst.StorageName.currentMessageEvent);
 
-/** 通信モードアクセサ。*/
+/** access to operation mode */
 Tenken.Storage.OperationMode = new Tenken.Storage.Accessor(TenkenConst.StorageName.OperationMode);
 
-/** 作業者データアクセサ。*/
+/** access to operator data */
 Tenken.Storage.UserData = new Tenken.Storage.Accessor(TenkenConst.StorageName.username);
 
-/** 最終ダウンロード日時アクセサ。*/
+/** access to last download time and date */
 Tenken.Storage.DownloadDate = new Tenken.Storage.Accessor(TenkenConst.StorageName.DownloadDate);
 
 
-/** シーンアクセサ。*/
+/** access to scenes */
 Tenken.Storage.SceneList = new Tenken.Storage.Accessor(TenkenConst.StorageName.scene);
 Tenken.Storage.SceneNames = new Tenken.Storage.Accessor(TenkenConst.StorageName.SceneNames);
 
-/** AR重畳表示定義データアクセサ。*/
+/** access to ar overlay data */
 Tenken.Storage.SuperimposedGraphic = new Tenken.Storage.Accessor(TenkenConst.StorageName.SuperimposedGraphic);
 
-/** 点検項目テーブルデータアクセサ。*/
+/** access to checklist tables */
 Tenken.Storage.TenkenTable = new Tenken.Storage.Accessor(TenkenConst.StorageName.tenkentable);
 
-/** シナリオアクセサ。*/
+/** access to scenario list*/
 Tenken.Storage.ScenarioList = new Tenken.Storage.Accessor(TenkenConst.StorageName.scenario);
-/** 選択シナリオ名・ID */
+/** selected scenario name and ID */
 Tenken.Storage.ScenarioId = new Tenken.Storage.Accessor(TenkenConst.StorageName.ScenarioId);
 Tenken.Storage.ScenarioName = new Tenken.Storage.Accessor(TenkenConst.StorageName.ScenarioName);
-/** 最終シナリオダウンロード日時アクセサ。*/
+/** access to last date and time of scenario download */
 Tenken.Storage.DownloadScenario = new Tenken.Storage.Accessor(TenkenConst.StorageName.DownloadScenario);
 
 
 /**
- * シナリオデータ以外のストレージデータをクリアします。
+ * Clear storage data except for scenario data
  */
 
 Tenken.Storage.clearWithOutScenario = function() {
@@ -122,7 +122,7 @@ Tenken.Storage.clearWithOutScenario = function() {
 
 };
 /**
- * 全点検業務ストレージデータをクリアします。
+ * Clear entire storage data
  */
 Tenken.Storage.clear = function() {
 	Tenken.Storage.clearWithOutScenario();
@@ -135,7 +135,7 @@ Tenken.Storage.clear = function() {
 };
 
 /**
- * 作業中ストレージデータをクリアします。
+ * Clear storage data under work
  */
 Tenken.Storage.clearCurrent = function() {
 	Tenken.Storage.startDatetime.remove();
@@ -146,7 +146,7 @@ Tenken.Storage.clearCurrent = function() {
 	Tenken.Storage.currentMessageEventData.remove();
 };
 
-/* 点検アプリに必要なダウンロードデータが存在するかチェックします */
+/* Check that all download data exists to run Tenken */
 Tenken.Storage.AllDownloadIsExist = function()
 {
 	if (Tenken.Storage.lastAssetData.isExist() == true &&

@@ -1,28 +1,28 @@
 /**
- * @overview 点検業務向けJavaScript API群(データ送受信機能)です。
+ * @overview JavaScript API (Data request & response module) for Tenken Application
  * @copyright Copyright 2014 FUJITSU LIMITED
  *
- * 機能:
- *    FUJITSU Software Interstage AR Processing Server(以後ARのREST APIを
- *     利用して、データの送信・受信・削除の機能を提供します。
- *    本機能は、点検アプリケーションで必要とするARの送信・受信・削除の
- *    一部の機能のみを提供します。
- *      ・データ受信(AR.Data.getArServerDataのquad指定)
- *      ・データ送信(AR.Data.postArServerDataのquad指定)
- *      ・データ削除(AR.Data.deleteArServerDataのqentities指定)
+ * Function:
+ *    The library uses FUJITSU Software Interstage AR Processing Server(AR from 
+ *    here after)'s REST API to send, rescieve, and delete data.
+ *    This file provides limited fuctionality for Tenken application's data
+ *    processing as following.
+ *      ・Data Recieve (quad parameter for AR.Data.getArServerData)
+ *      ・Data Send (quad parameter for AR.Data.postArServerData)
+ *      ・Data Delete (qentities parameter for AR.Data.deleteArServerData)
  */
 
-// 例外時情報出力マクロ
+// Macro function for exception handling
 var TenkenARdebugException = function(_function, _e)
 {
 	alert("Exception : " + _function + "\n" + _e);
 }
 
-// ARデータ管理用定義
+// AR Data Management
 var TenkenARvalue = {};
 
-// AR実行サーバのQuadを表現するクラスです。
-// データの送受信時に使用します。
+// Quad object used for communication with AR server
+// Used to send/receive data from the server
 TenkenARvalue.Quad = function(_qtypename)
 {
 	this.qtypeName=_qtypename;
@@ -32,8 +32,8 @@ TenkenARvalue.Quad = function(_qtypename)
 	return this;
 };
 
-// AR実行サーバのQValueを表現するクラスです。
-// データの送受信時に使用します。
+// QValue object used for communication with AR server
+// Used to send/receive data from the server
 TenkenARvalue.QValue = function(_qtypeName, _qattributeName, _stringValue, _longValue, _floatValue )
 {
 	this.qtypeName = _qtypeName;
@@ -44,14 +44,14 @@ TenkenARvalue.QValue = function(_qtypeName, _qattributeName, _stringValue, _long
 	this.version;
 };
 
-// AR実行サーバのデータの削除時するクラスです。
+// Class used to delete data from AR Server
 TenkenARvalue.QDelete = function(_qentityid, _version )
 {
 	this.qentityid = _qentityid;
 	this.version = parseInt(_version);
 };
 
-// AR実行サーバのquad検索のクエリを表現するクラスです。
+// Object used for Quad query from AR Server
 TenkenARvalue.QuadQuery = function()
 {
 	this.type;
@@ -63,8 +63,9 @@ TenkenARvalue.QuadQuery = function()
 	return this;
 };
 
-// AR実行サーバのquad検索クエリの範囲を表現するクラスです。
-// コンストラクタでendを省略するとstartと同じ値が格納されます。
+// Object to describe range of Quad query from AR Server.
+// If _end value is not specified in constructor method, _end will have the same
+// value as _start
 TenkenARvalue.Range = function(_start, _end)
 {
 	this.start = _start;
@@ -73,7 +74,7 @@ TenkenARvalue.Range = function(_start, _end)
 	return this;
 };
 
-// AR実行サーバのquad検索クエリのExpressionを表現するクラスです。
+// Object to describe Expression of Quad query parameter
 TenkenARvalue.QuadQueryExpression = function(_nameRange, _valueRange, _type, _desc)
 {
 	this.qattributeNameRanges = _nameRange;
@@ -83,7 +84,7 @@ TenkenARvalue.QuadQueryExpression = function(_nameRange, _valueRange, _type, _de
 	return this;
 };
 
-// QuadQueryクラスからquad検索文字列を生成します。
+// Obtain quad query string from QuadQuery class
 TenkenARvalue.makeQuadQuery = function(_qQuery)
 {
 	try
@@ -105,9 +106,9 @@ TenkenARvalue.makeQuadQuery = function(_qQuery)
 };
 
 //============================================================================
-// 共有部品定義
+// Shared objects and functions
 //============================================================================
-// AR実行サーバとデータの送受信を行うクラスです。
+// Class that communicate with AR Server
 var TenkenARdata = function (_tablename)
 {
 	if ( null == _tablename )
@@ -120,25 +121,25 @@ var TenkenARdata = function (_tablename)
 		return new TenkenARdata(_tablename);
 	}
 
-	// プロパティ
-	this.tablename = _tablename;  // データ送受信テーブル名
-	this.maxLimitRange=100; // 最大受信数(デフォルト100個）：受信時のlimitRange
-	this.getMaxCount=0;   // 受信上限数(検索結果の上位ｎ個のみを取得する場合に設定)。0は上限無しです。
-	this.reload=true; // 強制ロード
-	this.useOfflineStorage=true; // オフラインストレージを使用するか否か設定(true=利用、false=利用せず)
+	// Property
+	this.tablename = _tablename;  // Table name for Data communication
+	this.maxLimitRange=100; // Max retrieve value (default is 100):limitRange upon retrieve
+	this.getMaxCount=0;   // Max retrieve count of data (used when retrieving top N number of data after the query). 0 specifies no max count.
+	this.reload=true; // Force load
+	this.useOfflineStorage=true; // Sets to use off-line storage or not (true: use, false: do not use)
 
-	// データ送受信カウンタ類
+	// Counters for data communication
 
-	// データ送受信・結果データ
-	this.where=null;      // 検索条件
-	this.sort=null;       // ソート条件
-	this.sortdesc=false;  // ソート順 (false昇順 , true:降順)
+	// Result data
+	this.where=null;      // query param
+	this.sort=null;       // sort param
+	this.sortdesc=false;  // sort order (false:asc , true:desc)
 
 	this.result=null;
 	this.status=null;
 	this.detail=null;
 
-	// コールバック（呼び出し元のコールバック関数）
+	// Callbacks (callback methods from callee)
 	this.callBackGetCountSuccess=null;
 	this.callBackGetCountError=null;
 	this.callBackGetDataSuccess=null;
@@ -148,49 +149,49 @@ var TenkenARdata = function (_tablename)
 	this.callBackDeleteDataSuccess=null;
 	this.callBackDeleteDataError=null;
 
-	// 内部作業用
-	this.dataGetValue=[];   // 受信データ(get)を一時保存
-	this.dataPostValue=[];  // 送信データ(post)を一時保存
-	this.dataDelete=[];     // 削除データ(delete)を一時保存
-	this.dataCount=0;       // 送受信中データ数。
-							// 送受信完了後は送受信が完了した数を表します。
-	this.dataNextCount=0;   // 次に処理する先頭インデックス値
-	this.dataMaxCount=0;    // 送信・受信・削除すべき最大数
-	this.dataSendOKCount=0; // post(Quad)/delete(Qentity)で送信成功したデータ数
-	this.dataSendNGCount=0; // post(Quad)/delete(Qentity)で送信失敗したデータ数
+	// Internal use
+	this.dataGetValue=[];   // Temporary variable to save received (get) data
+	this.dataPostValue=[];  // Temporary variable to save send (post) data
+	this.dataDelete=[];     // Temporary valriable to save delete (delete) data
+	this.dataCount=0;       // Data count of communicated data.
+							// Total number of data received (or send) will be set when communication is finished.
+	this.dataNextCount=0;   // Next index number to process
+	this.dataMaxCount=0;    // Max data count to send, receive, or delete
+	this.dataSendOKCount=0; // Success count of post(Quad)/delete(Qentity)
+	this.dataSendNGCount=0; // Error count of post(Quad)/delete(Qentity)
 
-	this.busy=false; 	  		// 通信中フラグ (true=通信中 false=未通信)
-	this.complete=false; 	  	// 送受信中フラグ (true=通信中 false=送受信完了)
+	this.busy=false; 	  		// Flag to determine if it's still communicating (true=in middle of communication false=not in communication)
+	this.complete=false; 	  	// Flag to determine if the data is still processing (true=in middle of communication false=all data transferred)
 
-	// インターバルタイマー(ミリ秒単位): 0はインタバールタイムを使用しない。
+	// Interval Timer (in milli seconds): 0 specifies not to use Interval Timer
 	this.IntervalTime = 500;
 
-	// インターバルタイマーID
+	// Interval Timer Id
 	this.IntervalId=null;
 
-	// テーブル名取得
+	// Get Table name
 	this.getTableName = function()
 	{
 		return this.tablename;
 	}
 
-	// テーブル名設定
+	// Set Table name
 	this.setTableName = function(_tablename)
 	{
 		this.tablename = _tablename;
 	}
-	// インターバルタイマー値設定
+	// Set Interval Timer value
 	this.setIntervalTime = function(_intervalTime)
 	{
 		this.IntervalTime = _intervalTime;
 	}
-	// インターバルタイマー値取得
+	// Get Interval Timer value
 	this.getIntervalTime = function()
 	{
 		return this.IntervalTime;
 	}
 
-	// １回の受信最大数
+	// Set maximum count to receive at single call
 	this.setMaxLimitRange = function(_maxLimitRange)
 	{
 		if ( null != _maxLimitRange && 0 < _maxLimitRange && _maxLimitRange <= 100 )
@@ -202,13 +203,13 @@ var TenkenARdata = function (_tablename)
 			throw("setMaxLimitRange: Error parameter");
 		}
 	}
-	// １回の受信最大数値取得
+	// Get maximum count to receive at single call
 	this.getMaxLimitRange = function()
 	{
 		return this.maxLimitRange;
 	}
 
-	// 受信上限数
+	// Set maximum count to receive
 	this.setGetMaxCount = function(_count)
 	{
 		if ( null != _count && 0 <= _count )
@@ -220,72 +221,63 @@ var TenkenARdata = function (_tablename)
 			throw("setGetMaxCount: Error parameter");
 		}
 	}
-	// 受信上限数取得
+	// Get maximum count to receive
 	this.getGetMaxCount = function()
 	{
 		return this.getMaxCount;
 	}
 
-	// 強制リロード値設定
+	// Set force reload value
 	this.setReload = function(_reload)
 	{
 		this.reload = _reload;
 	}
-	// 強制リロード値取得
+	// get force reload value
 	this.getReload = function()
 	{
 		return this.reload;
 	}
 
-	// オフラインストレージ値設定
+	// Set to use off-line storage
 	this.setUseOfflineStorage = function(_useOfflineStorage)
 	{
 		this.useOfflineStorage = _useOfflineStorage;
 	}
-	// オフラインストレージ値取得
+	// Get off-line storage value
 	this.getuseOfflineStorage = function()
 	{
 		return this.useOfflineStorage;
 	}
 
-	// 検索条件追加
-	// AR.Data.getArServerDataに指定するクエリパタメータwhereExpressionsに
-	// 指定する検索条件を追加します。
-	// @param {String} _nameStart  検索対象のQAttribute名を指定します。
-	//                             複数指定の場合にはnameRangesのstartとなりま
-	//                             す。
-	// @param {String} _nameEnd    検索対象のQAttribute名を指定します。
-	//                             複数指定の場合にはnameRangesのendとなりま
-	//                             す。
-	// @param {String/Number} _valueStart _nameStartまたは_nameEndに指定した
-	//                                    QAttribute名の中から検索する値を
-	//                                    指定します。(数値または文字列)
-	// @param {String/Number} _valueEnd   _nameStartまたは_nameEndに指定した
-	//                                    QAttribute名の中から検索する値を
-	//                                    指定します。(数値または文字列)
-	// @param {String} _type 検索対象の属性(STRING/LONG/FLOAT)を指定します。
-	// @return true:正常に追加完了  false:追加失敗
+	// Add query parameters
+	// Add paramenter for whereExpressions in AR.Data.getArServerData
+	// @param {String} _nameStart  Specify QAttribute name of the query target.
+	//                             If multiple value is specified, start of nameRanges will be used
+	// @param {String} _nameEnd    Specify QAttribute name of the query target.
+	//                             If multiple value is specified, end of nameRanges will be used
+	// @param {String/Number} _valueStart Specify value to query from QAttribute name defined in _nameStart or _nameEnd
+	//                                    The value will be number or string.
+	// @param {String/Number} _valueEnd   Specify value to query from QAttribute name defined in _nameStart or _nameEnd
+	//                                    The value will be number or string.
+	// @param {String} _type Specify type (STRING/LONG/FLOAT) of query target.
+	// @return true:addition success  false:addition failed
 	//
-	// 本メソッドを複数回指定して検索条件を追加した場合には、
-	// 各条件はAND条件になります。
-	// なお、_valueStartおよび_valueEndが配列型で指定した場合、
-	// その配列内のデータをOR条件として検索条件に追加します。
-	// なお、条件指定のパラメータの上限、下限数は、利用しているARの仕様に
-	// 従います。本メソッドでは上限・下限値、上限数をチェックしません。
+	// If this method is used to add multiple queries, all queries will be added as AND query.
+	// If _valueStart and _valueEnd is specified as an array, each values inside an array is appended as OR query.
+	// The method will not check against maximum/minimum value nor the maximum count.
 	//
-	// 指定例:
-	//   1)検索条件が１つ
-	//     QAttribute="Target1"の値が"abc"であるものを取得する場合。
+	// Example:
+	//   1) Single query param
+	//     To otain the value of "abc" where QAttribute="Target1"
 	//      addWhere( "Target1", null, "abc", null, "STRING");
 	//
-	//   2)検索条件が２つ(AND条件)
-	//     QAttribute="Target1"の値が"abc"、かつ"Target2"が150であるものを
-	//     取得する場合。
+	//   2) Multiple query param (AND query)
+	//     To obtain the value of "abc" where QAttribute="Target1", AND value of 150 where QAtribute="Target2"
 	//      addWhere( "Target1", null, "abc", null, "STRING");
 	//      addWhere( "Target2", null, 150, null, "LONG");
 	//
-	//   3)検索条件を１つ(OR条件)
-	//     QAttribute="Target3"の値が0または40であるものを取得する場合。
+	//   3) Multiple query param (OR query)
+	//     To obtain the value of 0 OR 40 where QAttribute="Target3"
 	//      addWhere( "Target3", null, [0, 40], null, "LONG");
 	//
 	this.addWhere = function(_nameStart, _nameEnd, _valueStart, _valueEnd, _type)
@@ -313,10 +305,10 @@ var TenkenARdata = function (_tablename)
 		// whereExpressions
 		if ( _valueStart instanceof Array )
 		{
-			// 複数指定(or条件)
+			// multiple value query 
 			if ( null != _valueEnd && !(_valueEnd instanceof Array)) 
 			{
-				// 配列指定の場合はSTART,ENDとも配列である必要がある。
+				// if array is specified, both START and END needs to be arrays
 				throw("addWhere : invalid _valueEnd");
 			}
 			else if ( null == _valueEnd || _valueEnd instanceof Array) 
@@ -339,10 +331,10 @@ var TenkenARdata = function (_tablename)
 		}
 		else
 		{
-			// 値の単一指定(非配列)
+			// Single value query
 			if (   null != _valueEnd && _valueEnd instanceof Array )
 			{
-				// 配列指定の場合はSTART,ENDとも配列である必要がある。
+				// if array is specified, both START and END needs to be arrays
 				throw("addWhere : invalid _valueEnd");
 			}
 			else if ( null != _valueEnd )
@@ -358,18 +350,18 @@ var TenkenARdata = function (_tablename)
 		// qattributeNameRanges
 		if ( null == this.where ) this.where = new Array();
 
-		// 検索条件配列に追加する
+		// Append to query paramenter array
 		this.where.push(new TenkenARvalue.QuadQueryExpression(nameRanges, where, _type, this.sortdesc));
 		return true;
 	}
 
-	// 検索条件クリア
+	// Clear query parameter
 	this.clearWhere = function()
 	{
 		this.where=null;
 	}
 
-	// ソート条件追加
+	// Add sort parameter
 	this.addSort = function(_nameStart, _nameEnd, _valueStart, _valueEnd, _type)
 	{
 		if ( null == _nameStart && null == _nameEnd )
@@ -394,17 +386,17 @@ var TenkenARdata = function (_tablename)
 			var nameRanges=new TenkenARvalue.Range(_nameStart);
 		}
 
-		// sort条件指定
+		// Specify sort parameter
 		if ( _valueStart instanceof Array )
 		{
 			if ( null != _valueEnd && !(_valueEnd instanceof Array))
 			{
-				// 配列指定の場合はSTART,ENDとも配列である必要がある。
+				// if array is specified, both START and END needs to be arrays
 				throw("addSort : invalid _valueEnd");
 			}
 			else if ( null == _valueEnd || _valueEnd instanceof Array)
 			{	
-				// 複数指定(or条件)
+				// multiple value query
 				var sort = new Array();
 				len=_valueStart.length;
 				for ( var i=0 ; i < len ; i++ )
@@ -423,10 +415,10 @@ var TenkenARdata = function (_tablename)
 		}
 		else
 		{
-			// 値の単一指定(非配列)
+			// single value query (not an array)
 			if (   null != _valueEnd && _valueEnd instanceof Array )
 			{
-				// 配列指定の場合はSTART,ENDとも配列である必要がある。
+				// if array is specified, both START and END needs to be arrays
 				throw("addSort : invalid _valueEnd");
 			}
 			else if (  null != _valueEnd )
@@ -446,69 +438,69 @@ var TenkenARdata = function (_tablename)
 		// qattributeNameRanges
 		if ( null == this.sort ) this.sort = new Array();
 
-		// ソート条件配列に追加する
+		// Append to sort parameter array
 		this.sort.push(new TenkenARvalue.QuadQueryExpression(nameRanges, sort, _type,  this.sortdesc));
 		return true;
 	}
-	// ソート条件クリア
+	// Clear sort parameter
 	this.clearSort = function()
 	{
 		this.sort=null;
 	}
-	// ソート降順設定(false=昇順(デフォルト),true=降順)
+	// Set sort order (false=asc.(default), true=desc.)
 	this.setSortDesc = function(_desc)
 	{
 		if ( _desc ) this.sortdesc=_desc;
 	}
-	// ソート降順取得
+	// Get sort order
 	this.getSortDesc = function()
 	{
 		return this.sortdesc;
 	}
 
-	// 通信中フラグ取得
+	// Get busy flag
 	this.getBusyStatus = function()
 	{
 		return this.busy;
 	}
 
-	// 送受信完了フラグ取得
+	// Get if communication has completed
 	this.getCompleteStatus = function()
 	{
 		return this.complete;
 	}
 
-	// データカウント数取得
+	// Get data count
 	this.getDataCount = function()
 	{
 		return this.dataCount;
 	}
 
-	// 受信データ取得(配列[Object形式])
+	// Get received data (in Object array)
 	this.getDataValue = function()
 	{
 		return this.dataGetValue;
 	}
 
-	// 結果取得
+	// Get result
 	this.getResult = function()
 	{
 		return this.result;
 	}
 
-	// ステータス取得
+	// Get status
 	this.getStatus = function()
 	{
 		return this.status;
 	}
 
-	// 詳細取得
+	// Get details
 	this.getDetail = function()
 	{
 		return this.detail;
 	}
 
-	// データカウント数・成功コールバック
+	// Callback method for successful data count
 	this.getArDataCountSuccess = function(_result)
 	{
 		try
@@ -517,7 +509,7 @@ var TenkenARdata = function (_tablename)
 			{
 				var result=_result.getValue();
 			}
-			// データカウント数の保存
+			// Save data counts
 			this.dataCount=result.unlimitedRecordCount;
 
 			if ( this.callBackGetCountSuccess ) this.callBackGetCountSuccess(_result);
@@ -528,14 +520,14 @@ var TenkenARdata = function (_tablename)
 		}
 	}
 
-	// データカウント数・失敗コールバック
+	// Callback method for error upon data count
 	this.getArDataCountError = function(_result)
 	{
 		try
 		{
 			this.result=_result;
 
-			var message = "データカウント数の取得に失敗しました。動作モードとネットワーク状況を確認して再度お試しください。(" + this.tablename + ")\n";
+			var message = "Error occurred while obtaining data count. Please confirm operation mode and network connectivity and retry. (" + this.tablename + ")\n";
 			this.detail="";
 			if(_result.getStatus() == "AR_HTTP_EXCEPTION")
 			{
@@ -562,30 +554,28 @@ var TenkenARdata = function (_tablename)
 			this.callBackGetCountSuccess=_onSuccess;
 			this.callBackGetCountError=_onError;
 
-			//検索クエリオブジェクトを作成します。
+			// Create Query object
 			var query = new TenkenARvalue.QuadQuery();
 			query.type = "COUNT";
 
-			//利用者定義データが登録されているqtypeを指定します。
+			// Specify qtype where operator data is defined
 			query.qtypeNameRanges = new Array(new TenkenARvalue.Range(this.tablename));
 
-			// 検索条件指定
+			// Put query param
 			if ( null != this.where )
 			{
 				query.whereExpressions=this.where;
 			}
 
-			// ソート条件指定(カウントのみなのでソートの必要は無し)
+			// Set sort parameter (since we're just getting count, no need to define sort)
 
-			//文字列に変換します。
+			// Transform to string value
 			var getQuery = TenkenARvalue.makeQuadQuery(query);
 
 
-			//AR実行サーバから点検項目テーブルデータを取得します。
-			//コールバック内でTenkenARdataのthisを利用するため、bindを
-			//利用しています。
-			//bindは古いHTMLレンダリングエンジンでは利用できない場合が
-			//あります。
+			// Obtain Checklist table data from AR server.
+			// The method uses bind() to use TenkenARdata's "this" inside the callback.
+			// Note: bind() might not work for old HTML rendering engine.
 
 			AR.Data.getArServerData(
 				getQuery,
@@ -600,7 +590,7 @@ var TenkenARdata = function (_tablename)
 		}
 	}
 
-	// JSONオブジェクトから利用者定義データを抽出します。
+	// Extract operator data from JSON object
 	this.extractData = function(_result)
 	{
 		try
@@ -608,13 +598,13 @@ var TenkenARdata = function (_tablename)
 			var data=_result.getValue();
 			if ( null == data ) return;
 
-			//取得したレコード数です
+			// Received record count
 			var recordCount = data.records.length;
 
 			this.dataCount += recordCount;
 			for(var recordIndex = 0; recordIndex < recordCount; recordIndex++)
 			{
-				//レコードを一つずつ調べます。
+				// Parse record one by one
 				var record = data.records[recordIndex];
 				var valueLength = record.qvalues.length;
 				var value = new Object();
@@ -622,7 +612,7 @@ var TenkenARdata = function (_tablename)
 				value.version = record.version;
 				value.qentityId = record.id;
 
-				//使用するqvalueの数だけ取得します。attributeNameで判断します。
+				// Obtain only the count specified by qvalue. Define by attribute Name
 				for(var valueIndex = 0; valueIndex < valueLength; valueIndex++)
 				{
 
@@ -641,14 +631,14 @@ var TenkenARdata = function (_tablename)
 					}
 				}
 
-				// データ保存
+				// Save data
 				if ( null == this.dataGetValue ) this.dataGetValue = new Array();
 				this.dataGetValue.push(value);
 			}
-			// 最後のデータまで取得したらコールバックルーチンを呼ぶ
+			// Call the callback method when entire data is received
 			if ( this.dataCount >= this.dataMaxCount )
 			{
-				// データ受信後共通終了処理
+				// End process when data receive is completed.
 				this.completeGetData();
 
 				if ( this.callBackGetDataSuccess ) this.callBackGetDataSuccess(_result);
@@ -660,7 +650,7 @@ var TenkenARdata = function (_tablename)
 		}
 	};
 
-	// インターバルタイマーを利用してデータ受信
+	// Receive data using internal timer
 	this.startIntervalAction = function(_action)
 	{
 		this.dataNextCount=0;
@@ -678,7 +668,7 @@ var TenkenARdata = function (_tablename)
 		}
 	}
 
-	// データカウント数・成功コールバック
+	// Success callbback method for data count
 	this.getArDataCountSuccess2 = function(_result)
 	{
 		try
@@ -687,15 +677,15 @@ var TenkenARdata = function (_tablename)
 			{
 				var result=_result.getValue();
 
-				// 受信するデータ数を保存
+				// Save data count to receive
 				if ( 0 < this.getMaxCount && this.getMaxCount < result.unlimitedRecordCount )
 				{
-					// 受信上限数が設定されている場合は上限数までに制限
+					// If max data count is specified, limit to that max count
 					this.dataMaxCount=this.getMaxCount;
 				}
 				else
 				{
-					// 受信上限数が設定されていない、または結果件数が上限以下の場合には結果件数を設定
+					// If max data count is not specified, or the query result is less than the max, set the result count
 					this.dataMaxCount=result.unlimitedRecordCount;
 				}
 
@@ -706,22 +696,21 @@ var TenkenARdata = function (_tablename)
 				{
 					if ( null != this.IntervalTime && 0 < this.IntervalTime )
 					{
-						// インターバルタイマーを利用して
-						// データ受信数を制御します。
+						// Use interval timer to limit data receive count
 						this.startIntervalAction("get");
 					}
 					else
 					{
-						// インターバルタイマー利用せずデータ取得
-						// 1個目からすべて受信します。
+						// Receive data without using interval timer.
+						// This will receive everything
 						this.getArDataValue(1, result.unlimitedRecordCount);
 					}
 				}
 				else
 				{
-					// 対象が0件のため、データ取得を終了します。
+					// End data receival since the target record is zero
 
-					// データ受信後共通終了処理
+					// End process when data receive is completed.
 					this.completeGetData();
 
 					if ( this.callBackGetDataSuccess ) this.callBackGetDataSuccess(_result);
@@ -734,14 +723,14 @@ var TenkenARdata = function (_tablename)
 		}
 	}
 
-	// データカウント数・失敗コールバック
+	// Error callback method for data count
 	this.getArDataCountError2 = function(_result)
 	{
 		try
 		{
 			this.result=_result;
 
-			var message = "データカウント数の取得に失敗しました。動作モードとネットワーク状況を確認して再度お試しください。(" + this.tablename + ")\n";
+			var message = "Error occurred while obtaining data. Please confirm operation mode and network connectivity and retry.(" + this.tablename + ")\n";
 			this.detail="";
 			if(_result.getStatus() == "AR_HTTP_EXCEPTION")
 			{
@@ -763,24 +752,24 @@ var TenkenARdata = function (_tablename)
 	}
 
 
-	// データ受信成功コールバック
+	// Callback when data receive is success
 	this.getArDataSuccess = function(_result)
 	{
 		if ( null != _result.getValue() )
 		{
-			//結果から必要なデータを抽出して保存します。
+			// Save data from the result
 			this.extractData(_result);
 		}
 	}
 
-	// データ受信失敗コールバック
+	// Callback when data receive is error
 	this.getArDataError = function(_result)
 	{
 		try
 		{
 			this.result=_result;
 
-			var message = "データの取得に失敗しました。動作モードとネットワーク状況を確認して再度お試しください。(" + this.tablename + ")\n";
+			var message = "Error occurred while obtaining data. Please confirm operation mode and network connectivity and retry.(" + this.tablename + ")\n";
 			this.detail="";
 			if(_result.getStatus() == "AR_HTTP_EXCEPTION")
 			{
@@ -789,7 +778,6 @@ var TenkenARdata = function (_tablename)
 			{
 				this.detail += _result.getStatus() + "\n"+ _result.getValue();
 			}
-			// データ受信後共通終了処理
 			this.completeGetData();
 
 
@@ -802,31 +790,28 @@ var TenkenARdata = function (_tablename)
 	}
 
 
-	// データ受信
+	// Data receive
 
-	// データ受信は、カウント数を取得後１回の最大送受信数(maxLimitRange)分繰り返します。
-	// _start : 受信開始カウント:このカウントからthis.maxLimitRangeまで
-	//          １回のAR.dat4a.getArServerDataで受信します。
-	// _count : 最大受信個数です。
-	//          AR.data.getArServerDataは、以下の回数分呼ばれます。
-	//          端数切り上げ)
+	// Data receiving is done by looping count from 1 to the maxLimitRange value.
+	// _start : Receive start count: Single AR.dat4a.getArServerData will receive data from this value to the value specified in this.maxLimitRange
+	// _count : Maxinum number to receive data
+	//          AR.data.getArServerData will be called following times.
+	//          round up)
 	//            (_count - _start) / this.maxLimitRange
 
-	// _start : 受信開始カウント:
+	// _start : Counter to start receive:
 	this.getArDataValue = function(_start, _count)
 	{
 		try
 		{
-			// インターバルタイマーから呼ばれた場合は、１回で受信可能な
-			// _startと_countが指定されるため、forループは行いません。
-			// インタバーバルタイマーを利用しない場合は、this.maxLimitRangeの
-			// 数毎にforループして、複数回処理を行います。
+			// If the method is called from interval timer, for loop will not be used as the _start and _count will be determined previously with the number to receive in single call.
+			// If interval timer is not used, use loop until this.maxLimitRange to process multiple times.
 			for ( var i=_start ; i <= _count ; i += this.maxLimitRange )
 			{
-				//検索クエリオブジェクトを作成します。
+				// Create Query object
 				var query = new TenkenARvalue.QuadQuery();
 				query.type = "RECORDSANDCOUNT";
-				// 1の場合は、ENDを指定せず1個のみ受信するように設定
+				// Set to receive single data by not setting END value if 1 is specified.
 				if ( 1 == this.maxLimitRange )
 				{
 					query.limitRange = new TenkenARvalue.Range(1);
@@ -837,25 +822,25 @@ var TenkenARdata = function (_tablename)
 				}
 				query.qattributeOrderIndexRange = new TenkenARvalue.Range(1,100);
 
-				//利用者定義データが登録されているqtypeを指定します。
+				// Set qtype where operator data is registered
 				query.qtypeNameRanges = new Array(new TenkenARvalue.Range(this.tablename));
 
-				// 検索条件指定
+				// Set query parameter
 				if ( null != this.where )
 				{
 					query.whereExpressions=this.where;
 				}
 
-				// ソート条件指定
+				// Set sort parameter
 				if ( null != this.sort )
 				{
 					query.sortOrderExpressions=this.sort;
 				}
 
-				//文字列に変換します。
+				// Transform to string
 				var getQuery = TenkenARvalue.makeQuadQuery(query);
 
-				//AR実行サーバから点検設備データを取得します。
+				// Retrieve checklist data from AR server
 				AR.Data.getArServerData(
 					getQuery,
 					this.reload,
@@ -876,7 +861,7 @@ var TenkenARdata = function (_tablename)
 		{
 			if ( this.dataCount >= this.dataMaxCount )
 			{
-				// 最後まで受信したので終了
+				// End as we've processed until the end.
 				this.stopIntervalAction();
 
 				return;
@@ -906,19 +891,19 @@ var TenkenARdata = function (_tablename)
 		return;
 	}
 
-	// データ受信は、カウント数を取得後、１回の最大送受信数分繰り返します。
+	// Data receive will occur in loops of max data count
 	this.getArData = function(_onSuccess, _onError)
 	{
 		try
 		{
-			// 既に通信中の場合は処理を行わない。
+			// Do not process if it's already communicating
 			if ( true == this.busy )
 			{
 				return;
 			}
-			// 通信中フラグON
+			// Set busy flag
 			this.busy=true;
-			// 送受信完了フラグをfalse(未完了)に設定
+			// Set communication complete flat to false (processing state)
 			this.complete=false
 
 			this.dataGetValue=null;
@@ -940,12 +925,12 @@ var TenkenARdata = function (_tablename)
 		}
 	}
 
-	// インターバルタイマー開始
+	// Start the interval timer
 	this.setIntervalFunc = function(_funcname)
 	{
 		try
 		{
-		// 既に登録されている場合は登録しません。
+		// Don't register if it's already set
 		if ( null == this.IntervalId && null != _funcname )
 		{
 			this.IntervalId = setInterval(_funcname, this.IntervalTimer);
@@ -957,7 +942,7 @@ var TenkenARdata = function (_tablename)
 		}
 	}
 
-	// インターバルタイマー停止
+	// Stop the interval timer
 	this.stopIntervalAction = function()
 	{
 		try
@@ -974,25 +959,25 @@ var TenkenARdata = function (_tablename)
 		}
 	};
 
-	// データ受信完了後の共通処理
+	// Common process after data retreival
 	this.completeGetData = function()
 	{
-		// 通信中フラグをOFF
+		// Set communication status to off
 		this.busy=false;
-		// 送受信完了フラグをtrue(完了)に設定
+		// Set communication completion flag to true (finished)
 		this.complete=true;
 	}
-	// データ送信完了後の共通処理
+	// Common process after finishing data send
 	this.completePostData = function()
 	{
-		// 通信中フラグをOFF
+		// Set communication status to off
 		this.busy=false;
-		// 送受信完了フラグをtrue(完了)に設定
+		// Set communication completion flag to true (finished)
 		this.complete=true;
 	}
 
-	// 送信データ追加
-	// Quad単位で指定してください。
+	// Add send data.
+	// Define by each Quad.
 	this.addPostData = function(_postData)
 	{
 		if ( null != _postData )
@@ -1001,22 +986,20 @@ var TenkenARdata = function (_tablename)
 		}
 	}
 
-	// 送信データクリア
+	// Clear send data
 	this.clearPostData = function()
 	{
 		this.dataPostValue.length=0;
 	}
 
-	// 指定された範囲のデータを送信
+	// Send data of specified range
 	this.postArDataValue = function(_start, _count)
 	{
 		try
 		{
 
-		// インターバルタイマーから呼ばれた場合は、１回で送信可能な
-		// _startと_countが指定されるため、forループは行いません。
-		// インタバーバルタイマーを利用しない場合は、this.maxLimitRangeの
-		// 数毎にforループして、複数回処理を行います。
+		// For loop will not occur if interval timer is used, since _start and _count is pre-defined.
+		// If interval timer is not used, we will loop until this.maxLimitRange is met.
 		for ( var i = _start ; i < _count ; i++ )
 		{
 			if ( null != this.dataPostValue[i] )
@@ -1037,17 +1020,17 @@ var TenkenARdata = function (_tablename)
 		}
 	}
 
-	// 送信時インターバルタイマー
+	// Interval timer for sending data
 	this.postArDataInterval = function()
 	{
 		try
 		{
 			if ( 0 < this.dataSendNGCount )
 			{
-				// 送信が失敗したデータがあるため、送信処理を中断する
+				// Stop sending data as there is error on some data
 				this.stopIntervalAction();
 
-				// データ送信後共通終了処理
+				// Commpon process upon completion of data send
 				this.completePostData();
 
 				if ( this.callBackPostDataError ) this.callBackPostDataError(this.result);
@@ -1056,11 +1039,11 @@ var TenkenARdata = function (_tablename)
 
 			if ( this.dataSendOKCount >= this.dataMaxCount )
 			{
-				// 最後まで送信したので終了
+				// End as entire data has been sent
 				this.stopIntervalAction();
 				this.dataPostValue.length = 0;
 
-				// データ送信後共通終了処理
+				// Common process upon completion of data send
 				this.completePostData();
 
 				if ( this.callBackPostDataSuccess ) this.callBackPostDataSuccess(this.result);
@@ -1093,26 +1076,26 @@ var TenkenARdata = function (_tablename)
 	}
 
 
-	// データの送信
+	// Data send
 	this.postArData = function(_onSuccess, _onError)
 	{
 		try
 		{
-			// 既に通信中の場合は処理を行わない。
+			// Don't process if it's already communicating
 			if ( true == this.busy )
 			{
 				return;
 			}
 			if ( this.dataPostValue.length <= 0 )
 			{
-				// 送信データがないため処理を行わない。
-				// resultがないため、成功コールバックは呼びません。
+				// Don't process as there is no data to send.
+				// As result is not present, success callback method will not be called.
 				return;
 			}
 
-			// 通信中フラグON
+			// Set busy flag ON
 			this.busy=true;
-			// 送受信完了フラグをfalse(未完了)に設定
+			// Set communication completion flag to false (still in progress)
 			this.complete=false
 
 			this.callBackPostDataSuccess=_onSuccess;
@@ -1127,13 +1110,13 @@ var TenkenARdata = function (_tablename)
 
 			if ( null != this.IntervalTime && 0 < this.IntervalTime )
 			{
-				// タイマーをセットし、その関数内で結果を送信
+				// Set the timer and send the result in the timer's method
 				this.startIntervalAction("post");
 			}
 			else
 			{
-				// インターバルタイマー利用せずデータ送信
-				// 1個目からmaxCount数ずつ送信します。
+				// Send data without using interval timer.
+				// This will send all data from the 1st to maxCount
 				var countNext=0;
 				var countAll=this.dataMaxCount
 				for ( var i=0 ; i < countAll ; i += this.maxLimitRange )
@@ -1153,13 +1136,13 @@ var TenkenARdata = function (_tablename)
 
 		}
 		catch(e) {
-			alert("データのアップロード中にエラーが発生しました。\n" + e);
+			alert("Error occurred while uploading data\n" + e);
 			return false;
 		}
 	}
 
 
-	// データ送信成功コールバック
+	// Success callback method upon data send
 	this.postArDataSuccess = function(_result)
 	{
 		try
@@ -1169,11 +1152,11 @@ var TenkenARdata = function (_tablename)
 
 			if ( this.dataMaxCount <= (this.dataSendOKCount +  this.dataSendNGCount))
 			{
-				// インターバルタイマーの指定なしの場合は完了処理を行う。
-				// 指定ありの場合はインターバルタイマ内で完了処理を行う
+				// Process completion method when interval timer is not used.
+				// If interval timer is used, completion will be processed inside the timer.
 				if ( null != this.IntervalTime && this.IntervalTime <= 0 )
 				{
-					// データ送信後共通終了処理
+					// Common process after the data send complete
 					this.completePostData();
 
 					if (  0 < this.dataSendNGCount )
@@ -1194,16 +1177,16 @@ var TenkenARdata = function (_tablename)
 		}
 	};
 
-	// データ送信失敗コールバック
+	// Error callback upon data send
 	this.postArDataError = function(_result)
 	{
 		try
 		{
 
-			// タイマーをクリア
+			// Clear the timer.
 			this.stopIntervalAction();
 
-			var message = "データのアップロードに失敗しました。動作モードとネットワーク状況を確認して再度お試しください。";
+			var message = "Error occurred while uploading data. Please confirm operation mode and network connectivity and retry.";
 			var detail="";
 			var strCount = ":count=" + this.dataMaxCount + "," + this.dataNextCount + "," + this.dataSendOKCount + "," + this.dataSendNGCount;
 
@@ -1216,7 +1199,7 @@ var TenkenARdata = function (_tablename)
 			this.dataSendNGCount++;
 			if ( this.dataNextCount <= (this.dataSendOKCount +  this.dataSendNGCount))
 			{
-				// データ送信後共通終了処理
+				// Common process after data sending is complete
 				this.completePostData();
 
 				if ( this.callBackPostDataError ) this.callBackPostDataError(_result);
@@ -1228,10 +1211,9 @@ var TenkenARdata = function (_tablename)
 		}
 	};
 
-	// 削除データ追加
-	// 削除データは、QEntity単位です。
-	// (QvalueのQAttribute単位ではないので注意してください)
-	//   _deleteData : TenkenARvalue.QDeleteを指定してください。
+	// Add data to delete.
+	// Deletion data is by QEntity. (NOTE: Not by QAttribute of QValue)
+	//   _deleteData : Set TenkenARvalue.QDelete
 	this.addDeleteData = function(_deleteData)
 	{
 		if ( null != _deleteData )
@@ -1240,13 +1222,13 @@ var TenkenARdata = function (_tablename)
 		}
 	}
 
-	// 削除データクリア
+	// Clear delete data
 	this.clearDeleteData = function()
 	{
 		this.dataDelete.length=0;
 	}
 
-	// 指定された範囲のデータを削除要求
+	// Request to delete the range specified
 	this.deleteArDataValue = function(_start, _count)
 	{
 		try
@@ -1275,17 +1257,17 @@ var TenkenARdata = function (_tablename)
 		}
 	}
 
-	// 削除時インターバルタイマー
+	// Interval timer used for deleting
 	this.deleteArDataInterval = function()
 	{
 		try
 		{
 			if ( 0 < this.dataSendNGCount )
 			{
-				// 削除が失敗したデータがあるため、削除処理を中断する
+				// Stop delete process as some data has an error
 				this.stopIntervalAction();
 
-				// データ削除後共通終了処理
+				// Common process upon completion of data delete
 				this.completeDeleteData();
 
 				if ( this.callBackDeleteDataError ) this.callBackDeleteDataError(this.result);
@@ -1294,11 +1276,11 @@ var TenkenARdata = function (_tablename)
 
 			if ( this.dataSendOKCount >= this.dataMaxCount )
 			{
-				// 最後まで削除したので終了
+				// End as we've deleted the entire data
 				this.stopIntervalAction();
 				this.dataDelete.length = 0;
 
-				// データ削除後共通終了処理
+				// Common process upon completion of data delete
 				this.completeDeleteData();
 
 				if ( this.callBackDeleteDataSuccess ) this.callBackDeleteDataSuccess(this.result);
@@ -1330,25 +1312,25 @@ var TenkenARdata = function (_tablename)
 		return;
 	}
 
-	// データの削除
+	// Delete Data
 	this.deleteArData = function(_onSuccess, _onError)
 	{
 		try
 		{
-			// 既に通信中の場合は処理を行わない。
+			// Don't process if it's already communicating
 			if ( true == this.busy )
 			{
 				return;
 			}
 			if ( this.dataDelete.length <= 0 )
 			{
-				// 削除データがないため処理を行わない。
+				// Don't process as there is no data to delete
 				return;
 			}
 
-			// 通信中フラグON
+			// Set communication flag ON
 			this.busy=true;
-			// 送受信完了フラグをfalse(未完了)に設定
+			// Set complition flag to false (in progress)
 			this.complete=false
 
 			this.callBackDeleteDataSuccess=_onSuccess;
@@ -1362,13 +1344,13 @@ var TenkenARdata = function (_tablename)
 
 			if ( null != this.IntervalTime && 0 < this.IntervalTime )
 			{
-				// タイマーをセットし、その関数内で削除
+				// Set the timer, and delete within that method
 				this.startIntervalAction("delete");
 			}
 			else
 			{
-				// インターバルタイマー利用せずデータ削除
-				// 1個目からmaxCount数ずつ削除します。
+				// Delete data without using interval timer.
+				// Delete per maxCount from the 1st object
 				var countNext=0;
 				var countAll=this.dataMaxCount
 				for ( var i=0 ; i < countAll ; i += this.maxLimitRange )
@@ -1388,13 +1370,13 @@ var TenkenARdata = function (_tablename)
 
 		}
 		catch(e) {
-			alert("データのアップロード中にエラーが発生しました。\n" + e);
+			alert("Error occurred during data upload\n" + e);
 			return false;
 		}
 	}
 
 
-	// データ削除成功コールバック
+	// Succss callback upon data deletion
 	this.deleteArDataSuccess = function(_result)
 	{
 		try
@@ -1404,11 +1386,11 @@ var TenkenARdata = function (_tablename)
 
 			if ( this.dataMaxCount <= (this.dataSendOKCount +  this.dataSendNGCount))
 			{
-				// インターバルタイマーの指定なしの場合は完了処理を行う。
-				// 指定ありの場合はインターバルタイマ内で完了処理を行う
+				// Process completion methods when iterval timer is not defined.
+				// If interval timer is defined, completion methods will be handled inside timer object
 				if ( null != this.IntervalTime && this.IntervalTime <= 0 )
 				{
-					// データ削除後共通終了処理
+					// Common process after data deletion
 					this.completeDeleteData();
 
 					if (  0 < this.dataSendNGCount )
@@ -1428,16 +1410,16 @@ var TenkenARdata = function (_tablename)
 		}
 	};
 
-	// データ削除失敗コールバック
+	// Error callback method on data deletion
 	this.deleteArDataError = function(_result)
 	{
 		try
 		{
 
-			// タイマーをクリア
+			// Clear the timer
 			this.stopIntervalAction();
 
-			var message = "データのアップロードに失敗しました。動作モードとネットワーク状況を確認して再度お試しください。";
+			var message = "Error occurred while uploading data. Please confirm operation mode and network connectivity and retry.";
 			var detail="";
 			var ErrorStatus=0;
 
@@ -1450,15 +1432,15 @@ var TenkenARdata = function (_tablename)
 				detail += _result.getStatus() + "\n"+ _result.getValue() + strCount;
 			}
 
-			// deleteが404 Not Foundになる場合があるため、
-			// 404で終了時は正常時と同じ処理を行う。
+			// It sometimes return with 404 Not Found upon delete.
+			// When 404 is returned, process the same as success.
 			if ( 404 == ErrorStatus )
 			{
 				this.dataSendOKCount++;
 
 				if ( this.dataMaxCount <= (this.dataSendOKCount +  this.dataSendNGCount))
 				{
-					// データ削除後共通終了処理
+					// Common process after data deletion
 					this.completeDeleteData();
 
 					if (  0 < this.dataSendNGCount )
@@ -1476,7 +1458,7 @@ var TenkenARdata = function (_tablename)
 				this.dataSendNGCount++;
 				if ( this.dataNextCount <= (this.dataSendOKCount +  this.dataSendNGCount))
 				{
-					// データ削除後共通終了処理
+					// Common process after data deletion
 					this.completeDeleteData();
 
 					if ( this.callBackDeleteDataError ) this.callBackDeleteDataError(_result);
@@ -1489,12 +1471,12 @@ var TenkenARdata = function (_tablename)
 		}
 	};
 
-	// データ削除完了後の共通処理
+	// Common process after data deletion
 	this.completeDeleteData = function()
 	{
-		// 通信中フラグをOFF
+		// Set busy flat to OFF
 		this.busy=false;
-		// 送受信完了フラグをtrue(完了)に設定
+		// Set communication complete flag to true (completed)
 		this.complete=true;
 	}
 

@@ -1,44 +1,44 @@
 /**
- * @overview 点検業務向けJavaScript API群(点検GUI部)です。
+ * @overview JavaScript API (GUI parts) for Tenken Application
  * @copyright Copyright 2014 FUJITSU LIMITED
  */
 
 
 /**
- * GUIのライブラリ空間です。
+ * Library's namespace for GUI.
  */
 Tenken.GUI = {};
 
-// Upload中フラグ
+// Flag to define upload is in progress.
 Tenken.GUI.Uploading = false;
 
 Tenken.GUI.UploadingSelectMode = false;
 Tenken.GUI.UploadingSelectTenken = false;
 Tenken.GUI.UploadingSelectMsg = false;
 
-// 選択したマーカーのみ点検結果項目を表示するための領域
+// Region to display only the check results for selected marker
 Tenken.GUI.selectMarker = [];
 
-// 結果送信時選択テーブルリスト(点検項目)
+// Selection table list used when sending results (Checklist)
 Tenken.GUI.submitAssetLists = null;
 
-// 結果送信時選申し送り存在フラグ
+// Flag to define if there is messages when sending results
 Tenken.GUI.submitMsgFlag = false;
 
-//Tenken.GUI.Scene_main    = 1; // メイン：申し送り表示
-// シーン表示部に表示する文字列の定義(初期値のダミー)
+//Tenken.GUI.Scene_main    = 1; // Main: Show messages
+// Define string to show inside scene window (dummy default message)
 Tenken.GUI.Scenes=[
-  {"sceneid":0, "name":"シーン切り替え", "dispMSG":false, "dispASSET":false},
-  {"sceneid":1, "name":"メイン", "dispMSG":false, "dispASSET":false}
+  {"sceneid":0, "name":"Change scenes", "dispMSG":false, "dispASSET":false},
+  {"sceneid":1, "name":"Main", "dispMSG":false, "dispASSET":false}
   ];
 
-Tenken.GUI.selectScene = 1;  // 選択中のシーンID。1は初期のダミー値。
+Tenken.GUI.selectScene = 1;  // Selected scene ID. 1 is the default dummy value.
 
 /**
- * 点検値群を表現するクラスです。
- * @param _name 点検名
- * @param _datetime 点検開始日時
- * @param _operator 点検作業者
+ * Class for checklist values
+ * @param _name checklist name (Tenken name)
+ * @param _datetime Check DateTime
+ * @param _operator Check operator
  */
 Tenken.GUI.TenkenValue = function(_name, _datetime, _operator) {
 	this.name = _name;
@@ -46,16 +46,16 @@ Tenken.GUI.TenkenValue = function(_name, _datetime, _operator) {
 	this.operator = _operator;
 };
 
-// 点検完了処理
-// ストレージとデータをクリアし初画面に戻ります。
+// End check process.
+// Clear Storage and data to return to initial page.
 Tenken.GUI.FinishTenkenGoTop = function()
 {
 	Tenken.Storage.clear();
 
-	//カレント点検結果データのクリア
+	// Clear current check results
 	TenkenData.TenkenEvent.clearCurrentTenkenEvent();
 
-	// カレント申し送りデータのクリア
+	// Clear current messages
 	TenkenData.MsgEvent.clearCurrentMsgEvent();
 
 	AR.Data.clearResourceStorage(Tenken.Util.noop, Tenken.Util.noop);
@@ -63,58 +63,56 @@ Tenken.GUI.FinishTenkenGoTop = function()
 	location.replace(TenkenConst.PageName.top);
 }
 
-// 正常アップロード完了後の処理
+// Process after upload completed successfully
 Tenken.GUI.AfterUpload = function()
 {
 	try
 	{
 		Tenken.GUI.Uploading = false;
 
-		// 一括送信と選択送信で終了処理を分ける
+		// Separate process from bundled send and seleted send.
 		if ( true == Tenken.GUI.UploadingSelectMode )
 		{
 			if (true == Tenken.GUI.UploadingSelectTenken ||
 				true == Tenken.GUI.UploadingSelectMsg )
 			{
-				// 送信中のため継続する。
+				// Continue as sending is in progress.
 				return;
 			}
 
 			alert("Data was uploaded.");
 
-			// 選択されたマーカーＩＤのみの送信の場合、
-			// 初画面に戻らずに処理を続行します。
+			// Do not return to initial screen and continue process only when sending selected Marker ID.
 
-			// 送信対象テーブルの点検結果データ値(画面設定値とPOI)を削除
+			// Delete check result values (display set value and POI) of target table to send.
 			for ( assetid in Tenken.GUI.submitAssetLists )
 			{
 				var tableid = TenkenData.TenkenTable.getTableIdFromAssetId(assetid);
 				if ( tableid )
 				{
-					// 点検項目一覧の今回値をクリアする。
+					// Clear current value of checklist
 					Tenken.GUI.ChecklistPage.clearTable(tableid, null, false);
 
-					// 点検結果の今回値をクリアする。
+					// Clear current value of check results
 					TenkenData.TenkenEvent.resetCurrentTenkenEventTableTableId(tableid);
 
 				}
 
 			}
 
-			// 送信済みの点検結果を保存しなおす
+			// Save check results that have been sent.
 			TenkenData.TenkenEvent.saveStorage();
 
 			Tenken.GUI.submitAssetLists=null;
 
-			// 申し送りデータを送信した場合は、送信したカレントの申し送りデータを
-			// クリアする
+			// If messages are sent, clear the current messages that have been sent.
 			if ( true == Tenken.GUI.submitMsgFlag )
 			{
 				TenkenData.MsgEvent.moveCurrentDataToLastData();
 				Tenken.GUI.submitMsgFlag = false;
 			}
 
-			// 重畳データのリロード(完了報告した申し送りを除外)
+			// Reload overlay data (remove messages that has been reported as complete)
 			Tenken.GUI.setARcontents(Tenken.GUI.selectScene, true);
 
 			Tenken.GUI.Uploading = false;
@@ -124,7 +122,7 @@ Tenken.GUI.AfterUpload = function()
 		else
 		{
 			Tenken.GUI.UploadingSelectMode=false;
-			alert("データのアップロードが完了しました。\n\n初期画面に戻ります。");
+			alert("Finished uploading data.\n\nReturning to initial screen.");
 
 			Tenken.GUI.FinishTenkenGoTop();
 		}
@@ -136,26 +134,26 @@ Tenken.GUI.AfterUpload = function()
 }
 
 /**
- * 現在の点検結果をサーバに送信します。
- * @return サーバ送信が成功した場合はtrue、それ以外はfalse
+ * Send current check results to server.
+ * @return true when sending success. false otherwise.
  */
 Tenken.GUI.TenkenValue.prototype.submit = function(_submitall)
 {
 	if ( true == Tenken.GUI.Uploading )
 	{
-		alert("結果送信中です。");
+		alert("Sending results.");
 		return;
 	}
 
 	Tenken.GUI.Uploading = true;
 	Tenken.GUI.submitMsgFlag = false;
 
-	//点検結果データの送信
+	// Send check results
 	TenkenData.TenkenEvent.submitTenkenEvent(null, _submitall, Tenken.GUI.onPostSuccess, Tenken.GUI.onPostError, 1);
 
 };
 
-// 送信が成功した場合に呼ばれます(点検結果、申し送り、完了報告共通)
+// Called when send succedded (common for check result, messages, and completion report)
 Tenken.GUI.onPostSuccess = function(_value)
 {
 	var finFlag=false;
@@ -163,22 +161,22 @@ Tenken.GUI.onPostSuccess = function(_value)
 	switch ( _value )
 	{
 	case 1:
-		// 点検結果送信が完了したため、申し送りを送信する
-		// 申し送りデータの送信
+		// Send messages as sending check result ended.
+		// Send messages.
 		Tenken.GUI.UploadingSelectTenken = false;
 		Tenken.GUI.SubmitPage.submitMsg();
 		break;
 	case 2:
-		// 申し送り送信が完了したため、完了報告を送信する
+		// Send completion report as sending messages ended.
 		Tenken.GUI.UploadingSelectMsg = false;
 		TenkenData.MsgEvent.completeMsg(Tenken.GUI.onPostSuccess, Tenken.GUI.onPostError, 3);
 		break;
 	case 3:
-		// 完了報告旧データ削除
+		// Delete old completion report.
 		TenkenData.MsgEvent.deleteMsgEvent(Tenken.GUI.onPostSuccess, Tenken.GUI.onPostError, 4);
 		break;
 	case 4:
-		// 全データ送信完了
+		// Finished sending all data.
 		finFlag=true;
 		break;
 	}
@@ -189,21 +187,21 @@ Tenken.GUI.onPostSuccess = function(_value)
 	}
 }
 
-// 送信が失敗した場合に呼ばれます(点検結果、申し送り、完了報告共通)
+// Called when send failed (common for check result, messages, and completion report)
 Tenken.GUI.onPostError = function(_value)
 {
-// エラーメッセージが多重に表示されるため、ここでは表示しません。
+// Do not show here as duplicate error messages will be displayed
 //	switch ( _value )
 //	{
 //	case 1:
-//		alert("データのアップロードに失敗しました。(点検結果)");
+//		alert("Failed to upload data (Check results)");
 //		break;
 //	case 2:
-//		alert("データのアップロードに失敗しました。(申し送り)");
+//		alert("Failed to upload data (Messages)");
 //		break;
 //	case 3:
 //	case 4:
-//		alert("データのアップロードに失敗しました。(完了報告)");
+//		alert("Failed to upload data (Completion report)");
 //		break;
 //	}
 	Tenken.GUI.Uploading = false;
@@ -213,15 +211,15 @@ Tenken.GUI.onPostError = function(_value)
 	Tenken.GUI.submitMsgFlag = false;
 }
 
-/** 点検値群オブジェクト。*/
-Tenken.GUI.TenkenValue.instance = new Tenken.GUI.TenkenValue("点検シナリオ", new Tenken.DatetimeValue(Tenken.Storage.startDatetime.get()), Tenken.Storage.operator.get());
+/** Object to hold check values */
+Tenken.GUI.TenkenValue.instance = new Tenken.GUI.TenkenValue("Tenken Scenario", new Tenken.DatetimeValue(Tenken.Storage.startDatetime.get()), Tenken.Storage.operator.get());
 
 
 /**
- * 指定文字列に含まれるHTML制御文字をエスケープして返します。
- * <a href="javascript:...">等でも使用できるよう、JavaScriptを狂わせるクォート類もエンコードします。
- * @param {String} _text 対象文字列
- * @return {String} エスケープした対象文字列
+ * Escape HTML control charactors of the string and return.
+ * Encode quotes so that <a href="javascript:..."> can be used.
+ * @param {String} _text Target string
+ * @return {String} Escaped string
  */
 Tenken.GUI.escapeHTML = function(_text) {
 	return (null == _text) ? null : _text.replace(
@@ -240,10 +238,10 @@ Tenken.GUI.escapeHTML = function(_text) {
 			else if($6)
 				return "&#x27;";
 			else
-				return ""; // IE9で"undefined"になる対応
+				return ""; // support IE9 which sets "undefined"
 		});
 };
-/** HTML制御文字エスケープ用正規表現。*/
+/** Regular expression to escape HTML control charactors */
 Tenken.GUI.escapeHTML._REGEXP = (function() {
 	var re = new RegExp();
 	re.compile("(&)|(<)|(>)|( |\t)|(\\\")|(\\\')", "img");
@@ -251,9 +249,9 @@ Tenken.GUI.escapeHTML._REGEXP = (function() {
 })();
 
 /**
- * 指定文字列に含まれるJavaScript制御文字をエスケープして返します。
- * @param {String} _text 対象文字列
- * @return {String} エスケープした対象文字列
+ * Escape JavaScript control charactors of the string and return.
+ * @param {String} _text Target string
+ * @return {String} Escaped string
  */
 Tenken.GUI.escapeScript = function(_text) {
 	return (null == _text) ? null : _text.replace(
@@ -266,10 +264,10 @@ Tenken.GUI.escapeScript = function(_text) {
 			else if($3)
 				return "\\\\";
 			else
-				return ""; // IE9で"undefined"になる対応
+				return ""; // support IE9 which sets "undefined"
 		});
 };
-/** JavaScript制御文字エスケープ用正規表現。*/
+/** Regular expression to escape JavaScript control charactors */
 Tenken.GUI.escapeScript._REGEXP = (function() {
 	var re = new RegExp();
 	re.compile("(\\\")|(\\\')|(\\\\)", "img");
@@ -278,12 +276,12 @@ Tenken.GUI.escapeScript._REGEXP = (function() {
 
 
 /**
- * 指定URL文字列をエンコードして返します。
- * 通常のURLエンコードでは対象にならないJavaScriptを狂わせるクォート類もエンコードします。
- * 本関数は、encodeURIComponent()でなく、encodeURI()を使用し、URI全体をエンコーディングします。
- * クエリパラメータに予約語が含まれないことを前提としているので、注意してください。
- * @param {String} _text 対象文字列
- * @return {String} エンコードした対象文字列
+ * Return encoded URL string.
+ * Encode quotes that are normally not a target for URL encode as it will fail in JavaScript.
+ * This method uses encodeURI() and not encodeURIComponent() to encode the entire URI.
+ * Note that this method suppose there are no reserved words in query parameters.
+ * @param {String} _text Target string
+ * @return {String} Encoded string
  */
 Tenken.GUI.encodeURL = function(_text) {
 	if(null == _text) return null;
@@ -292,12 +290,12 @@ Tenken.GUI.encodeURL = function(_text) {
 		Tenken.GUI.encodeURL._REGEXP,
 		function($0, $1) {
 			if($1)
-				return "%27"; // encodeURIはシングルクォートをエスケープしないため、自力で行う
+				return "%27"; // encodeURI do not escapge single quote. encode manually here.
 			else
-				return ""; // IE9で"undefined"になる対応
+				return ""; // support IE9 which sets "undefined"
 		});
 };
-/** URL制御文字エスケープ用正規表現。*/
+/** Regular expression to escape URL escape charactors */
 Tenken.GUI.encodeURL._REGEXP = (function() {
 	var re = new RegExp();
 	re.compile("(\\\')", "img");
@@ -306,8 +304,8 @@ Tenken.GUI.encodeURL._REGEXP = (function() {
 
 
 /**
- * 指定エレメントが見えるようにbodyをスクロールさせます。
- * @param _targetElm 表示対象エレメント。対象がなく、先頭を表示したい場合はnull
+ * Scroll body to show seleted element.
+ * @param _targetElm Target element to show. If there is no target and want to show the head, specify null.
  */
 Tenken.GUI.scrollBodyIntoView = function(_targetElm) {
 	document.body.scrollTop = (null == _targetElm) ? 0 : (_targetElm.offsetTop - 70);
@@ -315,20 +313,20 @@ Tenken.GUI.scrollBodyIntoView = function(_targetElm) {
 
 
 /**
- * GUI部品生成の基底クラスです。
- * @param {String} _id 部品ID
+ * Base class to create GUI parts.
+ * @param {String} _id Part ID
  */
 Tenken.GUI.AbstractWidgetCreator = function() {};
 /**
- * 部品のHTMLを返します。
- * @param _id 部品ID
- * @return HTML文字列
+ * Return HTML of the parts.
+ * @param _id Part ID
+ * @return HTML string
  */
 Tenken.GUI.AbstractWidgetCreator.prototype.getHTML = function(_id) { return ""; }
 
 
 /**
- * 数値入力部品生成クラスです。
+ * Class to generate number input part.
  */
 Tenken.GUI.NumberWidgetCreator = function() {
 	Tenken.GUI.AbstractWidgetCreator.call(this);
@@ -342,22 +340,22 @@ return '<input type="text" id="' + _id + '" required pattern="' + Tenken.Checkli
 Tenken.GUI.NumberWidgetCreator._checkLimit = function(_value, _base, _low, _high) {
 	var	invalid=false;
 
-	// 下限値と上限値の範囲チェック
+	// Check min and max range.
 	var numValue= parseFloat(_value);
 	if ( null != _base && "" != _base)
 	{
 		if ( Tenken.ChecklistForm.checkValue("NUMBER", _base) == true )
 		{
-			// ベース値(数値)あり、下限上限あり。
-			// 下限と上限はベース値からの差
+			// min/max and base value (number) exists.
+			// min and max is difference from the base.
 			var numBase=parseFloat(_base);
 			var numLow=( null == _low ) ? null : numBase - _low;
 			var numHigh=( null == _high ) ? null : numBase + _high;
 		}
 		else
 		{
-			// ベース値(RowId指定)あり、下限上限あり
-			// ベースはRowIdの値を取得。下限と上限はベース値からの差
+			// min/max and base value (RowId) exists.
+			// Get base from RowId value. min and max is difference from the base.
 			var elmBase = document.getElementById(Tenken.GUI.ChecklistPage._createCurrentRowWidgetId(_base));
 			if ( elmBase )
 			{
@@ -373,7 +371,7 @@ Tenken.GUI.NumberWidgetCreator._checkLimit = function(_value, _base, _low, _high
 		}
 	}
 	else {
-		// ベース値なしの下限、上限のみ
+		// min/max only. no base value.
 		if ((null != _low && numValue < _low ) ||
 		(null != _high && numValue > _high )  )
 		{
@@ -390,7 +388,7 @@ Tenken.GUI.NumberWidgetCreator._validate = function(_elm) {
 	var row=TenkenData.TenkenTable.getRowFromRowId(rowId);
 	if ( null == row || (null == row.LimitLow && null == row.LimitHigh && null == row.listLimit) )
 	{
-		// 下限値や上限値の設定が無いので何もしない
+		// Do nothing as there is no min and max value set
 		return;
 	}
 
@@ -398,11 +396,11 @@ Tenken.GUI.NumberWidgetCreator._validate = function(_elm) {
 	if ( false == _elm.validity.valueMissing &&
 		 true == _elm.validity.valid )
 	{
-		// 下限値と上限値の範囲チェック
+		// Check min and max value range.
 		invalid = Tenken.GUI.NumberWidgetCreator._checkLimit(_elm.value, row.LimitBase, row.LimitLow, row.LimitHigh);
 
-		// ２つ目以降の下限値と上限値チェック
-		// (１つ目で既に範囲外の場合はチェックしない)
+		// Check the next min and max values.
+		// (Do not check if the first value already exceeds the range)
 		if ( true != invalid && null != row.listLimit && 0 < row.listLimit.length )
 		{
 			for ( var i=0 ; true != invalid && i < row.listLimit.length ; i++ )
@@ -421,7 +419,7 @@ Tenken.GUI.NumberWidgetCreator._validate = function(_elm) {
 };
 
 /**
- * 文字列入力部品生成クラスです。
+ * Class to generate string input part.
  */
 Tenken.GUI.StringWidgetCreator = function() {
 	Tenken.GUI.AbstractWidgetCreator.call(this);
@@ -435,7 +433,7 @@ return '<input type="text" id="' + _id + '" required pattern="' + Tenken.Checkli
 };
 
 Tenken.GUI.StringWidgetCreator._validate = function(_elm) {
-	var invalid = _elm.validity.valueMissing ? false // 値がなければ非invalid
+	var invalid = _elm.validity.valueMissing ? false // not invalid if value is not set.
 		: ((_elm.validity.valid && ( "" != _elm.value)) ? false : true);
 	_elm.style.backgroundColor = invalid ? "red" : "";
 	_elm.style.color = invalid ? "white" : "";
@@ -443,11 +441,11 @@ Tenken.GUI.StringWidgetCreator._validate = function(_elm) {
 
 
 /**
- * トグルボタン部品生成クラスです。
- * ボタンが押される度に、valueを変更します。
- * @param _enums トグル値の配列。先頭は初期値
- * @param _instanceName 本クラスのインスタンス名
- * @param _function クリック時に呼ぶfunction。function(this, _elm, _currentEnum, _nextEnum){ return (トグルするか否か。通常動作はtrue); }
+ * Class to generate toggle button.
+ * Change value per buton is pushed.
+ * @param _enums Array to hold toggle value. Head value is the default.
+ * @param _instanceName Instance name of this class.
+ * @param _function function to call when clicked. function(this, _elm, _currentEnum, _nextEnum){ return ( whether to toggle or not. default is true.); }
  */
 Tenken.GUI.ToggleButtonWidgetCreator = function(_enums, _instanceName, _function) {
 	Tenken.GUI.AbstractWidgetCreator.call(this);
@@ -462,9 +460,9 @@ Tenken.GUI.ToggleButtonWidgetCreator.prototype.getHTML = function(_id) {
 	return '<input type="button"' + id + ' class="togglebutton" value="' + this.enums[0] + '"onclick="javascript:' + this._instanceName + '.toggle(this)">';
 };
 /**
- * ボタンの選択状態をトグルします。
- * @param _elm 部品エレメント
- * @param _nextEnum 次に表示してほしい列挙値。nullの場合は、次のEnum値を表示
+ * Toggle button selection.
+ * @param _elm part element
+ * @param _nextEnum Enum value to show next. Show next enum if null is specified.
  */
 Tenken.GUI.ToggleButtonWidgetCreator.prototype.toggle = function(_elm, _nextEnum) {
 	var currentIndex = -1;
@@ -492,7 +490,7 @@ Tenken.GUI.ToggleButtonWidgetCreator.prototype.toggle = function(_elm, _nextEnum
 };
 
 
-/** 点検スキップトグルボタン部品生成インスタンス。*/
+/** Instance to generate check skip toggle button */
 Tenken.GUI.skipornotButtonWidgetCreator = new Tenken.GUI.ToggleButtonWidgetCreator(
 	["Running. Inspection is required.", "Stopping. Inspection is not required."],
 	"Tenken.GUI.skipornotButtonWidgetCreator",
@@ -501,42 +499,42 @@ Tenken.GUI.skipornotButtonWidgetCreator = new Tenken.GUI.ToggleButtonWidgetCreat
 		return true;
 	}
 );
-/** 天気入力トグルボタンWidgetインスタンス。*/
+/** Instance of Widget for weather input toggle button */
 Tenken.GUI.weatherButtonWidgetCreator = new Tenken.GUI.ToggleButtonWidgetCreator(Tenken.putEach(["No input"], Tenken.ChecklistForm.WEATHERTYPE.enum.enums, false), "Tenken.GUI.weatherButtonWidgetCreator");
-/** OK/NGトグルボタンWidgetインスタンス。*/
+/** Instance of Widget for OK/NG input toggle button */
 Tenken.GUI.okngButtonWidgetCreator = new Tenken.GUI.ToggleButtonWidgetCreator(Tenken.putEach(["No input"], Tenken.ChecklistForm.OKNGTYPE.enum.enums, false), "Tenken.GUI.okngButtonWidgetCreator");
-/** ○×トグルボタンWidgetインスタンス。*/
+/** Instance of Widget for ○× input toggle button */
 Tenken.GUI.marubatsuButtonWidgetCreator = new Tenken.GUI.ToggleButtonWidgetCreator(Tenken.putEach(["No input"], Tenken.ChecklistForm.MARUBATSUTYPE.enum.enums, false), "Tenken.GUI.marubatsuButtonWidgetCreator");
-/** 数値入力Widgetインスタンス。*/
+/** Instance of Widget for number input toggle button */
 Tenken.GUI.numberWidgetCreator = new Tenken.GUI.NumberWidgetCreator();
-/** 文字列入力Widgetインスタンス。*/
+/** Instance of Widget for string input toggle button */
 Tenken.GUI.stringWidgetCreator = new Tenken.GUI.StringWidgetCreator();
 
 /**
- * ページを処理するクラスです。
- * 利用方法は以下のとおりです。
- * (1)main.htmlの#header_menu, #content配下にHTMLを追加
- * (2)tenkengui.cssのbody[data-ar-content="*"], #content配下にCSSを追加
- * (3)Tenken.GUI.Page.pages配列に、本クラスを継承したページクラスインスタンスを登録。pages配列インデックスと(1)のcontent_Xとを揃える必要がある。0番目はメインページ(閉じるボタンで戻るページ)インスタンスでなければならない。
+ * Class to process pages.
+ * Use as following:
+ * (1) Append HTML under #header_menu, #content of main.html
+ * (2) Append CSS under body[data-ar-content="*"] of tenkengui.css, and #content
+ * (3) Create page class instance derived from this class and add to Tenken.GUI.Page.pages array. context_X of (1) and array index must match. index 0 must be the main page (where user returns when pushes the close button)
  *
- * @param _arEnabled ARの重畳表示/操作等を有効にする場合はtrue、それ以外はfalse
+ * @param _arEnabled true to enable AR overlay and operations. false otherwise
  */
 Tenken.GUI.Page = function(_arEnabled) {
 	this._arEnabled = _arEnabled;
 };
 /**
- * ページ表示前の処理をします。
+ * Process before showing the page.
  */
 Tenken.GUI.Page.prototype.handleBeforeShow = function() {};
 /**
- * ページ消去前の処理をします。
+ * Process before hiding the page.
  */
 Tenken.GUI.Page.prototype.handleBeforeHide = function() {};
-/** ページ配列。*/
+/** page array */
 Tenken.GUI.Page.pages = [];
 /**
- * ページを切り替えます。
- * @param _pageIndex Tenken.GUI.Page.pages配列のインデックス
+ * Switch pages.
+ * @param _pageIndex Index of Tenken.GUI.Page.pages array.
  */
 Tenken.GUI.Page.changePage = function(_pageIndex) {
 try
@@ -546,9 +544,9 @@ try
 
 
 	var newActivePage = Tenken.GUI.Page.pages[_pageIndex];
-	if(null != currentActivePage) { // 初回表示時はcurrentがない
+	if(null != currentActivePage) { // current do not exist for the first time.
 		currentActivePage.handleBeforeHide();
-		Tenken.GUI.stopCamera(); // カメラ停止
+		Tenken.GUI.stopCamera(); // Stop camera.
 	}
 
 	newActivePage.handleBeforeShow();
@@ -557,21 +555,21 @@ try
 }
 catch (e)
 {
-  Tenken.Util.logerr("ページの表示に失敗しました。", e);
-  alert("ページの表示に失敗しました。" +  e);
+  Tenken.Util.logerr("Failed to show the page", e);
+  alert("Failed to show the page" +  e);
 }
 };
 /**
- * 現在表示中のページインデックスを返します。
- * @return 現在表示中のページ。表示中のページがない場合は-1
+ * Return current showing page index.
+ * @return array index of current page. -1 if none of the page is shown.
  */
 Tenken.GUI.Page._getShowingPageIndex = function() {
 	var index = document.body.getAttribute("data-ar-content");
 	return isNaN(index) ? -1 : parseInt(index);
 };
 /**
- * 指定ページを表示します。
- * @param _pageIndex 対象ページインデックス
+ * Show specified page.
+ * @param _pageIndex page index to show.
  */
 Tenken.GUI.Page._show = function(_pageIndex) {
 	document.body.setAttribute("data-ar-content", _pageIndex);
@@ -579,19 +577,19 @@ Tenken.GUI.Page._show = function(_pageIndex) {
 	Tenken.GUI.scrollBodyIntoView(null);
 };
 
-/** ウィンドウロードイベントリスナの登録。*/
+/** Register Windows load event listener */
 window.addEventListener("load", function() {
 try {
-	// 各データのロード
+	// Load each data
 	TenkenData.AllGet.loadStorage();
 
-	// マーカー検知イベント
+	// Marker detected event.
 	Tenken.Util.addMarkerListener(onDetectMarker);
 Tenken.Util.loginfo("addMarkerListener");
 
 	if (window.navigator.userAgent.match(/(iPad|iPhone|iPod)/i))
 	{
-		// タッチイベントを登録(iOS)
+		// Register touch event (iOS)
 		document.body.addEventListener("touchstart", function(event) {
 			Tenken.traceEvent.traceButtonEvent(Tenken.GUI.TenkenValue.instance.operator, event.target);
 			if(document.body != event.target) return;
@@ -605,7 +603,7 @@ Tenken.Util.loginfo("addMarkerListener");
 	}
 	else
 	{
-		// クリックイベントを登録(Android/Win)
+		// Register click event (Android/Win)
 		document.body.addEventListener("click", function(event) {
 			Tenken.traceEvent.traceButtonEvent(Tenken.GUI.TenkenValue.instance.operator, event.target);
 			if(document.body != event.target) return;
@@ -618,13 +616,13 @@ Tenken.Util.loginfo("addMarkerListener");
 		});
 	}
 
-	// 全点検項目のPOIを作成
+	// Create POI of all the checklist
 	Tenken.GUI.LoadPOI();
 
-	// 重畳データの登録
+	// Register overlay data
 	Tenken.GUI.setARcontents(Tenken.GUI.selectScene, false);
 
-	// タイトル部に表示するシナリオをダウンロードしたシナリオ名に変更
+	// Change senario name shown in the title to downloaded scenario name.
 	var ScenarioName=TenkenData.Scenario.getScenarioName();
 	if ( null != ScenarioName )
 	{
@@ -632,17 +630,17 @@ Tenken.Util.loginfo("addMarkerListener");
 		if ( elm ) elm.innerHTML=ScenarioName;
 	}
 
-	// 差分計算自動表示用
-	// input要素のchangeイベントを登録
+	// For automatically calculating differencials.
+	// Register change event of the input element.
 	document.body.addEventListener("change", Tenken.GUI.onChange);
 
-	// 初期ページを表示(メインページ)
+	// Show the initial page (main page)
 	Tenken.GUI.Page.changePage(0);
 
-	// ネイティブカメラを起動
-	Tenken.GUI.startCamera(); // カメラ起動
+	// Start camera on native device.
+	Tenken.GUI.startCamera(); // Start camera
 
-	// トグルを１つ進めて表示する(メインの次のシーン名を表示)
+	// Display by incrementing toggle (Display scene name next to the main page)
 	var elmToggle = document.getElementById("changescene");
 	if ( elmToggle ) Tenken.GUI.changeSceneButtonWidgetCreator.toggle(elmToggle, null);
 
@@ -655,36 +653,36 @@ catch (e)
 }
 );
 
-/** ウィンドウアンロード前イベントリスナの登録。*/
+/** Register event listener before window unload */
 window.addEventListener("beforeunload", function() {
 	if ( true == TenkenData.AllGet.getPhase() )
 	{
-		return("ダウンロード中のデータがあります。\nダウンロード中にアプリケーションを終了した場合、アプリケーションが正常に動作しなくなる可能性があります。");
+		return("Download in progress.\nApplication might not start collectly if application is quited during download.");
 	}
 	if ( true == Tenken.GUI.Uploading )
 	{
-		return("アップロード中のデータがあります。\nアップロード中にアプリケーションを終了した場合、アプリケーションが正常に動作しなくなる可能性があります。");
+		return("Upload in progress.\nApplication might not start collectly if application is quited during upload.");
 	}
 
-	// 入力中にOSの戻るボタンで戻ってしまうと、入力中の点検データが
-	// クリアされてしまうため、一度メイン画面に戻し入力値を保存する。
-	Tenken.GUI.Page.changePage(0); // ページ切替
+	// Return to the main page and save input data, as data will be cleared when user returns 
+	// by clicking OS's "back" button.
+	Tenken.GUI.Page.changePage(0); // Switch page
 });
 
 
-/** ウィンドウアンロードイベントリスナの登録。*/
+/** Register window unload event lister */
 window.addEventListener("unload", function() {
-	// マーカー検知イベントリスナ削除
+	// Remove event lister to detect markers
     Tenken.Util.removeMarkerListener();
 });
 
-// 指定の親(Parent)配下内の入力可能なHTMLのタグのElementを
-// 指定された配列に格納して返す。
+// Save all inputable HTML tag elements from the specified parent
+// into specified array and return.
 Tenken.GUI.getInputTag = function(_parent, _listInputs )
 {
 	try
 	{
-		// 親配下のINPUTタグを抽出
+		// Get INPUT tag elements under the parent element
 		if ( null == _parent ) return;
 		var lenchildCount=_parent.childElementCount;
 		for ( var i=0 ; i < lenchildCount ; i++ )
@@ -692,11 +690,11 @@ Tenken.GUI.getInputTag = function(_parent, _listInputs )
 			if ( _parent.children )
 			{
 				var child=_parent.children[i];
-				// INPUTタグ。
+				// INPUT tag.
 				if ( child && "INPUT" == child.nodeName.toUpperCase() )
 				{
-					// typeを絞り込む。対象以外は除外する。
-					//	除外: BUTTON RADIO CHECKBOX FILE HIDDEN SUBMIT
+					// Limit the type. Remove anything other than the target type.
+					//	Remove: BUTTON RADIO CHECKBOX FILE HIDDEN SUBMIT
 					//        RESET IMAGE
 					var type=child.type.toUpperCase()
 					switch ( type )
@@ -729,18 +727,17 @@ Tenken.GUI.getInputTag = function(_parent, _listInputs )
 	}
 }
 
-// カレントElementから親をたどり、TABLEタグを探した後、
-// そのTABLEタグの中に含まれるINPUTタグのリスト配列を作成して返します。
-// 指定した要素の親をたどり、属性名に"input-ar-group"が登録されている
-// 要素トップの親とします。
-// そのトップの親の配下にあるINPUT要素を配列で返します。
+// Search TABLE tag of parent elements of the specified element.
+// Then, create array of INPUT tag list from this TABLE tag. 
+// The matching parent should have attribute of "input-ar-group".
+// Array containing INPUT elements after this parent is returned.
 Tenken.GUI.findInputTagOfTables = function(_current)
 {
 	try
 	{
 		var parentElm = _current;
 
-		// 親をたどり、TABLEタグを探し出す。
+		// Search TABLE tag parsing parents
 		for ( ; null != parentElm ; )
 		{
 			parentElm = parentElm.parentElement;
@@ -768,32 +765,32 @@ Tenken.GUI.findInputTagOfTables = function(_current)
 }
 
 
-/** Keydownイベントリスナの登録。*/
+/** Register Keydown event listener */
 window.addEventListener("keydown", function(event) {
 
 try {
 	if ( !event ) return;
 
-	// Enterが押された場合
+	// When Enter is pressed.
 	if ( event.keyCode == 13 )
 	{
 
 		var inputs=Tenken.GUI.findInputTagOfTables(event.target);
 
-		// INPUTタグが２個以上存在した場合はフォーカスを移動する
+		// Move the focus if there are more than 2 INPUT tags　
 		if ( inputs && 1 < inputs.length )
 		{
 			var lenInput=inputs.length;
 			var focusIndex=0;
 			for ( var i=0 ; i < lenInput ; i++ )
 			{
-				// 現在フォーカスをチェック
+				// Check current focus.
 				if ( document.activeElement == inputs[i] )
 				{
-					// 次のInput要素の配列を求める。最後の場合は先頭(0)に戻す。
+					// Get next Input tag array. If at the bottom, return head (0)
 					focusIndex = (i+1) % lenInput;
 
-					// 次のInput要素へフォーカスを移動する
+					// Move focus to the next Input element
 					inputs[focusIndex].focus();
 					break;
 				}
@@ -808,7 +805,7 @@ catch (e)
 });
 
 /**
- * ARメインページクラスです。
+ * AR main page class.
  */
 Tenken.GUI.ARPage = function() {
 	Tenken.GUI.Page.call(this, true);
@@ -818,40 +815,40 @@ Tenken.inherit(Tenken.GUI.ARPage, Tenken.GUI.Page);
 Tenken.GUI.ARPage.prototype.handleBeforeShow = function() {
 	Tenken.traceEvent(Tenken.GUI.TenkenValue.instance.operator, Tenken.traceEvent.Type.AR_SHOW, null, null, null);
 };
-/** ページクラスインスタンスの登録。*/
+/** Register page class instance */
 Tenken.GUI.Page.pages.push(new Tenken.GUI.ARPage());
 /**
- * マーカー検知状態変更時に呼ばれる関数です。
- * @param {Number} _markerId マーカーID
- * @param {Boolean} _status 当該ID新規検出の場合はtrue、当該ID消失の場合はfalse
+ * Method called when marker detection status changed.
+ * @param {Number} _markerId marker ID
+ * @param {Boolean} _status true if this is first time to detect this marker ID. False if ID disappeared.
  */
 function onDetectMarker(_result){
-	// 引数に検知したマーカ情報が含まれています。
+	// Marker informaion is included in the parameter
 	var markval = _result.getValue();
 
-		if(markval.status == true){ //検出した場合
-			//マーカー検知通知領域の表示を変更します。
+		if(markval.status == true){ // When detected
+			// Change display of marker detection notification area.
 Tenken.Util.loginfo("onDetectMarker:" + markval.markerId);
 
-			// 選択されたマーカーの情報をサマリウィンドウに表示します。
+			// Show selected marker's information into summary window.
 			Tenken.GUI.Page.Summary.showByMarkerId(markval.markerId);
 
-		} else if(markval.status == false){ //消失した場合
+		} else if(markval.status == false){ // When diappeared.
 
 Tenken.Util.loginfo("onDetectMarker:" + 0);
 
-			// サマリウィンドウの情報を空にして表示にします。
+			// Clear information in the summary window.
 			Tenken.GUI.Page.Summary.showByMarkerId(0);
 		}
 };
 
 /**
- * サマリウィンドウを処理するライブラリ空間です。
+ * Library namespace to process summary window.
  */
 Tenken.GUI.Page.Summary = {};
 /**
- * マーカーIDに紐付いた情報を表示します。
- * @param _markerId マーカーID
+ * Display information attached to marker ID.
+ * @param _markerId marker ID
  */
 Tenken.GUI.Page.Summary.showByMarkerId = function(_markerId) {
 	Tenken.traceEvent(Tenken.GUI.TenkenValue.instance.operator, Tenken.traceEvent.Type.SUMMARY_SHOW, _markerId, null, null);
@@ -877,7 +874,7 @@ Tenken.GUI.Page.Summary.showByMarkerId = function(_markerId) {
 		else
 		{
 			str += "<dl class='assetinfo'><dt>";
-			str += "マーカーID[" + _markerId + "]の設備データはありません。";
+			str += "Asset data for marker ID [" + _markerId + "] not found.";
 			str += "</dt></dl>";
 		}
 
@@ -886,9 +883,9 @@ Tenken.Util.loginfo("Tenken.GUI.Page.Summary.showByMarkerId");
 	elm.innerHTML = str;
 };
 /**
- * 申し送りEVENT POI IDに紐付いた情報を表示します。
- * @param _poiId 申し送りEVENT POI ID
- * @param _occurrenceTime 発生日時。未登録POIはidを持っていないため、この値で特定する TODO 本来はどうすべき? たまたま同じ時間のPOIってことがある??
+ * Show information attached to message EVENT POI ID.
+ * @param _poiId Message's EVENT POI ID
+ * @param _occurrenceTime Occured time. Specify this value as unregistered POI do not have id. TODO Think what to do when there could be POI for the same time.
  */
 Tenken.GUI.Page.Summary.showByMessageEventPOIId = function(_poiId, _occurrenceTime) {
 try {
@@ -923,18 +920,17 @@ catch (e)
 }
 };
 
-// AR.OS.openUrl失敗時のコールバックです。
+// Error callback handler upon AR.OS.openUrl
 Tenken.GUI.Page.Summary.openUrlError = function(_result)
 {
-	// URLのオープン失敗。
+	// Failed to open URL
 	var message = "AR.OS.openUrl:error:";
 	var detail = _result.getStatus() + "\n"+ _result.getValue();
 
 	Tenken.Util.logerr(message, detail);
 }
 
-// サマリ画面で追加アイコン(点検入力、申送追加以外)がタップされた
-// 場合のファイルオープン処理
+// File open process when additional icon (Check input, other than message add) is tapped in the summary window.
 Tenken.GUI.Page.Summary.openUrl = function(_url)
 {
 	if ( null != _url )
@@ -943,12 +939,10 @@ Tenken.GUI.Page.Summary.openUrl = function(_url)
 	}
 }
 
-// サマリ画面のサムネイルグラフを表示しているiframeのロード完了後に
-// 再度マーカー検知イベントリスナーを登録
-// Windows版のみです。iframeを利用した場合、画面遷移され、
-// リスナーが消えるためです。
+// Register marker detection event listener again when iframe to show thumbnail graph inside summary windows has completed the load.
+// Windows only - This is because lister will dissappear when iframe is used since the page will transition.
 Tenken.GUI.Page.Summary.onLoadIframe = function() {
-	// マーカー検知イベント
+	// Marker detection event
 try {
 Tenken.Util.loginfo("onLoadIframe");
 	Tenken.Util.addMarkerListener(onDetectMarker);
@@ -961,9 +955,9 @@ catch (e)
 }
 
 /**
- * ASSET POIのHTMLを返します。
+ * Return HTML of ASSET POI.
  * @param _poi ASSET POI
- * @return HTML文字列
+ * @return HTML string
  */
 Tenken.GUI.Page.Summary._getAssetPOIHTML = function(_asset) {
 	var elm = document.getElementById("summary");
@@ -971,7 +965,7 @@ Tenken.GUI.Page.Summary._getAssetPOIHTML = function(_asset) {
 	var graphHeight = Math.min(100, Math.floor(elm.offsetHeight / 2));
 	var poiidHS = Tenken.GUI.escapeHTML(Tenken.GUI.escapeScript(_asset.assetid));
 	var poinameH = Tenken.GUI.escapeHTML(_asset.assetname);
-	var pointid = _asset.markerid; // escape不要
+	var pointid = _asset.markerid; // no need to escape
 
 	var str = "";
 	str += "<dl class='assetinfo'>";
@@ -1001,13 +995,13 @@ Tenken.GUI.Page.Summary._getAssetPOIHTML = function(_asset) {
 		}
 	}
 
-	// 点検グラフアイコン
-	// 指定が無い場合はデフォルトを表示
+	// Check graph icon.
+	// If not specified show default.
 	var strGraph="";
 	if ( null != _asset.graphURL )
 	{
 		var iconInfo=_asset.graphURL[0];
-		var nameTenken=( null == iconInfo[0] ) ? "点検グラフ" : iconInfo[0];
+		var nameTenken=( null == iconInfo[0] ) ? "Check graph" : iconInfo[0];
 		var graphURL=( null == iconInfo[1] ) ? "" : iconInfo[1];
 		if ( "none" != nameTenken.toLowerCase() )
 		{
@@ -1015,8 +1009,8 @@ Tenken.GUI.Page.Summary._getAssetPOIHTML = function(_asset) {
 		}
 	}
 
-	// 点検入力アイコン
-	// 指定が無い場合はデフォルトを表示
+	// Check input icon.
+	// If not specified, show default.
 	var strTenken="";
 	if ( null != _asset.tenkenICON )
 	{
@@ -1033,8 +1027,8 @@ Tenken.GUI.Page.Summary._getAssetPOIHTML = function(_asset) {
 		strTenken="<a href='javascript:Tenken.GUI.ChecklistPage.showPageAndTargetContent(\"" + poiidHS + "\")' data-ar-eventtype='SUMMARY_CHECKLIST'><img src='image/icon-dark/xdpi/edit-check-list.png'><br>Input</a>";
 	}
 
-	// 申し送りアイコン
-	// 指定が無い場合はデフォルトを表示
+	// Message icon
+	// If not specified, show default.
 	var strMsg="";
 	if ( null != _asset.msgICON )
 	{
@@ -1054,14 +1048,13 @@ Tenken.GUI.Page.Summary._getAssetPOIHTML = function(_asset) {
 
 	str+= "</section>" + "<section class='group'>" + strGraph + strTenken + strMsg + "</section>" + "</dd>";
 
-	// イメージ表示(グラフ)
+	// Show image (graph)
 	if ( null != _asset.imageURL && "none" != _asset.imageURL.toLowerCase() )
 	{
 		var imageUrlU = Tenken.GUI.encodeURL(_asset.imageURL);
 
-		// Windows版のみです。iframeを利用した場合、画面遷移され、
-		// ARマーカー検知リスナーが消えるため、iframeのロード完了後に、
-		// 再度リスナーを登録する関数を呼びます。
+		// Windows only - Marker detection lister will dissappear when iframe is used since the page will transition.
+		// Call method to re-register listener after iframe load is complete.
 		var strOnloadIfarame='';
 		if ( AR.Native.isWindows() == true )
 		{
@@ -1080,10 +1073,10 @@ Tenken.GUI.Page.Summary._getAssetPOIHTML = function(_asset) {
 
 
 /**
- * 申し送りEVENT POIのHTMLを返します。
- * @param _poi 申し送りEVENT POI
- * @param _highlight ハイライトする場合はtrue、それ以外はfalse
- * @return HTML文字列
+ * Return HTML of Message EVENT POI.
+ * @param _poi Message EVENT POI
+ * @param _highlight true to highlight, false otherwise.
+ * @return HTML string
  */
 Tenken.GUI.Page.Summary._getMessageEventPOIHTML = function(_poi, _highlight) {
 
@@ -1094,7 +1087,7 @@ Tenken.GUI.Page.Summary._getMessageEventPOIHTML = function(_poi, _highlight) {
 	var udtitleH = Tenken.GUI.escapeHTML(_poi.title);
 	var udvalueH = Tenken.GUI.escapeHTML(_poi.value);
 
-	// サーバからダウンロードした申し送りの場合は、完了報告ボタンを表示する
+	// If message was downloaded from the server, show completion report button.
 	var strCompBtn = ( null == _poi.qentityId ) ? "" : '<input type="button" + value="Completion report" class="completeMsgSummary" onClick="Tenken.GUI.completeMessagePage.completeMsg(' +  _poi.msgid  + ')" >';
 
 	var str = "";
@@ -1109,22 +1102,22 @@ Tenken.GUI.Page.Summary._getMessageEventPOIHTML = function(_poi, _highlight) {
 };
 
 /**
- * Submitページクラスです。
+ * Submit page class.
  */
 Tenken.GUI.SubmitPage = function() {
 	Tenken.GUI.Page.call(this, false);
 };
 Tenken.inherit(Tenken.GUI.SubmitPage, Tenken.GUI.Page);
 
-// 選択された結果のみ送信します。
-// 送信対象のcheckboxのチェックがONになっている項目のみ送信します。
+// Send only the results selected.
+// Send only the items where checkbox of send target is checked.
 Tenken.GUI.SubmitPage.submitTable = function()
 {
 	try
 	{
 		if ( true == Tenken.GUI.Uploading )
 		{
-			alert("結果送信中です。");
+			alert("Sending data.");
 			return;
 		}
 
@@ -1138,7 +1131,7 @@ Tenken.GUI.SubmitPage.submitTable = function()
 
 		Tenken.GUI.submitAssetLists = new Object();
 
-		// チェックされている設備のテーブルIDを取得
+		// Get table ID of assets being checked.
 		var rowFunc = function(_table, _group, _row, _poi2, _valueEntryName, _value, _assetstatus)
 		{
 			if ( null ==_table ) return;
@@ -1148,12 +1141,12 @@ Tenken.GUI.SubmitPage.submitTable = function()
 			{
 				if ( arrayTables.indexOf(_table.TableId) < 0 )
 				{
-					//	まだ未登録なら
+					// If not registered yet
 					arrayTables.push(_table.TableId);
 				}
 				if ( arrayAssetId.indexOf(_row.AssetId) < 0 )
 				{
-					//	まだ未登録なら
+					// If not registered yet
 					arrayAssetId.push(_row.AssetId);
 				}
 				Tenken.GUI.submitAssetLists[_row.AssetId]=_row.AssetId;
@@ -1181,8 +1174,8 @@ Tenken.GUI.SubmitPage.submitTable = function()
 		{
 			if ( null == assetid )
 			{
-				// 基本情報は、マーカーIDがない場合があるため、
-				// nullの場合はＩＤ=0として扱う
+				// Base information might not have marker ID.
+				// Set ID=0 when null.
 				listMarkerIds.push(0);
 			}
 			else
@@ -1201,26 +1194,25 @@ Tenken.GUI.SubmitPage.submitTable = function()
 			Tenken.GUI.UploadingSelectMode=true;
 			Tenken.GUI.UploadingSelectTenken = true;
 
-			//点検結果データの送信(指定設備に含まれるマーカーＩＤの分のみ送信）
+			// Send check resutls (Only send for marker ID items included in the specified asset)
 			TenkenData.TenkenEvent.submitTenkenEvent(listMarkerIds, true, Tenken.GUI.onPostSuccess, Tenken.GUI.onPostError, 1);
 		}
 		else
 		{
-			// 点検項目が送信対象に選択されていない、かつ、申し送りが
-			// 送信対象として選択されている場合は、点検項目の送信のあとに
-			// 送信されないため、ここで申し送りを送信する。
-			// 申し送りのテーブルIDを取得
+			// Send messages here because data will not be send after sending checklist when
+			// checklist is not selected to send AND messages is selected to send.
+			// Get message's table ID.
 			elmCheck =document.getElementById("content_1_submit_msg");
 			if (  null != elmCheck && true == elmCheck.checked )
 			{
-				// 指定されていれば、申し送りを送信
+				// If specified, send messages.
 				Tenken.GUI.UploadingSelectMode=true;
 				Tenken.GUI.submitMsgFlag = true;
 				Tenken.GUI.SubmitPage.submitMsg();
 			}
 			else
 			{
-				alert("送信対象が選択されていません");
+				alert("No data is selected to send.");
 			}
 		}
 	}
@@ -1231,27 +1223,27 @@ Tenken.GUI.SubmitPage.submitTable = function()
 
 }
 
-// 申し送りを送信します。
+// Send message
 Tenken.GUI.SubmitPage.submitMsg = function()
 {
 	Tenken.GUI.Uploading = true;
 	Tenken.GUI.submitMsgFlag = true;
 	Tenken.GUI.UploadingSelectMsg = true;
 
-	// 申し送りデータの送信
+	// Send message
 	TenkenData.MsgEvent.submitMsgEvent(null, Tenken.GUI.onPostSuccess, Tenken.GUI.onPostError, 2);
 
 }
 
-// 指定テーブルＩＤの入力値に未入力項目/書式誤りがないかチェック
-//   _tableid   : 設備テーブルのIDを指定します。
-//   _noinputok : 未入力項目の取り扱いモードを指定します。
-//                true: 未入力項目も完了として使いカンントしません。
-//                その他の値: 未入力項目をカウントして戻り値として返します。
-// 戻り値
-//   -1    : 設備停止
-//    0    : 未入力項目/書式誤り項目なし。
-//   1以上 : 未入力項目/書式誤り項目数。
+// Check whether all items are set/no error of input value into selected table ID
+//   _tableid   : Set ID of asset table.
+//   _noinputok : Set handling mode for unset items.
+//                true: Assume unset items as finished and do not count.
+//                otherwize: Count unset items and return the value.
+// Return
+//   -1    : Asset stopped.
+//    0    : No unset item, or error found.
+//   1 or more : Count of unset item and errors founc.
 //
 Tenken.GUI.SubmitPage.checkTableValue = function(_tableid, _noinputok)
 {
@@ -1271,6 +1263,7 @@ Tenken.GUI.SubmitPage.checkTableValue = function(_tableid, _noinputok)
 			{
 				// 未入力項目を完了とするモードが指定されている場合には
 				// カウントしません。
+				// Do not count when mode is set that unset items will be defined as finished.
 				if ( true == _noinputok &&
 					( null == _value || "" == _value || "No input" == _value ) )
 				{
@@ -1291,7 +1284,7 @@ Tenken.GUI.SubmitPage.checkTableValue = function(_tableid, _noinputok)
 	return(ret);
 }
 
-// 点検値未入力送信の許可チェックボックスのクリックイベント
+// Click event of checkbox to approve sending checklist item without values set.
 Tenken.GUI.SubmitPage.onClickNoInputCheckBox = function()
 {
 	var elmCheck=document.getElementById("content_1_noinput_check");
@@ -1306,20 +1299,20 @@ Tenken.GUI.SubmitPage.onClickNoInputCheckBox = function()
 		if ( false != Tenken.config.noinputsubmit ) reloadPage=true;
 		Tenken.config.noinputsubmit=false;
 	}
-	// 結果送信画面の再描画
+	// Redraw send screen.
 	if ( true == reloadPage ) Tenken.GUI.Page.changePage(1);
 }
 
 /**
- * ページコンテンツHTMLを返します。
- * @return コンテンツHTML文字列
+ * Return page contents HTML.
+ * @return contents HTML string
  */
 
 Tenken.GUI.SubmitPage.getContentHTML = function() {
 try {
 	var str = '';
 
-	// main.htmlの描画時にデータが空になるため、ここでロードします。
+	// Load here since data will be cleared upon drawing main.html.
 	Tenken.GUI.initMainGUI();
 
 	str += '<table>';
@@ -1367,7 +1360,7 @@ try {
 
 	str += '</table>';
 
-	// 点検項目の値未入力がある場合の送信の可否のチェックボックス表示の有無
+	// Show or hide checkbox that will send checklists even if the values are not all set.
 	var strCheckBox = "";
 	if ( true == Tenken.config.noinputsubmitcheckbox )
 	{
@@ -1411,8 +1404,8 @@ try
 			result.status = (null == _assetstatus) ? null : _assetstatus;
 			result.assetid = (null == _row) ? 0 : _row.AssetId;
 
-			// 入力未完了項目が存在しても送信可能の場合は値未設定でも完了にする
-			// 未入力項目はinvalidにしない。
+			// Set to finished if the mode is set that sending unset value is possible.
+			// Do not make it invalid for unset items.
 			if ( true == Tenken.config.noinputsubmit &&
 				( null == _value || "" == _value || "No input" == _value ) )
 			{
@@ -1440,7 +1433,7 @@ try
 	for(var i = 0; i < results.length; i++) {
 		var result = results[i];
 		var elm = document.getElementById(Tenken.GUI.SubmitPage._createTableWidgetId(result.table.TableId));
-		// 入力未完了項目が存在しても送信可能の場合は値未設定でも送信可能
+		// We can send unset items if the mode is set to send empty values.
 		if ( true == Tenken.config.noinputsubmit )
 		{
 			if ("STOP" == result.status)
@@ -1491,13 +1484,13 @@ try
 	operator.innerHTML = Tenken.GUI.escapeHTML(Tenken.Storage.operator.get());
 
 
-	// 申し送りデータの表示
+	// Show Messages
 	var str = "";
 	var messageStr = "";
 
 	var msgevent = null;
 
-	// 申し送り(新規登録)
+	// Message (Register new)
 	for ( var i = 0 ; i < TenkenData.MsgEvent.Current.length ; i++ )
 	{
 		var msgevent=TenkenData.MsgEvent.Current[i];
@@ -1512,7 +1505,7 @@ try
 		messageStr += '<dd>[Content] ' + (((null == valueH) || ('' == valueH)) ? '(nothing)' : valueH)
 	}
 
-	// 申し送り(完了報告)
+	// Messages (Completion report)
 	for ( var i = 0 ; i < TenkenData.MsgEvent.Last.length ; i++ )
 	{
 		var msgevent=TenkenData.MsgEvent.Last[i];
@@ -1543,9 +1536,9 @@ catch (e)
 
 };
 /**
- * Tenken.ChecklistForm.Tableの部品IDを生成して返します。
- * @param _table Tenken.ChecklistForm.Tableオブジェクト
- * @return 部品ID
+ * Create part ID of Tenken.ChecklistForm.Table and return.
+ * @param _table Tenken.ChecklistForm.Table object.
+ * @return Part ID
  */
 Tenken.GUI.SubmitPage._createTableWidgetId = function(_tableid) {
 	return "content_1_" + _tableid;
@@ -1554,10 +1547,10 @@ Tenken.GUI.SubmitPage._createSubmitTableId = function(_tableid) {
 	return "content_1_submit_" + _tableid;
 };
 /**
- * 結果を送信します。
+ * Send results.
  * @param _submitall
- *           true   :全設備の点検結果送信。(停止設備も送信）
- *           false  :停止している設備の結果は送信しない。
+ *           true   :Send checkresults for all assets. (Send including stopped asset)
+ *           false  :Do not send for stopped asset.
  */
 Tenken.GUI.SubmitPage._submit = function(_submitall) {
 	var submitButton = document.getElementById("content_1_submit");
@@ -1570,29 +1563,29 @@ Tenken.GUI.SubmitPage._submit = function(_submitall) {
 		}
 	}
 };
-/** ページクラスインスタンスの登録。*/
+/** Register page class instance. */
 Tenken.GUI.Page.pages.push(new Tenken.GUI.SubmitPage());
 
 
 /**
- * Checklistページクラスです。
+ * Checklist page class.
  */
 Tenken.GUI.ChecklistPage = function() {
 	Tenken.GUI.Page.call(this, false);
 };
 Tenken.inherit(Tenken.GUI.ChecklistPage, Tenken.GUI.Page);
 
-// 条件判定欄に上限値、下限値の文字列を組み立てます。
+// Construct string of max and min value for range check window.
 Tenken.GUI.ChecklistPage.setLimitString = function(_limitLow, _limitHigh, _limitBase)
 {
 	var str="";
-	// 上限値、下限値を条件判定欄に追記する
+	// Append max and min value into range check window.
 	if ( null != _limitLow || null != _limitHigh )
 	{
 		str += " ";
 		if ( null == _limitBase || "" == _limitBase)
 		{
-			// ベース値なし、下限上限あり
+			// No base value, min/max exists.
 			if ( null != _limitLow && null != _limitHigh ) str += "[" + _limitLow  + " - " + _limitHigh + "]";
 			else if ( null != _limitLow ) str += "[more than " + _limitLow  + "]";
 			else str += "[less than " + _limitHigh  + "]";
@@ -1601,7 +1594,7 @@ Tenken.GUI.ChecklistPage.setLimitString = function(_limitLow, _limitHigh, _limit
 		{
 			var fBase = parseFloat(_limitBase );
 
-			// ベース値(数値)あり、下限上限あり
+			// Base value (number) exists, min/max exists.
 			if ( _limitLow == _limitHigh ) str += "[" + fBase  + "±" + _limitLow + "]";
 			else if ( _limitLow && _limitHigh ) str += "[" + (fBase - _limitLow)  + " - " + (fBase + _limitHigh) + "]";
 			else if ( null != _limitLow ) str += "[more than" + (fBase  - _limitLow)  + "]";
@@ -1612,8 +1605,8 @@ Tenken.GUI.ChecklistPage.setLimitString = function(_limitLow, _limitHigh, _limit
 }
 
 /**
- * ページコンテンツHTMLを返します。
- * @return コンテンツHTML文字列
+ * Return page contents HTML.
+ * @return Contents HTML string
  */
 Tenken.GUI.ChecklistPage.getContentHTML = function() {
 try {
@@ -1631,7 +1624,7 @@ try {
 	str += '</tbody></thead></table>';
 	str += '<hr>';
 
-	// テーブル表示(設備)
+	// Show table (assets)
 	for ( var i=0 ; i < TenkenData.TenkenTable.ListTables.length ; i++ )
 	{
 		var table=TenkenData.TenkenTable.ListTables[i];
@@ -1660,7 +1653,7 @@ try {
 
 		if ( null != table.listRowGroups &&  0 < table.listRowGroups.length )
 		{
-			// グループ設定あり
+			// Group setting exists.
 			for ( var j=0 ; j < table.listRowGroups.length ; j++ )
 			{
 				var group=table.listRowGroups[j];
@@ -1668,7 +1661,7 @@ try {
 				groupTd = '<td rowspan="' + group.listRows.length + '">' + group.RowGroupName + '</td>';
 				firstRow = true;
 
-				// 点検項目(Row)表示
+				// Show checklist (Row)
 				for ( var k=0 ; k < group.listRows.length ; k++ )
 				{
 					row=group.listRows[k];
@@ -1678,9 +1671,9 @@ try {
 					str += '<td>' + Tenken.GUI.ChecklistPage._createCurrentRowWidgetHTML(row) +  '</td>';
 					str += '<td id="' + Tenken.GUI.ChecklistPage._createLastRowWidgetId(row.RowId) + '"></td>';
 					var strDesc=((null == row.Description) ? "" : row.Description);
-					// 上限値、下限値を条件判定欄に追記する
+					// Append max and min value to range check window.
 					strDesc += Tenken.GUI.ChecklistPage.setLimitString(row.LimitLow, row.LimitHigh, row.LimitBase);
-					// 2つ目以降の上限値、下限値を追記する
+					// Append following max and min values.
 					if ( null != row.listLimit && 0 < row.listLimit.length )
 					{
 						for ( var l=0 ; l < row.listLimit.length ; l++ )
@@ -1701,8 +1694,8 @@ try {
 		}
 		if ( null != table.listRowsTable &&  0 < table.listRowsTable.length )
 		{
-			// グループ設定なし
-			// 点検項目(Row)表示
+			// No group settings.
+			// Display checklist (Row).
 			for ( var k=0 ; k < table.listRowsTable.length ; k++ )
 			{
 				row=table.listRowsTable[k];
@@ -1711,9 +1704,9 @@ try {
 				str += '<td>' + Tenken.GUI.ChecklistPage._createCurrentRowWidgetHTML(row) + '</td>';
 				str += '<td id="' + Tenken.GUI.ChecklistPage._createLastRowWidgetId(row.RowId) + '"></td>';
 				var strDesc=((null == row.Description) ? "" : row.Description);
-				// 上限値、下限値を条件判定欄に追記する
+				// Append max and min value to range check window.
 				strDesc += Tenken.GUI.ChecklistPage.setLimitString(row.LimitLow, row.LimitHigh, row.LimitBase);
-				// 2つ目以降の上限値、下限値を追記する
+				// Append following max and min values.
 				if ( null != row.listLimit && 0 < row.listLimit.length )
 				{
 					for ( var l=0 ; l < row.listLimit.length ; l++ )
@@ -1746,19 +1739,19 @@ catch (e)
 };
 
 /**
- * Tenken.ChecklistForm.Tableの処理スキップ部品IDを生成して返します。
+ * Create and return skip processing part ID of Tenken.ChecklistForm.Table
  */
 Tenken.GUI.ChecklistPage._createTableSkipWidgetId = function(_tableid) {
 	return "content_2_table_skip_" + _tableid;
 };
 /**
- * 現在のTenken.ChecklistForm.Rowの部品IDを生成して返します。
+ * Create and return part ID of current Tenken.ChecklistForm.Row
  */
 Tenken.GUI.ChecklistPage._createCurrentRowWidgetId = function(_rowid) {
 	return "content_2_row_current_" + _rowid;
 };
 /**
- * 過去のTenken.ChecklistForm.Rowの部品IDを生成して返します。
+ * Create and return part ID of previous Tenken.ChecklistForm.Row
  */
 Tenken.GUI.ChecklistPage._createLastRowWidgetId = function(_rowid) {
 	return "content_2_row_last_" + _rowid;
@@ -1783,8 +1776,8 @@ Tenken.GUI.ChecklistPage._createLastData = function(_tableid) {
 };
 
 /**
- * 入力用WidgetのHTML文字列を返します。
- * @return 入力用WidgetのHTML文字列
+ * return HTML string for input Widgets.
+ * @return HTML string for input Widgets
  */
 Tenken.GUI.ChecklistPage._createCurrentRowWidgetHTML = function(_row) {
 	var widget = null;
@@ -1805,15 +1798,15 @@ Tenken.GUI.ChecklistPage._createCurrentRowWidgetHTML = function(_row) {
 			widget = Tenken.GUI.marubatsuButtonWidgetCreator;
 			break;
 		default:
-			alert("ValutTypeが正しくない項目があります。\nRowId=" + _row.RowId + "\nRowName=" + _row.RowName + "\nValueType=" + _row.ValueType);
+			alert("Invalid ValutType exists\nRowId=" + _row.RowId + "\nRowName=" + _row.RowName + "\nValueType=" + _row.ValueType);
 			break;
 	}
 
 	return (null == widget) ? "" : widget.getHTML(Tenken.GUI.ChecklistPage._createCurrentRowWidgetId(_row.RowId));
 };
 
-// クリアボタンが押下された設備の今回値をクリアします。
-// _tableidがnullの場合は、全点検項目値をクリアします。
+// Clear current value of assets for those that clear button has pressed.
+// Clear entire checklist values if _tableid is null.
 Tenken.GUI.ChecklistPage.clearTable = function(_tableid, _assetid, _confirm)
 {
 	if ( true == _confirm && confirm("Do you clear?") != true )
@@ -1821,7 +1814,7 @@ Tenken.GUI.ChecklistPage.clearTable = function(_tableid, _assetid, _confirm)
 		return;
 	}
 
-	// 点検項目一覧の今回値のクリア
+	// Clear current value of checklist items
 	var tableid=null;
 	var elm=null;
 	if ( null != _tableid )
@@ -1830,15 +1823,14 @@ Tenken.GUI.ChecklistPage.clearTable = function(_tableid, _assetid, _confirm)
 		elm = document.getElementById(elmid);
 		if ( elm )
 		{
-			// クリアボタンのIDからTableIdを求める
+			// Get TableId from clear button ID.
 			tableid=Tenken.GUI.ChecklistPage._createTableIdFromClearButtonElm(elm);
 		}
 	}
 
 	var rowFunc = function(_table, _group, _row, _poi2, _valueEntryName, _value, _assetstatus)
 	{
-		// 指定tableidまたはassetiと一致する点検項目(rowid)の
-		// 値をクリア・初期化する。
+		// Clear and initialize check value (rowid) of specified tableid or assetid.
 		if ( null == _table && null == _row ) return;
 
 		if ( ( null == _tableid && null == _assetid ) ||
@@ -1874,17 +1866,16 @@ Tenken.GUI.ChecklistPage.clearTable = function(_tableid, _assetid, _confirm)
 				{
 					if ( "togglebutton" == elmValue.className)
 					{
-						// トグルは、値配列の１個目(初期表示値)に設定します。
+						// Set to the first (default) object in the array for the toggle.
 						widget.toggle(elmValue, widget.enums[0]);
 					}
 					else
 					{
-						// トグル以外のフィールドは、nullクリアします。
+						// null clear for all fields except for toggle.
 						elmValue.value=null;
 					}
-					// 値チェックが有効なフィールドは、値チェックします。
-					// クリア対象の点検項目を参照している点検項目がある
-					// 場合は、再チェックの必要があるため。
+					// Check value for all fields that needs to be checked.
+					// We need to re-check this as there might be check item that is referencing other check item that is set to clear.
 					if ( validate )
 					{
 						validate(elmValue);
@@ -1892,8 +1883,7 @@ Tenken.GUI.ChecklistPage.clearTable = function(_tableid, _assetid, _confirm)
 				}
 				else
 				{
-					// widgetが取得できないValutTypeのフィールドは、
-					// nullクリアします。
+					// null clear all ValueType field that can not get widget.
 					elmValue.value=null;
 				}
 			}
@@ -1909,8 +1899,8 @@ Tenken.GUI.ChecklistPage.clearTable = function(_tableid, _assetid, _confirm)
 Tenken.GUI.ChecklistPage.prototype.handleBeforeShow = function() {
 	Tenken.traceEvent(Tenken.GUI.TenkenValue.instance.operator, Tenken.traceEvent.Type.CHECKLIST_SHOW, null, null, null);
 
-	// 表示するマーカーＩＤが指定されている場合には、該当テーブルのみ表示する
-	// ここでは、該当するテーブル配列を作成する
+	// Show only the corresponding table if marker id to show is specified.
+	// Create table array here.
 	var selectTableId = [];
 	if ( 0 < Tenken.GUI.selectMarker.length )
 	{
@@ -1945,14 +1935,12 @@ Tenken.GUI.ChecklistPage.prototype.handleBeforeShow = function() {
 		Tenken.GUI.selectMarker=[];
 	}
 
-	// 表示対象が１つのマーカー、または対象設備が０個の場合は、
-	// "全点検項目値クリア"ボタンは表示しない
+	// Do not show "Clear entire check item values" if only one marker is shown, or there is no asset.
 	if ( 1 == selectTableId.length || 0 == TenkenData.TenkenEvent.Current.length )
 	{
 		var elmClearAll = document.getElementById("content_2_clear_button_allclear");
-		//hidden=trueは有効にならないエンジンもあるため、style.visibilityを
-		//使用する。
-		//ただし、ボタンが見えないだけで領域も確保されたままになります。
+		// Use style.visibility as some engine do now validate hidden=true.
+		// Note that area will be allocated even if the button is not shown.
 		if ( null != elmClearAll )
 		{
 				elmClearAll.style.display="none";
@@ -1968,7 +1956,7 @@ Tenken.GUI.ChecklistPage.prototype.handleBeforeShow = function() {
 		}
 		if(current)
 		{
-			// 今回値の設定
+			// Set current value
 			if(null != _value) document.getElementById(Tenken.GUI.ChecklistPage._createCurrentRowWidgetId(_row.RowId)).value = _value;
 			if(null != _assetstatus)
 			{
@@ -1978,26 +1966,26 @@ Tenken.GUI.ChecklistPage.prototype.handleBeforeShow = function() {
 					Tenken.GUI.skipornotButtonWidgetCreator.toggle(skipWidget, ("STOP" == _assetstatus) ? Tenken.GUI.skipornotButtonWidgetCreator.enums[1] : Tenken.GUI.skipornotButtonWidgetCreator.enums[0]);
 				}
 
-				// 下限値、上限値のチェック
-				// 数字項目の場合のみチェックする
+				// Check min and max value.
+				// Only check if it's a number.
 				if ( "NUMBER" == _row.ValueType )
 				{
-					// チェックする点検項目の今回値の<td>のid値とエレメント取得
+					// Get element and current value's <td> id of check item.
 					var idRow=Tenken.GUI.ChecklistPage._createCurrentRowWidgetId(_row.RowId);
 					if ( idRow )
 					{
 						var elm=document.getElementById(idRow);
 						if ( elm )
 						{
-							// 点検項目の下限、上限値をチェックする
+							// Validate min and max value of check item.
 							Tenken.GUI.NumberWidgetCreator._validate(elm);
 						}
 					}
 				}
 			}
 
-			// マーカーＩＤ指定がある場合、指定マーカー以外の項目を
-			// 非表示にする。基本法目である天気、室温も表示しない。
+			// Hide all item except for selected marker if marker ID is specified.
+			// Do not show weather, temperature also.
 			var idHeader=Tenken.GUI.ChecklistPage._createHeaderId(_table.TableId);
 			var idTable=Tenken.GUI.ChecklistPage._createTableId(_table.TableId);
 			var hdname="hr_" + Tenken.GUI.ChecklistPage._createTableId(_table.TableId);
@@ -2005,7 +1993,7 @@ Tenken.GUI.ChecklistPage.prototype.handleBeforeShow = function() {
 			var tableWidget = document.getElementById(idTable);
 			var hrWidget = document.getElementById(hdname);
 
-			// hiddenが有効にならない場合があるためstyle.displayを利用する
+			// Use style.display as hidden might not work.
 			var hiddenDisp="";
 
 			if ( 0 < selectTableId.length )
@@ -2020,18 +2008,18 @@ Tenken.GUI.ChecklistPage.prototype.handleBeforeShow = function() {
 					}
 				}
 			}
-			// テーブル、スキップトグル、横罫線を非表示にする。
+			// Hide table, skip toggle, horizontal lines.
 			if ( tableWidget ) tableWidget.style.display=hiddenDisp;
 			if ( skipHeader ) skipHeader.style.display=hiddenDisp;
 			if ( hrWidget )	hrWidget.style.display=hiddenDisp;
 		}
 		else
 		{
-			// 前回値の設定
+			// Set previous values
 			var statused = (null == _assetstatus) ? _value : (("START" == _assetstatus) ? _value : _assetstatus);
 			document.getElementById(Tenken.GUI.ChecklistPage._createLastRowWidgetId(_row.RowId)).innerHTML = (null == statused) ? "" : statused;
 
-			// 前回値の設定時間設定
+			// Set DateTime of previous value input.
 			var idLast=Tenken.GUI.ChecklistPage._createLastData(_table.TableId);
 			var elmLast=document.getElementById(idLast);
 			if ( elmLast )
@@ -2041,11 +2029,11 @@ Tenken.GUI.ChecklistPage.prototype.handleBeforeShow = function() {
 		}
 	}
 
-	// 今回値の設定
+	// Set current values
 	current = true;
 	TenkenData.TenkenTable.foreachTables(TenkenData.TenkenEvent.Current, null, null, rowFunc);
 
-	// 前回値の設定
+	// Set previous values
 	current = false;
 	TenkenData.TenkenTable.foreachTables(TenkenData.TenkenEvent.Last, null, null, rowFunc);
 
@@ -2063,10 +2051,10 @@ try {
 		}
 		var fieldValue = document.getElementById(Tenken.GUI.ChecklistPage._createCurrentRowWidgetId(_row.RowId)).value;
 
-		// 設定されている今回値にPOI2に設定
+		// Set POI2 to current values
 		_poi2[_valueEntryName] = ("" == fieldValue) ? null : fieldValue;
 
-		// 設備の稼動状態(稼動/停止)を設定
+		// Set asset status (running/stopped)
 		var skipWidget = document.getElementById(Tenken.GUI.ChecklistPage._createTableSkipWidgetId(_table.TableId));
 		if ( skipWidget )
 		{
@@ -2074,17 +2062,17 @@ try {
 		}
 		else
 		{
-			// 停止できない設備は"START"を設定
+			// Set "START" for non stoppable asset
 			_poi2.assetstatus = "START";
 		}
 	}
 
 	TenkenData.TenkenTable.foreachTables(TenkenData.TenkenEvent.Current, null, null, rowFunc);
 
-	// 画面からPOI2に設定した点検結果データをローカルストレージに保存
+	// Save check results set to POI2 from display to local storage.
 	TenkenData.TenkenEvent.saveStorage();
 
-	// 入力画面を固定に戻す。
+	// Change input screen to fixed.
 	Tenken.GUI.ChecklistPage.changeMode(false);
 
 }
@@ -2093,10 +2081,10 @@ catch (e)
 	alert("Exception : Tenken.GUI.ChecklistPage.prototype.handleBeforeHide\n" + e);
 }
 };
-/** ページクラスインスタンスの登録。*/
+/** Register page class instance */
 Tenken.GUI.Page.pages.push(new Tenken.GUI.ChecklistPage());
 /**
- * 自ページを表示し、指定のpoiが見えるようにスクロールします。
+ * Scroll page to show selected poi.
  * @param {String} _poiId poi.id
  */
 Tenken.GUI.ChecklistPage.showPageAndTargetContent = function(_targetassetid) {
@@ -2104,14 +2092,14 @@ Tenken.GUI.ChecklistPage.showPageAndTargetContent = function(_targetassetid) {
 	Tenken.GUI.Page.changePage(2);
 };
 
-// 未完了(未入力または書式誤りがある)の設備の点検項目入力画面に切り替えます。
+// Change to checklist input screen for check items that is not complete (not set or has error)
 Tenken.GUI.ChecklistPage.showPageAndTargetContentMarkerId = function(_markerid) {
 	Tenken.GUI.selectMarker=[_markerid];
 	Tenken.GUI.Page.changePage(2);
 };
 
 /**
- * Messagelistページクラスです。
+ * Page class for Messagelist
  */
 Tenken.GUI.MessagelistPage = function() {
 	Tenken.GUI.Page.call(this, false);
@@ -2134,13 +2122,13 @@ Tenken.GUI.MessagelistPage.prototype.handleBeforeShow = function() {
 		var assetidH = TenkenData.Asset.getAssetNamefromMarkerId(msg.markerid);
 		var operatorH = Tenken.GUI.escapeHTML(msg.operator);
 		var titleH = Tenken.GUI.escapeHTML(msg.title);
-		var level = msg.level; // escape不要
+		var level = msg.level; // unncessary to escape
 		var valueH = Tenken.GUI.escapeHTML(msg.value);
 
-		// サーバからダウンロードした申し送りの場合は、完了報告ボタンを表示する
+		// Show completion report button for messages downloaded from the server.
 		var strCompBtn = ( null == msg.qentityId ) ? "" : '<input type="button" + value="Completion report" class="completeMsg" onClick="Tenken.GUI.completeMessagePage.completeMsg(' +  msg.msgid  + ')" >';
 		var strComplete = (null == msg.Answer) ? "" : "[Completion report]" + msg.Answer;
-		// 新規申し送りの場合は、申送取消しボタンを表示する
+		// Show cancel send button for new messages 
 		var strMsgInputBtn ="";
 		var msgnew=TenkenData.MsgEvent.getMsgEventFromMsgIdCurrent(msg.msgid);
 		if ( msgnew )
@@ -2158,24 +2146,24 @@ Tenken.GUI.MessagelistPage.prototype.handleBeforeShow = function() {
 		str += '</dl>';
 	}
 
-	// 申し送り入力ダイアログを表示するボタンを表示
+	// Show button to display message input dialog
 	str += '<hr>';
 	str += '<button id="content_3_inputmsg" onclick="Tenken.GUI.AddingMessagePage.InputMsgByMarkerId(-1);" data-ar-eventtype="MESSAGELIST_INPUT_MSG">Input message</button><br><br>';
 
 	document.getElementById("content_3").innerHTML = str;
 };
 /**
- * 申し送りの部品IDを生成して返します。
+ * Create and return part ID of message
  * @param _poiId poiのid
  * @return 部品ID
  */
 Tenken.GUI.MessagelistPage._createRecordWidgetId = function(_poiId) {
 	return "content_3_" + _poiId;
 };
-/** ページクラスインスタンスの登録。*/
+/** Register page class instance */
 Tenken.GUI.Page.pages.push(new Tenken.GUI.MessagelistPage());
 /**
- * 自ページを表示し、指定のpoiが見えるようにスクロールします。
+ * Scroll to show selected poi.
  * @param {String} _poiId poi.id
  */
 Tenken.GUI.MessagelistPage.showPageAndTargetContent = function(_poiId) {
@@ -2186,29 +2174,26 @@ Tenken.GUI.MessagelistPage.showPageAndTargetContent = function(_poiId) {
 
 
 /**
- * AR重畳データを登録、表示します。
+ * Register and show AR overlay data.
  */
 Tenken.GUI.setARcontents = function(_sceneid, _reset)
 {
-	// シーンID毎のAR重畳表示定義データを表示。
-
+	// Display AR overlay data per scene ID.
 	if ( null == _sceneid || _sceneid < 0 )
 	{
 		return;
 	}
-	// シーンIDからシーン情報の取得
+	// Get scene information from scene ID.
 	var scene=Tenken.GUI.getSceneFromSceneId(_sceneid);
 	if ( null == scene )
 	{
 		return;
 	}
 
-	// AR重畳表示をクリア
+	// Clear AR overlay view
 	AR.Renderer.clear(Tenken.Util.noop,Tenken.Util.noop);
 
-	// 変更がある可能性のある申し送りデータ、削除された項目を
-	// リセットするため、AR重畳定義データをストレージから
-	// ロードしなおす。
+	// Reload AR overlay data from the storage to reset messages that might have been edited or items that have been deleted.
 	if ( true == _reset )
 	{
 		TenkenData.MsgEvent.loadStorage();
@@ -2217,12 +2202,12 @@ Tenken.GUI.setARcontents = function(_sceneid, _reset)
 
 	var SceneName=null;
 
-	// 選択シーンIDの保存
+	// Store selected sceneId.
 	Tenken.GUI.selectScene=_sceneid;
 
-	// シーン定義が無い場合も表示する
-	// 申し送りおよび設備名は、表示設定が設定されているシーンのみ表示する。
-	// ただし、シーンが１つも定義されていない場合には両方とも表示する。
+	// Display even if there is no scene definition.
+	// Display only the scene that display is enabled for messages and asset names.
+	// Display both if no scene is defined.
 	var lenScene=TenkenData.Scene.ListAll.length;
 
 	var listAsset=null;
@@ -2252,10 +2237,10 @@ Tenken.GUI.setARcontents = function(_sceneid, _reset)
 							funcAssetStr,
 							funcMsgStr);
 
-	// 表示するシーン名を取得
+	// Get scene name to show.
 	SceneName=TenkenData.Scene.getSceneName(_sceneid);
 
-	// シーン名を変更
+	// Change scene name.
 	if ( null != SceneName )
 	{
 		var elm = document.getElementById("header_title_2");
@@ -2263,7 +2248,7 @@ Tenken.GUI.setARcontents = function(_sceneid, _reset)
 	}
 }
 
-// 指定された申し送り(新規登録)を取り消します。
+// Cancel selected message (register new)
 Tenken.GUI.MessagelistPage.rejectMsg = function(_msgid)
 {
 	if ( _msgid )
@@ -2276,13 +2261,13 @@ Tenken.GUI.MessagelistPage.rejectMsg = function(_msgid)
 			{
 				TenkenData.MsgEvent.deleteMsgEventCurrent(_msgid);
 
-				// ストレージに申し送りデータを保存しなおす。
+				// Re-store messages into storage.
 				TenkenData.MsgEvent.saveStorage();
 
-				// 重畳データのリロード
+				// Reload overlay data
 				Tenken.GUI.setARcontents(Tenken.GUI.selectScene, true);
 
-				// ページのリロード
+				// page reload.
 				Tenken.GUI.Page.changePage(3);
 			}
 		}
@@ -2290,31 +2275,31 @@ Tenken.GUI.MessagelistPage.rejectMsg = function(_msgid)
 }
 
 /**
- * AddingMessageページクラスです。
+ * AddingMessage page class.
  */
 Tenken.GUI.AddingMessagePage = function() {
 	Tenken.GUI.Page.call(this, true);
 };
 Tenken.inherit(Tenken.GUI.AddingMessagePage, Tenken.GUI.Page);
 
-/** ページクラスインスタンスの登録。*/
+/** Register page class instance */
 Tenken.GUI.Page.pages.push(new Tenken.GUI.AddingMessagePage());
 
-// 申し送り入力ダイアログの初期化
+// Initialize message input dialog
 Tenken.GUI.AddingMessagePage.getContentHTML = function() {
 	var str = '';
 	return str;
 };
 /** @extends Tenken.GUI.Page.prototype.handleBeforeShow */
-// 申し送り入力ダイアログが表示される前の前処理
+// Pre process before message input dialog is shown.
 Tenken.GUI.AddingMessagePage.prototype.handleBeforeShow = function() {
-	// 画面を初期化して表示します。
+	// Initialize screen and show.
 	var message = document.getElementById("content_4");
 	message.innerHTML = "";
 };
 
 /**
- * 申し送り入力ダイアログを起動します。
+ * Start message input dialog.
  */
 Tenken.GUI.AddingMessagePage.InputMsgByMarkerId = function(_markerid)
 {
@@ -2332,15 +2317,15 @@ try {
 
 	str += '<TABLE cellspacing="2" cellpadding="2" border="0" width="10" bgcolor="#c0c0c0" style="margin-top:3px;" input-ar-group="INPUTMSG">' ;
 
-	// マーカーID指定がある場合には、指定マーカーのみ表示・処理
+	// Only show and process those marker ID that is specified.
 	if ( -1 != _markerid )
 	{
-		// 指定マーカーIDの設備名を取得
+		// Get asset name of specified marker ID.
 		var assetname = TenkenData.Asset.getAssetNamefromMarkerId(_markerid);
 	}
 	else
 	{
-		// 全設備名表示
+		// Show every asset names
 		if ( AR.Native.isWindows() == true )
 		{
 			var assetname = '<section><select id="assetselect" size="3">';
@@ -2401,8 +2386,7 @@ catch (e)
 }
 
 /**
- * 申し送り入力ダイアログで登録ボタンが押下された場合の
- * 申し送り登録処理を行います。
+ * Process upon message registration when register button is pressed in the message input dialog.
  */
 
 Tenken.GUI.AddingMessagePage.performAfterShowMessageInputDialog = function(_markerid)
@@ -2432,11 +2416,11 @@ try {
 		var level=9;
 	}
 
-	// マーカーID指定の場合は、指定マーカーIDを設定
+	// Set selected marker ID if specified.
 	var markerid=_markerid;
 	if ( -1 == _markerid )
 	{
-		// 選択している設備名のvalue(=マーカーID)を取得する
+		// Get selected asset's value (=marker ID)
 		var elm = document.getElementById("assetselect");
 		if ( null != elm && "" != elm.value )
 		{
@@ -2444,7 +2428,7 @@ try {
 		}
 		else
 		{
-			alert("選択した対象機器が正しくありません");
+			alert("Invalid asset selected.");
 			return;
 		}
 	}
@@ -2454,8 +2438,8 @@ try {
 	var markername = ( null != assetdata ) ? assetdata.markername : "";
 	var targetassetid = ( null != assetdata ) ? assetdata.assetid : "";
 
-	// msgidは、本来自動採番されたユニークなIDを利用するなどしてください。
-	// ここでは、日付時間を代用しています。
+	// Please use unique sequence ID for msgid.
+	// We're temporary using DateTime here.
 	var msg=new Object();
 	msg.version = null;
 	msg.qentityId = null;
@@ -2483,13 +2467,13 @@ try {
 
 	TenkenData.MsgEvent.addCurrentMsgEvent(msg);
 
-	// 重畳データのリロード(新規に登録した申し送りを表示)
+	// Reload overlay data (show newly registered message)
 	Tenken.GUI.setARcontents(Tenken.GUI.selectScene, false);
 
-	// ストレージに申し送りデータを保存しなおす。
+	// Re-store message data into storage.
 	TenkenData.MsgEvent.saveStorage();
 
-	Tenken.GUI.Page.changePage(0); // ページ切替
+	Tenken.GUI.Page.changePage(0); // Switch page.
 }
 catch (e)
 {
@@ -2499,51 +2483,51 @@ catch (e)
 }
 
 /**
- * 申し送り入力ダイアログでキャンセルボタンが押下された場合に
- * メインページに切り替える処理を行います。
+ * Process to move to main page when cancel button was pressed
+ * in the message input dialog.
  */
 Tenken.GUI.AddingMessagePage.ShowMessageInputDialogCancel = function()
 {
-	Tenken.GUI.Page.changePage(0); // ページ切替
+	Tenken.GUI.Page.changePage(0); // Switch page
 }
 
 
 
 /**
- * completeMessagePageページクラスです。
+ * completeMessagePage page class
  */
 Tenken.GUI.completeMessagePage = function() {
 	Tenken.GUI.Page.call(this, true);
 };
 Tenken.inherit(Tenken.GUI.completeMessagePage, Tenken.GUI.Page);
 
-/** ページクラスインスタンスの登録。*/
+/** Register page class instance */
 Tenken.GUI.Page.pages.push(new Tenken.GUI.completeMessagePage());
 
 
 
-// 申し送り完了報告入力ダイアログの初期化
+// Initialize message completion report dialog
 Tenken.GUI.completeMessagePage.getContentHTML = function() {
 	var str = '';
 	return str;
 };
 
-// 申し送り完了報告入力ダイアログが表示される前の前処理
+// Pre process before showing message completion report dialog
 Tenken.GUI.completeMessagePage.prototype.handleBeforeShow = function() {
 
-	// 画面を初期化して表示します。
+	// Initialize screen and show
 	var message = document.getElementById("content_5");
 	message.innerHTML = "";
 };
 
 /**
- * 申し送り完了報告入力ダイアログを起動します。
+ * Start message completion report dialog.
  */
 Tenken.GUI.completeMessagePage.completeMsg = function(_id)
 {
 	if ( null == _id ) return;
 
-	// 申し送りデータをリスト内から取得
+	// Get messages from the list.
 	var msg = TenkenData.MsgEvent.getMsgEventFromMsgIdLast(_id)
 	if ( null == msg ) return;
 
@@ -2561,10 +2545,10 @@ Tenken.GUI.completeMessagePage.completeMsg = function(_id)
 
 	str += '<TABLE cellspacing="2" cellpadding="2" border="0" width="10" bgcolor="#c0c0c0" style="margin-top:3px;" input-ar-group="INPUTCOMPLETEMSG">' ;
 
-	// 設備名を取得
+	// Get asset name.
 	var assetname = TenkenData.Asset.getAssetNamefromMarkerId(msg.markerid);
 
-	// 既に完了報告が入力されていた場合にはその内容を設定
+	// If completion report has already been set, set that value.
 	var completeMsg = "";
 	if ( null != msg.Answer ) completeMsg = msg.Answer;
 
@@ -2613,8 +2597,8 @@ Tenken.GUI.completeMessagePage.completeMsg = function(_id)
 }
 
 /**
- * 完了報告ダイアログで登録ボタンが押下された場合の
- * 完了報告登録処理を行います。
+ * Process completion report registeration when register button is pressed
+ * in the completion report dialog.
  */
 
 Tenken.GUI.completeMessagePage.performAfterShowMessageInputDialog = function(_id)
@@ -2624,21 +2608,21 @@ try {
 	var elmValue=document.getElementById("completemsg_value");
 	if ( null == elmValue || elmValue.value == "" )
 	{
-		alert("完了報告の内容が入力されていません");
+		alert("Completion report is empty.");
 		return;
 	}
 
-	// msgidから該当の申し送りデータを取得する
+	// get message data from msgid.
 	var msg = TenkenData.MsgEvent.getMsgEventFromMsgIdLast(_id);
 
-	// 完了報告を格納し、完了フラグを"TRUE"に変更します。
+	// Store completion report and change complete flag to "TRUE"
 	msg.Enable="false";
 	msg.Answer=elmValue.value;
 
-	// ストレージに申し送りデータを保存しなおす。
+	// Re-store message data into storage.
 	TenkenData.MsgEvent.saveStorage();
 
-	Tenken.GUI.Page.changePage(0); // ページ切替
+	Tenken.GUI.Page.changePage(0); // Switch page
 }
 catch (e)
 {
@@ -2648,55 +2632,55 @@ catch (e)
 }
 
 /**
- * 完了報告入力ダイアログでキャンセルボタンが押下された場合に
- * メインページに切り替える処理を行います。
+ * Switch to main page when cancel button is pressed
+ * in the completion report dialog.
  */
 Tenken.GUI.completeMessagePage.ShowMessageInputDialogCancel = function()
 {
-	Tenken.GUI.Page.changePage(0); // ページ切替
+	Tenken.GUI.Page.changePage(0); // Switch page
 }
 
 /**
- * 完了報告入力ダイアログで取り消しボタンが押下された場合に
- * 完了報告をクリアし、メインページに切り替える処理を行います。
+ * Clear completion report and switch to main page when
+ * cancel button is pressed in the completion report dialog.
  */
 Tenken.GUI.completeMessagePage.ShowMessageInputDialogReject = function(_id)
 {
-	// 申し送りデータをリスト内から取得
+	// get message data from the list.
 	var msg = TenkenData.MsgEvent.getMsgEventFromMsgIdLast(_id)
 	if ( null != msg )
 	{
 		msg.Enable = "true";
 		msg.Answer = null;
 
-		// ストレージに申し送りデータを保存しなおす。
+		// Re-store message data into the storage.
 		TenkenData.MsgEvent.saveStorage();
 	}
 
-	Tenken.GUI.Page.changePage(0); // ページ切替
+	Tenken.GUI.Page.changePage(0); // Switch page.
 }
 
 
 
-/** タップイベント通知のonErrorに設定するコールバック関数です。 */
+/** Callback method for onError upon tap event */
 Tenken.GUI.Page.onBodyClickError = function(_result){
-	var message = "タップイベントの通知に失敗しました。\n";
+	var message = "Failed to trigger tap event.\n";
 	var detail = _result.getStatus() + "\n"+ _result.getValue();
 	alert(message + ":" + detail);
 };
 
-// 全点検項目のPOIを作成
+// Create POI for entire checklist.
 Tenken.GUI.LoadPOI = function()
 {
 	try
 	{
-		// POI2が存在しない点検項目(前回値、今回値のPOI2を作成する)
+		// Checklist that POI2 do not exist (Create previous and current POI2)
 		if ( !Tenken.Storage.currentTenkenEventData.isExist() )
 		{
 			var current;
 			var rowFunc = function(_table, _group, _row, _poi2, _valueEntryName, _value, _assetstatus)
 			{
-				// 既にPOI2が登録済みの場合は登録必要なし。
+				// No need to register if POI2 is already registered.
 				if ( null != _poi2 ) return;
 				if ( true == current )
 				{
@@ -2714,7 +2698,7 @@ Tenken.GUI.LoadPOI = function()
 					return;
 				}
 
-				// POI2の登録
+				// Register POI2
 				var value =new Object();
 				value.version=0;
 				value.qentityId=null;
@@ -2736,15 +2720,15 @@ Tenken.GUI.LoadPOI = function()
 				if ( null != POI2 && null != _valueEntryName && null != _value && null == POI2[_valueEntryName] ) POI2[_valueEntryName] = _value;
 			}
 
-			// 前回値のPOI作成
+			// Create POI for previous values
 			current = false;
 			TenkenData.TenkenTable.foreachTables(TenkenData.TenkenEvent.Last, null, null, rowFunc);
 
-			// 今回値のPOI作成
+			// Create POI for current values
 			current = true;
 			TenkenData.TenkenTable.foreachTables(TenkenData.TenkenEvent.Current, null, null, rowFunc);
 
-			// 点検項目の前回値に今回値に設定する (rowのSetLastDataがtrueの項目のみ)
+			// Set checklist current value to previous value. (only to items that SetLastData of row is set to true)
 			TenkenData.TenkenEvent.copyCurrentDataFromLastData();
 		}
 
@@ -2757,10 +2741,10 @@ Tenken.GUI.LoadPOI = function()
 	return;
 }
 
-// 表示するシーン名および切り替えトグルの作成
+// Create toggle to switch scene name to show.
 Tenken.GUI.createSceneToggle = function()
 {
-	// シーン名リストを作成
+	// Create scene name list
 	var listSceneName=[];
 	var lenScene=TenkenData.Scene.ListAll.length;
 
@@ -2771,7 +2755,7 @@ Tenken.GUI.createSceneToggle = function()
 		{
 			listSceneName.push(TenkenData.Scene.ListAll[i].name);
 
-			// シーン名とIDをダミーからダウンロードしたシーン情報に書き換える
+			// Overwrite scene name and ID with downloaded scene information.
 			var scene=new Object();
 			scene.name=TenkenData.Scene.ListAll[i].name;
 			scene.sceneid=TenkenData.Scene.ListAll[i].sceneid;
@@ -2779,16 +2763,16 @@ Tenken.GUI.createSceneToggle = function()
 			scene.dispASSET=TenkenData.Scene.ListAll[i].dispASSET;
 			Tenken.GUI.Scenes[i]=scene;
 		}
-		// １つめのシーンIDを設定
+		// Set the first scene ID
 		Tenken.GUI.selectScene=TenkenData.Scene.ListAll[0].sceneid;
 	}
 	else
 	{
-		// 表示するシーンがないためダミーを表示する
-		listSceneName.push("(シーンなし)");
+		// No scene to show. Set dummy data.
+		listSceneName.push("(No Scenes)");
 	}
 
-	// シーン切り替えトグルボタンを作成
+	// Create toggle button to switch scenes.
 	Tenken.GUI.changeSceneButtonWidgetCreator=new Tenken.GUI.ToggleButtonWidgetCreator(
 	listSceneName,
 	"Tenken.GUI.changeSceneButtonWidgetCreator",
@@ -2803,7 +2787,7 @@ Tenken.GUI.createSceneToggle = function()
 	);
 }
 
-// 表示するシーンの変更
+// Change scene to show.
 Tenken.GUI.changeScene = function(_sceneName)
 {
 	var selectScene=Tenken.GUI.selectScene;
@@ -2816,16 +2800,15 @@ Tenken.GUI.changeScene = function(_sceneName)
 		}
 	}
 
-	// 表示中のシーンと異なるシーンの場合は、
-	// AR重畳表示定義データを登録しなおして表示する
+	// If scene is different from the current shown one, re-register AR overlay data and re-render.
 	if ( selectScene != Tenken.GUI.selectScene )
 	{
-		//AR重畳表示定義データをネイティブAR表示層に設定します。
+		// Set AR overlay data to native device's AR rendering layer.
 		Tenken.GUI.setARcontents(selectScene, false);
 	}
 }
 
-// 表示するシーン情報の取得
+// Get scene information to show.
 Tenken.GUI.getSceneFromSceneId = function(_sceneid)
 {
 	var scene=null;
@@ -2841,7 +2824,7 @@ Tenken.GUI.getSceneFromSceneId = function(_sceneid)
 	return scene;
 }
 
-// 点検結果項目の差分計算・表示を行います。
+// Calculate difference and show check results.
 Tenken.GUI.ResultOperatorNumber = function(_value1, _value2, _operator)
 {
 	var value=null;
@@ -2854,7 +2837,7 @@ Tenken.GUI.ResultOperatorNumber = function(_value1, _value2, _operator)
 		value=(Math.round(_value1 * 1000) + Math.round(_value2 * 1000)) / 1000;
 		break;
 	case "/":
-		// 少数点第３桁は四捨五入
+		// round to the nearest 1/1000
 		value=(Math.round(_value1 / _value2 * 1000)) / 1000;
 		break;
 	case "*":
@@ -2864,7 +2847,7 @@ Tenken.GUI.ResultOperatorNumber = function(_value1, _value2, _operator)
 	return(value);
 }
 
-// 入力値が変更された点検項目の上限値、下限値をチェック
+// Check max and min value of checklist item
 Tenken.GUI.changeDiffValue = function(_id)
 {
 	var lenPrefix="content_2_row_current_".length;
@@ -2872,15 +2855,15 @@ Tenken.GUI.changeDiffValue = function(_id)
 
 	var rowFunc = function(_table, _group, _row, _poi2, _valueEntryName, _value, _assetstatus)
 	{
-		// 数字項目以外は差分計算は行わない
+		// Do not calculate differences other than numbers.
 		if ( null == _row  || "NUMBER" != _row.ValueType) return;
 
 		var foundRow=false;
 
-		// 上限、下限計算反映(LimitBaseがRowId指定のRowの場合)
+		// Show calculated result of min and max. (If LimitBais is the Row of RowId)
 		if ( rowId == _row.LimitBase ) foundRow=true;
 
-		// 2つ目以降の条件以降のRowIdに指定がある場合もチェックする。
+		// Check if next condition is also set on the following RowId
 		if ( true != foundRow && null != _row.listLimit && 0 < _row.listLimit.length )
 		{
 			for ( var i=0 ; true != foundRow && i < _row.listLimit.length ; i++ )
@@ -2899,11 +2882,12 @@ Tenken.GUI.changeDiffValue = function(_id)
 			if( elmValue )
 			{
 				// 計算結果値の設定と値のチェック
+				// Set calculated value and check value
 				Tenken.GUI.NumberWidgetCreator._validate(elmValue);
 			}
 		}
 
-		// 差分計算
+		// Calculate differences
 		if ( rowId == _row.Value1RowId || rowId == _row.Value2RowId  )
 		{
 			var elmValue  = document.getElementById(Tenken.GUI.ChecklistPage._createCurrentRowWidgetId(_row.RowId));
@@ -2919,6 +2903,7 @@ Tenken.GUI.changeDiffValue = function(_id)
 				var value2=parseFloat(elmValue2.value) ;
 				var value = Tenken.GUI.ResultOperatorNumber(value1, value2, _row.ValueOperator);
 				// 計算結果値の設定と値のチェック
+				// Set calculated value and check.
 				if ( null != value )
 				{
 					elmValue.value=value;
@@ -2927,7 +2912,7 @@ Tenken.GUI.changeDiffValue = function(_id)
 			}
 			else
 			{
-				// 値１か２が表示できない場合は自動計算結果を値なしに設定
+				// Set as automated calculated result to none if value 1 or 2 can not be shown.
 				elmValue.value=null;
 			}
 		}
@@ -2937,24 +2922,24 @@ Tenken.GUI.changeDiffValue = function(_id)
 
 }
 
-// input要素の値が変更された場合に呼び出されるイベントハンドラです。
-// 値の変更が無い場合は呼ばれません。
+// Event handler called when input element is changed.
+// The method will not be called if value did not change.
 Tenken.GUI.onChange = function(event)
 {
-	// 点検結果差分計算・表示
+	// Calculate difference of check results and show
 	if ( event && event.target )
 	{
 		Tenken.GUI.changeDiffValue(event.target.id);
 	}
 }
 
-// 結果送信画面で、送信対象のチェックを全選択または全解除します。
-// _check : true -> 全選択、false -> 全解除
+// Set or unset all checkboxes of target items in the result send screen.
+// _check : true -> check all, false -> unset all
 Tenken.GUI.submitCheckAll = function(_check)
 {
 	var elmCheck=null;
 
-	// 点検設備の各チェックをON(true)またはOFF(false)
+	// Set check of assets to ON (true) or OFF (false)
 	var rowTable = function(_start, _table)
 	{
 		if ( null ==_table ) return;
@@ -2968,7 +2953,7 @@ Tenken.GUI.submitCheckAll = function(_check)
 
 	TenkenData.TenkenTable.foreachTables(null, rowTable, null, null);
 
-	// 申し送りのチェックをON(true)またはOFF(false)
+	// Set check of messages to ON (true) or OFF (false)
 	elmCheck =document.getElementById("content_1_submit_msg");
 	if ( null != elmCheck )
 	{
@@ -2977,12 +2962,12 @@ Tenken.GUI.submitCheckAll = function(_check)
 
 }
 
-// カメラ起動
+// Start camera
 Tenken.GUI.startCamera = function()
 {
 	Tenken.Util.startCameraView();
 }
-// カメラ停止
+// Stop camera
 Tenken.GUI.stopCamera = function()
 {
 	Tenken.Util.stopCameraView();
@@ -2990,7 +2975,7 @@ Tenken.GUI.stopCamera = function()
 
 Tenken.GUI.ChecklistPage.dispMove=0;
 
-// 点検項目一覧画面の固定／可変モードの切り替え。
+// Change mode to fixed or variable of checklist screen. 
 Tenken.GUI.ChecklistPage.changeMode = function(_mode)
 {
 	var elm = document.getElementById("content_2");
@@ -2999,19 +2984,19 @@ Tenken.GUI.ChecklistPage.changeMode = function(_mode)
 		var setAttr=0;
 		if ( true == _mode || ( null == _mode && Tenken.GUI.ChecklistPage.dispMove == 0 ))
 		{
-			// 可動ウィンドウへ変更
+			// Change to variable window
 			setAttr=1;
 		}
 		else
 		{
-			// 固定ウィンドウへ戻す
+			// Change to fixed window
 			setAttr=0;
 		}
 
 		document.body.setAttribute("data-ar-floating", setAttr);
 		elm.setAttribute("data-ar-floating", setAttr);
 
-		// カメラボタン
+		// Camera button
 		var elmCam1 = document.getElementById("startcamera2");
 		if ( elmCam1 ) elmCam1.setAttribute("data-ar-floating", setAttr);
 
@@ -3022,36 +3007,34 @@ Tenken.GUI.ChecklistPage.changeMode = function(_mode)
 	}
 }
 
-// 点検を完了します。
-// 未送信のデータがないかチェックし、なければデータとストレージを
-// クリア後、初画面に戻ります。
+// Complete check (Tenken)
+// Validate if there is not unsend data, clear data and storage, then return to initial screen.
 Tenken.GUI.checkFinishTenken = function()
 {
-	// 未入力項目の送信許可のチェックボックスがチェックされている
-	// 場合は、チェック解除の警告を表示
+	// Show warning that checkbox is unselected if sending unset items is permitted.
 	var elmCheck=document.getElementById("content_1_noinput_check");
 	if ( true == elmCheck.checked )
 	{
-		alert("「点検値未入力項目がある場合も送信許可」のチェックを解除後、再度実行してください。");
+		alert("Please retry by unchecking [Allow to send even if there are uninput items]");
 		return;
 	}
 
-	// 点検結果(各設備の項目全入力完了)が残っていないかチェック
+	// Validate if there are no check result left (All items for the assets been completed)
 	var submitButton = document.getElementById("content_1_submit");
 	if(0 < submitButton["data-ar-inputcount"])
 	{
-		alert("未送信の点検結果が残っているため完了できません。\n(点検項目一部未入力も含みます)\n\n結果送信を行うか、入力済の点検項目値を全てクリアしてから再度実行してください。");
+		alert("Can not complete due to unsend check result.\n(This includes items that are partialy not set)\n\nPlease send results, or clear entire checklist items and do again.");
 		return;
 	}
 
-	// 申し送り（新規登録)が残っていないかチェック
+	// Validate if messages (register new) are not left
 	if ( 0 < TenkenData.MsgEvent.Current.length )
 	{
-		alert("未送信の申し送り項目があります。\n\n申し送りの送信を行ってください。");
+		alert("There are messages not sent.\n\nPlease send messages");
 		return;
 	}
 
-	// 完了報告が残っていないかチェック
+	// Validate if completion reports are not left.
 	var foundComp=0;
 	for ( var i = 0 ; i < TenkenData.MsgEvent.Last.length ; i++ )
 	{
@@ -3059,7 +3042,7 @@ Tenken.GUI.checkFinishTenken = function()
 
 		if ( "true" != msgevent.Enable && null != msgevent.Answer)
 		{
-			// １件でも完了報告が残っていれば中断する。
+			// Abort if any complete report is left.
 			foundComp=1;
 			break;
 		}
@@ -3067,7 +3050,7 @@ Tenken.GUI.checkFinishTenken = function()
 
 	if ( 0 < foundComp )
 	{
-		alert("未送信の完了報告があります。\n\n完了報告の送信を行うか、完了報告の取り消しを行ってください。");
+		alert("There are completion reports not sent.\n\nPlease send completion reports or cancel completion reports.");
 		return;
 	}
 
@@ -3080,14 +3063,14 @@ Tenken.GUI.checkFinishTenken = function()
 
 }
 
-// Tenken.GUIの初期化処理
+// Initialize Tenken.GUI
 Tenken.GUI.initMainGUI = function()
 {
 	try {
-	// ローカルストレージからデータを取得
+	// Get data from local storage.
 	TenkenData.AllGet.loadStorage();
 
-	// 選択シナリオID・シナリオ名を設定
+	// Set selected scenario ID and scene name
 	Tenken.config.ScenarioId=Tenken.Storage.ScenarioId.get();
 
 	if ( null != Tenken.config.ScenarioId )
@@ -3095,7 +3078,7 @@ Tenken.GUI.initMainGUI = function()
 		TenkenData.Scenario.setScenarioName(TenkenData.Scenario.getScenarioNameFromId(Tenken.config.ScenarioId));
 	}
 
-	// シーン名およびシーン名切り替えトグルの作成
+	// Create toggle to switch scene name.
 	Tenken.GUI.createSceneToggle();
 
 	}

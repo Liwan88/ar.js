@@ -1,98 +1,89 @@
 /**
- * @overview 点検業務向けJavaScript API群(コア/ユーティリティ部)です。
+ * @overview JavaScript API (Core & Utilities) for Tenken Application
  * @copyright Copyright 2014 FUJITSU LIMITED
  */
 
 
 /**
- * 点検業務のライブラリ空間です。
+ * Name Space for Tenken Application
  */
 var Tenken = {};
 
 /*********************************************************/
-/* プログラム内で利用する値の定義 */
-/* 各値は利用環境に合わせて変更してください */
+/* Environment parameters
+/* Configure following parameters to match the environment
 /*********************************************************/
 
 Tenken.config = {};
 
-/* シナリオID */
-/* シナリオIDは、シナリオ選択画面で選択されたシナリオID */
-/* 書き換えられます。                                   */
+/* Scenario ID */
+/* Scenario ID that is selected at Scenario selection screen */
 Tenken.config.ScenarioId = 0;
 
-/* 強制制読み込みモード */
-/* AR.Data.getArServerDataの_isSuperReloadに指定する値です。 */
-/*   true :強制読み込みを行う                                */
-/*   false:行わない。                                        */
+/* Force reload mode */
+/* Value to determine AR.Data.getArServerDataの_isSuperReload */
+/*   true : Force reload                                */
+/*   false: Do not force reload                                        */
 Tenken.config.SuperReload=true;
 
-/* データ取得時(点検結果)のデータ受信状態をチェックする  */
-/* インターバルタイマルーチンのインターバル時間です。    */
-/* 単位はミリ秒。                                        */
+/* Interval time to check data obtained from server */
+/* in Milliseconds                                        */
 Tenken.config.getIntervalTime=500;
 
-/* データ取得時(点検結果)の１回のダウンロード上限数 */
-/* 点検結果の同時受信上限数です。                   */
-/* 大きな数字にするとメモリやシステムリソース不足で */
-/* 失敗したり、異常終了する可能性があります。       */
+/* Pararell download count of data from the server */
+/* Application might terminate due to system resource error if large number is specified */
 Tenken.config.DownloadStep = 20;
 
-/* ログ設定 */
-/* ログの出力レベル  */
+/* Log Level */
 /* 0:ERROR  1:WARNING  2:INFO  3:DEBUG */
 Tenken.config.loglevel = 2;
 
-/* ログのメッセージPREFIX */
+/* Log message prefix */
 Tenken.config.log_prefix = "AR_Tenken:";
 
-/* ログのメッセージ番号 */
-/* errnoの場合で、出力メッセージ内に番号がある場合は、*/
-/* その番号を出力する場合があります */
+/* Log message number */
+/* If errno, and log message number is already specified in the message, log will output that number instead of this */
 Tenken.config.log_no_trace   = 1000;
 Tenken.config.log_no_info    = 2000;
 Tenken.config.log_no_warning = 3000;
 Tenken.config.log_no_debug   = 4000;
 Tenken.config.log_no_error   = 5000;
 
-/* 点検値の前回値が設備がSTOP状態の場合に対象外とするか。 */
-/*   true :START状態の結果のみを前回値として扱う            */
-/*   false:STOP状態の結果も前回値として扱う("STOP"が表示される） */
+/* Skip if the last check data is set as STOP */
+/*   true: Only use the result that was in START state */
+/*   false: Use result that was in STOP state */
 Tenken.config.skipStopLastData = true;
 
-/* 未入力の点検項目がある場合の送信可否の設定          */
-/*   false:未入力項目がある場合は送信不可)             */
-/*   true :未入力項目がある場合も値なしとして送信可能  */
+/* Send check data to server even if not all check items are not filled */
+/*   false: Do not send data if all check items are not set */
+/*   true: Can send data although all check items are not set */
 Tenken.config.noinputsubmit = false;
 
-/* 未入力の点検項目がある場合の送信可否の    */
-/* 切り替え用チェックボックス表示の有無      */
-/*   false=チェックボックスを表示しない      */
-/*   true=表示する                           */
+/* Display send(submit) button even if not all check items are not filled */
+/*   false: Do not show submit button */
+/*   true: Show submit button */
 Tenken.config.noinputsubmitcheckbox = true;
 
-/* オフライン事前ダウンロード対応フラグ      */
-/* 対象は、AR重畳表示定義データ              */
-/*   true =事前ダウンロードする              */
-/*   false=事前ダウンロードしない            */
+/* Flag to pre-download AR overlay data from the server */
+/*   true = Pre-download data from the server */
+/*   false = Do not pre-download from the server */
 Tenken.config.preloadFile = true;
 
-/* 設備テーブルの追加アイコンに指定された    */
-/* URLの事前ダウンロードを行うか             */
-/*   true =事前ダウンロードする              */
-/*   false=事前ダウンロードしない            */
+/* Flat to pre-download URL assigned to icons on equipments table */
+/*   true = Perform pre-download from the server */
+/*   false = Do not pre-download from the server */
 Tenken.config.preloadAssetFile = true;
 
 /*********************************************************/
 /*********************************************************/
 
 /**
- * ARシステムに対してトレースします。
- * @param {String} _user ユーザ名
- * @param {Tenken.traceEvent.Type} _type イベントタイプ
+ * Trace events to the AR service.
+ * @param {String} _user user name
+ * @param {Tenken.traceEvent.Type} _type event type
  * @param {Number} _markerid marker.id
  * @param {String} _poiid poi.id
- * @param {Object} _details 詳細オブジェクト
+ * @param {Object} _details detail object
  */
 Tenken.traceEvent = function(_user, _type, _markerid, _poiid, _details) {
 	var obj = (null == _details) ? new Object() : _details;
@@ -101,7 +92,7 @@ Tenken.traceEvent = function(_user, _type, _markerid, _poiid, _details) {
 	Tenken.Util.TraceToSystem(_user, _type, obj);
 };
 /**
- * ARシステムに対するトレースイベントタイプの列挙値です。
+ * Enum of event types to the AR service
  */
 Tenken.traceEvent.Type = {
 	SCENARIO_SHOW : "JS_SCENARIO_SHOW",
@@ -143,9 +134,9 @@ Tenken.traceEvent.Type = {
 	ADDMESSAGE_SHOW : "JS_ADDMESSAGE_SHOW"
 };
 /**
- * HTML部品のdata-ar-eventtype属性を利用して、クリックアクションをトレースします。
- * @param {String} _user ユーザ名
- * @param {Object} _target クリックターゲットエレメント
+ * Trace click actions using data-ar-eventtype attribute in HTML.
+ * @param {String} _user user name
+ * @param {Object} _target element that is the target of click event
  */
 Tenken.traceEvent.traceButtonEvent = function(_user, _target) {
 	var tmpType = Tenken.traceEvent._getEventType(_target);
@@ -154,9 +145,9 @@ Tenken.traceEvent.traceButtonEvent = function(_user, _target) {
 	if(null != type) Tenken.traceEvent(_user, type, null, null, null);
 };
 /**
- * 指定エレメント、および、その親エレメントの、data-ar-eventtype属性値を取得して返します。
- * @param {Object} _target クリックターゲットエレメント
- * @return data-ar-eventtype属性値。値がない場合はnull
+ * Return attribute value of selected element and it's parent element
+ * @param {Object} _target element that is the target of click event
+ * @return data-ar-eventtype attriblute value. null in case value is not set
  */
 Tenken.traceEvent._getEventType = function(_target) {
 	var type = null;
@@ -173,9 +164,9 @@ Tenken.traceEvent._getEventType = function(_target) {
 
 
 /**
- * クラスを継承させます。
- * @param _cls クラス
- * @param _scls 親クラス
+ * Class inheritance
+ * @param _cls class
+ * @param _scls parent class
  */
 Tenken.inherit = function(_cls, _scls){
 	_cls.prototype = new _scls();
@@ -184,9 +175,9 @@ Tenken.inherit = function(_cls, _scls){
 
 
 /**
- * 指定数値を0パディングして返します。
- * @param _baseZero 2桁でパディングしたい場合は"00"
- * @param _num 対象数値。正の整数で指定すること
+ * Return value with 0 (zero) padding
+ * @param _baseZero "00" to padd with 2 digits
+ * @param _num number to pad. number must be positive integer
  */
 Tenken.paddingZero = function(_baseZero, _num) {
 	var tmp = _baseZero + _num;
@@ -195,11 +186,11 @@ Tenken.paddingZero = function(_baseZero, _num) {
 
 
 /**
- * 指定の配列要素を追加して返します。
- * @param {Array} _arrayTo 追加先の配列。書き換わります
- * @param {Array} _arrayFrom 追加する値を含む配列
- * @param {Boolean} _unshift 先頭に追加する場合はtrue、末尾に追加する場合はfalse
- * @return {Array} 追加後の_arrayTo
+ * Add arrays and return result
+ * @param {Array} _arrayTo Target Array to be added. Value will be changed.
+ * @param {Array} _arrayFrom Array to add
+ * @param {Boolean} _unshift true to add to the head, false to the bottom of the array
+ * @return {Array} modified _arrayTo
  */
 Tenken.putEach = function(_arrayTo, _arrayFrom, _unshift) {
 	if((null == _arrayFrom) || (0 == _arrayFrom.length)) return _arrayTo;
@@ -210,34 +201,34 @@ Tenken.putEach = function(_arrayTo, _arrayFrom, _unshift) {
 
 
 /**
- * 表示用文字列化可能な値を表現するクラスです。
- * @param _value 値
- * @param _stringValue 表示用文字列。nullの場合は「値=表示用文字列」と見做す
+ * Object to hold string values that can be displayed.
+ * @param _value Original value
+ * @param _stringValue Value to be displayed. If null, original value will be used to display.
  */
 Tenken.StringableValue = function(_value, _stringValue) {
 	this._value = _value;
 	this._stringValue = _stringValue;
 };
 /**
- * 値を返します。
- * @return 値
+ * Return value.
+ * @return value
  */
 Tenken.StringableValue.prototype.getValue = function() { return this._value; };
 /**
- * 表示用文字列を返します。
- * @return 表示用文字列
+ * Return string to be displayed
+ * @return string to be displayed
  */
 Tenken.StringableValue.prototype.toString = function() { return (null == this._stringValue) ? this._value : this._stringValue; };
 /**
- * 値/表示用文字列を設定します。
- * @param _value 値
- * @param _stringValue 表示用文字列
+ * Set value and string to be displayed
+ * @param _value value
+ * @param _stringValue string to be displayed
  */
 Tenken.StringableValue.prototype.setValueAndStringValue = function(_value, _stringValue) { this._value = _value; this._stringValue = _stringValue; };
 
 
 /**
- * 日時値を表現するクラスです。
+ * Date and Time Object
  */
 Tenken.DatetimeValue = function(_value) {
 	Tenken.StringableValue.call(this, _value);
@@ -245,7 +236,7 @@ Tenken.DatetimeValue = function(_value) {
 };
 Tenken.inherit(Tenken.DatetimeValue, Tenken.StringableValue);
 /**
- * 表示用文字列を、「4桁の年/2桁の月/2桁の日(1桁の曜日) 2桁の時:2桁の分」の書式で返します。
+ * Return as "yyyy/mm/dd hh:mm" string to display
  * @extends Tenken.StringableValue.prototype.toString()
  */
 Tenken.DatetimeValue.prototype.toString = function() {
@@ -256,11 +247,10 @@ Tenken.DatetimeValue.prototype.toString = function() {
 		Tenken.paddingZero("00", this._date.getHours()) + ":" +
 		Tenken.paddingZero("00", this._date.getMinutes());
 };
-/** 曜日用列挙値。*/
 Tenken.DatetimeValue._DAYLABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 /**
- * 表示用文字列を、「4桁の年/2桁の月/2桁の日 2桁の時:2桁の分:2桁の秒」の書式で返します。
+ * Return as "yyyy/mm/dd hh:mm:ss" string to display
 */
 Tenken.DatetimeValue.prototype.toStringFullTime = function() {
 	return Tenken.paddingZero("0000", this._date.getFullYear()) + "/" +
@@ -280,8 +270,9 @@ Tenken.DatetimeValue.prototype.parseDatetime = function(_strDatetime)
 	return Date.parse(_strDatetime);
 }
 
-// 数値または数値文字列か判定します。
-// true:数値または数値文字列 false:数値、数値文字列以外
+// Determine if value is number or string representing numbers
+// true: number or string representing numbers
+// false: not a number or string representining numbers
 Tenken.isNumber = function(_value)
 {
 	if(("number" != typeof(_value)) && ("string" != typeof(_value))) return false;
@@ -292,83 +283,83 @@ Tenken.isNumber = function(_value)
 
 
 /* =======================================================================*/
-/* ユーティリティ                                                         */
+/* Utility                                                         */
 /* =======================================================================*/
 Tenken.Util = {};
 
-/** 何もしないコールバック用メソッドです。 */
+/** Callback method that do nothing */
 Tenken.Util.noop = function(_result){};
 
-/** 情報ログを出力します。 */
+/** Export information log */
 Tenken.Util.loginfo = function(_message, _detail){
 	if(_message == null) return;
 	if ( null == Tenken.config.loglevel || Tenken.config.loglevel < 2 ) return;
 	var message = Tenken.config.log_prefix + _message.toString();
-	//message + detailをログに出力します。
+	//log message + detail
 	if(_detail) message += ":" + _detail;
 
 	try{
 		AR.Log.log(AR.Log.LevelType.INFO, Tenken.config.log_no_info, message, Tenken.Util.noop, Tenken.Util.noop);
 	} catch(e){
-		alert("ログの出力に失敗しました。"+e);
+		alert("Error occured while writing to log"+e);
 	}
 };
 
-/** ワーニングログを出力します。 */
+/** Warning */
 Tenken.Util.logwarning = function(_message, _detail){
 	if(_message == null) return;
 	if ( null == Tenken.config.loglevel || Tenken.config.loglevel < 1 ) return;
 	var message = Tenken.config.log_prefix + _message.toString();
-	//message + detailをログに出力します。
+	//log message + detail
 	if(_detail) message += ":" + _detail;
 
 	try{
 		AR.Log.log(AR.Log.LevelType.WARNING, Tenken.config.log_no_warning, message, Tenken.Util.noop, Tenken.Util.noop);
 	} catch(e){
-		alert("ログの出力に失敗しました。"+e);
+		alert("Error occured while writing to log"+e);
 	}
 };
 
-/** デバッグログを出力します。 */
+/** Debug */
 Tenken.Util.logdebug = function(_message, _detail){
 	if(_message == null) return;
 	if ( null == Tenken.config.loglevel || Tenken.config.loglevel < 3 ) return;
 	var message = Tenken.config.log_prefix + _message.toString();
-	//message + detailをログに出力します。
+	//log message + detail
 	if(_detail) message += ":" + _detail;
 
 	try{
 		AR.Log.log(AR.Log.LevelType.INFO, Tenken.config.log_no_debug, message, Tenken.Util.noop, Tenken.Util.noop);
 	} catch(e){
-			alert("ログの出力に失敗しました。"+e);
+		alert("Error occured while writing to log"+e);
 	}
 };
 
-/** エラーログを出力します。 */
+/** Error */
 Tenken.Util.logerr = function(_message, _detail){
 	if(_message == null) return;
 	var code = Tenken.config.log_no_error;
 	var message;
 ;
 
-	if(_message instanceof Error){ //Errorオブジェクトの場合
+	if(_message instanceof Error){
 		if(typeof _message.code == 'number') code = _message.code;
 		message = Tenken.config.log_prefix + _message.componentName == null ? _message.toString() : _message.componentName + " : " + _message.toString();
 		if(_message.cause != null) message += " Cause : "+_message.cause;
 	} else message = Tenken.config.log_prefix + _message.toString(); //それ以外の場合
 
-	//message + detailをログに出力します。
+	//log message + detail
 	if(_detail) message += ":" + _detail;
 	try{
 		AR.Log.log(AR.Log.LevelType.ERROR, code,message,Tenken.Util.noop, Tenken.Util.noop);
 	} catch(e){
-		alert("ログの出力に失敗しました。"+e);
+		alert("Error occured while writing to log"+e);
 	}
 };
 
-/** トレース出力のonErrorに設定するコールバック関数です。 */
+/** Callback method for Trace log's onError */
 Tenken.Util.traceError = function(_result){
-	alert("トレースの出力に失敗しました。\n" + result.getStatus() + "\n"+ _result.getValue());
+	alert("Error occured while writing trace information\n" + result.getStatus() + "\n"+ _result.getValue());
 };
 
 
@@ -392,7 +383,7 @@ Tenken.Util.TraceToSystem = function(_user, _type, obj)
 };
 
 /**
- * ネイティブカメラ起動のonErrorに設定するコールバック関数です。
+ * Callback method for onError when starting native camera device
  */
 Tenken.Util.startCameraViewError = function(_result){
 	var message = "ネイティブカメラの起動に失敗しました。";
@@ -400,7 +391,9 @@ Tenken.Util.startCameraViewError = function(_result){
 	Tenken.Util.logerr(message, detail);
 };
 
-/** ネイティブカメラ停止のonErrorに設定するコールバック関数です。 */
+/**
+ * Callback method for onError when stopping native camera device
+ */
 Tenken.Util.stopCameraViewError = function(_result){
 	var message = "ネイティブカメラの停止に失敗しました。";
 	var detail = _result.getStatus() + ":"+ _result.getValue();
@@ -417,27 +410,29 @@ Tenken.Util.stopCameraView = function()
 	AR.Camera.stopCameraView(Tenken.Util.noop, Tenken.Util.stopCameraViewError);
 };
 
-/** マーカー検知に登録したリスナーID */
+/** Listener ID registered for detecting AR markers **/
 Tenken.Util.listenerId = "";
 
 /**
- * マーカー検知登録のonSuccessに設定するコールバック関数です。
+ * Callback method for onSuccess when registering AR markers
  */
 Tenken.Util.addMarkerListenerSuccess = function(_result){
-	//リスナIDをTenken.Util.listenerIdに格納します。登録したマーカー検知イベントリスナの削除に使用します。
+	// Set Listener ID to Tenken.Util.listenerId. This will be used to delete marker detection event listener.
 	Tenken.Util.listenerId = _result.getValue();
 };
 
-/** マーカー検知登録のonErrorに設定するコールバック関数です。*/
+/**
+ * Callback method for onError when registering AR markers
+ */
 Tenken.Util.addMarkerListenerError = function(_result){
-	var message ="マーカー検知のイベントリスナ登録に失敗しました。";
+	var message ="Failed to register marker detection event listener";
 	var detail = _result.getStatus() + ":"+ _result.getValue();
 	Tenken.Util.logerr(message, detail);
 };
 
 Tenken.Util.addMarkerListener = function(_onDetectMarker)
 {
-	//マーカー検知のイベントリスナ追加です。
+	// Add event listener to detect markers
 	try
 	{
 		AR.Camera.addMarkerListener( Tenken.Util.addMarkerListenerSuccess, Tenken.Util.addMarkerListenerError, _onDetectMarker, Tenken.Util.noop);
@@ -447,12 +442,16 @@ Tenken.Util.addMarkerListener = function(_onDetectMarker)
 	}
 };
 
-/** マーカー検知時のイベントリスナ削除に成功した場合のコールバック関数です。 */
+/**
+ * Callback method when removing AR markers event listener was a success
+ */
 Tenken.Util.removeMarkerListenerSuccess = function(_result){
 	Tenken.Util.listenerId = "";
 };
 
-/** マーカー検知削除のonErrorに設定するコールバック関数です。 */
+/**
+ * Callback method for onError when removing AR markers event listener
+ */
 Tenken.Util.removeMarkerListenerError = function(){
 	var message = "マーカー検知のイベントリスナ削除に失敗しました。\n";
 	var detail = _result.getStatus() + ":"+ _result.getValue();
@@ -461,7 +460,7 @@ Tenken.Util.removeMarkerListenerError = function(){
 
 Tenken.Util.removeMarkerListener = function()
 {
-	//イベントリスナを削除します。
+	// Remove event listerner
 	try{
 		AR.Camera.removeMarkerListener(Tenken.Util.listenerId, Tenken.Util.removeMarkerListenerSuccess , Tenken.Util.removeMarkerListenerError);
 	} catch (e){
@@ -469,15 +468,18 @@ Tenken.Util.removeMarkerListener = function()
 	}
 }
 
-/** 取得した動作モードを変数に格納します。 */
+/** Set operation mode */
 Tenken.Util.getOperationModeSuccess = function(_result)
 {
-	//取得した動作モードを変数に格納します。
+	// Set operation mode
 	var operationMode = _result.getValue();
 	Tenken.Storage.OperationMode.set(operationMode);
 };
 
-/** 動作モード取得のonErrorに設定するコールバック関数です。 */
+/**
+ * Callback method for onError when obtaining operation mode
+ */
+
 Tenken.Util.getOperationModeError = function(_result)
 {
 	var message = "動作モードの取得に失敗しました。\n";
@@ -486,13 +488,13 @@ Tenken.Util.getOperationModeError = function(_result)
 	Tenken.Util.logerr(message, detail);
 };
 
-/** 動作モードを取得します。 */
+/** Obtain operation mode */
 Tenken.Util.getOperationMode = function(_funcSuccess, _funcError)
 {
 	try{
 		Tenken.Storage.OperationMode.remove();
-		// 成功および失敗時のコールバックが指定されていれば保存する
-		// 指定されていない場合は、デフォルトのコールバックを指定します。
+		// Save if callbacks on success and error is specified.
+		// If nothing is specified, set default callback methods 
 		if ( null != _funcSuccess )
 		{
 			var funcSuccess=_funcSuccess;

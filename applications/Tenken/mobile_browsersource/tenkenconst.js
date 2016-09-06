@@ -1,56 +1,56 @@
 /**
- * @overview 点検業務向け定数定義群です。
+ * @overview Configuration parameters for Tenken
  * @copyright Copyright 2014 FUJITSU LIMITED
  */
 
 var TenkenConst = {};
 
-// AR点検アプリケーションの各画面HTML名
+// HTML file name for each pages in Tenken
 
 TenkenConst.PageName =
 {
-	top				:"index.html",     // 初画面
-	pre				:"pre.html",       // 作業者選択画面
-	main			:"main.html"       // メイン画面
+	top				:"index.html",     // Initial screen
+	pre				:"pre.html",       // Selection of operators screen
+	main			:"main.html"       // Main screen
 }
 
-// ARサーバの利用者定義テーブル名定義
-// (シナリオ、シーン、AR重畳表示定義を含みます)
+// Table name of AR Server for operator information
+// (Includes Scenario, Scene, and AR overlay data)
 TenkenConst.TableName =
 {
-	asset				:"asset",             // 設備情報テーブル
-	tenkenevent			:"tenkenevent",       // 点検結果テーブル
-	tenkentable			:"tenkentable",       // 点検項目定義テーブル
-	messageevent		:"messageevent",      // 申し送りテーブル
-	userdata			:"userdata",          // 作業者管理テーブル
-	scenario			:"arscn_scenario",    // シナリオ管理テーブル
-	scene				:"arsen_scene",       // シーン管理テーブル
-	SuperimposedGraphic	:"arpoiarmk_default"  // AR重畳表示定義テーブル
+	asset				:"asset",             // Equipment definition table
+	tenkenevent			:"tenkenevent",       // Check result table
+	tenkentable			:"tenkentable",       // Check list definition table
+	messageevent		:"messageevent",      // Messages table
+	userdata			:"userdata",          // operator management table
+	scenario			:"arscn_scenario",    // Scenario management table
+	scene				:"arsen_scene",       // Scene management table
+	SuperimposedGraphic	:"arpoiarmk_default"  // AR overlay data table 
 };
 
-// 保存するWebストレージ(ローカルストレージ)の名前
+// Name of the Web Storage (local storage) to store data
 TenkenConst.StorageName =
 {
-	// テーブル
-	asset				: "ARtenken_asset",           // 設備情報テーブル
-	tenkentable			: "ARtenken_tenkentable",     // 点検結果テーブル
-	username			: "ARtenken_userdata",        // 作業者管理テーブル
-	scenario			: "ARtenken_scenario",        // シナリオ管理テーブル
-	scene				: "ARtenken_scene",           // シーン管理テーブル
-	SuperimposedGraphic	: "ARtenken_arcontens",       // AR重畳表示定義テーブル
-	lastTenkenEvent		: "ARtenken_tenkeneventlast", // 点検結果テーブル(前回)
-	lastMessageEvent	: "ARtenken_messageeventlast",// 点検結果テーブル(今回)
-	currentTenkenEevnt	: "ARtenken_tenkeneventcurrent",  // 申し送りテーブル(前回)
-	currentMessageEvent	: "ARtenken_messageeventcurrent", // 申し送りテーブル(今回)
+	// table
+	asset				: "ARtenken_asset",           // Equipment definition table
+	tenkentable			: "ARtenken_tenkentable",     // Check result table
+	username			: "ARtenken_userdata",        // operator management table
+	scenario			: "ARtenken_scenario",        // Scenario management table
+	scene				: "ARtenken_scene",           // Scene management table
+	SuperimposedGraphic	: "ARtenken_arcontens",       // AR overlay data table 
+	lastTenkenEvent		: "ARtenken_tenkeneventlast", // Check result table (previous)
+	lastMessageEvent	: "ARtenken_messageeventlast",// Check result table (current)
+	currentTenkenEevnt	: "ARtenken_tenkeneventcurrent",  // Messages table (previous)
+	currentMessageEvent	: "ARtenken_messageeventcurrent", // Messages table (current)
 
-	// テーブル外
-	startDatatime		: "ARtenken_STARTDATETIME",   // 点検開始日時
-	operator			: "ARtenken_OPERATOR",        // 作業中の作業者名
-	OperationMode		: "ARtenken_OPERATIONMODE",   // ARの通信モード
-	DownloadScenario	: "ARtenken_DOWNLOADSCENARIO",// ダウンロード日時(シナリオ)
-	DownloadDate		: "ARtenken_DOWNLOADDATE",    // ダウンロード日時(シナリオ以外)
-	ScenarioName		: "ARtenken_SCENARIO_NAME",   // 選択したシナリオ名
-	ScenarioId			: "ARtenken_SCENARIOID",      // 選択したシナリオID
-	SceneNames			: "ARtenken_SCENE_NAMES",     // 選択したシナリオのシーン名一覧
+	// outside table
+	startDatatime		: "ARtenken_STARTDATETIME",   // Date and Time when check started
+	operator			: "ARtenken_OPERATOR",        // operator name
+	OperationMode		: "ARtenken_OPERATIONMODE",   // AR server communication mode
+	DownloadScenario	: "ARtenken_DOWNLOADSCENARIO",// Date and Time of scenario download
+	DownloadDate		: "ARtenken_DOWNLOADDATE",    // Date and time of data download (except for scenario)
+	ScenarioName		: "ARtenken_SCENARIO_NAME",   // Selected Scenario name
+	ScenarioId			: "ARtenken_SCENARIOID",      // Selected Scenario ID
+	SceneNames			: "ARtenken_SCENE_NAMES",     // Scene list of selected scenario
 };
 
