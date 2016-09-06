@@ -1,0 +1,353 @@
+<!DOCTYPE HTML>
+<html lang="ja" manifest="tenken.appcache">
+<head>
+
+	<meta charset="UTF-8"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="copyright" content="Copyright 2014 FUJITSU LIMITED">
+
+	<title>AR</title>
+
+	<style>
+	* {
+		font-size:103%;
+	}
+	html, body {
+		width:100%;
+		height:100%;
+	}
+	body {
+		padding:0px;
+		margin:0px;
+		background:dimgray url(image/slash.png);
+		display: -webkit-box;
+		-webkit-box-align: center;
+		-webkit-box-pack: center;
+	}
+	input, select {
+		width:100%;
+		margin:0.3em 0px 0px 0px;
+		line-height:150%;
+		font-size:125%;
+	}
+	hr {
+		margin:1em 0em 1em 0em;
+	}
+	#popmenu {
+		width:32em;
+		height:26em;
+		border:10px solid #333333;
+		border-radius:20px;
+		background:FloralWhite;
+		display: -webkit-box;
+		-webkit-box-align: center;
+		-webkit-box-pack: center;
+	}
+	#btnnext {
+		width:50%;
+		height:2em;
+	}
+	#btndwnld {
+		width:90%;
+		height:2em;
+	}
+	#lastdownload, #lastscenario {
+		font-size:80%;
+		align: left;
+		color:red;
+	}
+
+	</style>
+
+	<script src="ar/ar.js"></script>
+	<script src="tenkenconst.js"></script>
+	<script src="tenkenARdata.js"></script>
+	<script src="tenken.js"></script>
+	<script src="tenkenstorage.js"></script>
+	<script src="tenkenchecklistform.js"></script>
+	<script src="tenkendata.js"></script>
+
+	<script>
+
+	// キャッシュされたindex.htmlの場合onLoadイベントが呼ばれないため、
+	// DOMContentLoadedイベントを利用する
+	window.addEventListener("DOMContentLoaded", function() {init();}, false);
+
+	// ウィンドウアンロード前イベントリスナの登録。
+	window.addEventListener("beforeunload", function(e) {
+		try
+		{
+			if ( TenkenData.AllGet.getPhaseScenario() == true  )
+			{
+				return("現在データを取得中です。\n時間を置いて再度実行してください。\n\n画面を強制移動しますか？")
+			}
+		}
+		catch(e)
+		{
+			// 多重呼び出し回避用のcatch。処理は無しです。
+			// レンダリングエンジンによっては効果が無い場合があります。
+		}
+	});
+
+	// オフラインストレージ設定のonErrorに設定するコールバック関数です。
+	useOfflineStorageError = function(_result)
+	{
+		var message = "オフラインストレージの設定に失敗しました。";
+		var detail = _result.getStatus() + "\n"+ _result.getValue();
+		Tenken.Util.logerr(message, detail);
+	};
+
+
+	function updateSelectScenario()
+	{
+		try {
+		TenkenData.Scenario.selectScenarioNameHTML(document.formScenaio.selectScenarioId);
+		selectChangeScenario(Tenken.Storage.ScenarioId.get());
+		}
+		catch (e)
+		{
+			alert("exception : updateSelectScenario\n" + e);
+		}
+	}
+
+	function getDownloadScenarioDatetime()
+	{
+		var str="";
+		var downloadDatetime = Tenken.Storage.DownloadScenario.get();
+		if ( null != downloadDatetime )
+		{
+			str += "Last download date and time:";
+			str += new Tenken.DatetimeValue(downloadDatetime).toString();
+		}
+		return(str);
+	}
+
+
+	// ダウンロード成功
+	function downloadSuccess()
+	{
+
+		if(  "serverMode" == Tenken.Storage.OperationMode.get() )
+		{
+			alert("Scenario information was obtained. ");
+		}
+		else
+		{
+			alert("Scenario information was obtained. \n\nInformation might have be obtained from off-line storage because of standalone mode.");
+		}
+
+		// ダウンロード日時を保存・表示します。
+		downloadDatetime = new Date().getTime();
+		Tenken.Storage.DownloadScenario.set(downloadDatetime);
+		document.getElementById("lastdownload").innerHTML=getDownloadScenarioDatetime();;
+
+		// シナリオ名の選択状態を更新表示
+		updateSelectScenario();
+
+	}
+
+	// ダウンロード失敗
+	function downloadError(_errorMsg)
+	{
+		alert("AR実行サーバのデータ取得に失敗しました。\n動作モードとネットワーク状況を確認して再度お試しください。\nネットワークがオンライン状態の場合には、AR重畳表示アプリケーションを再起動してください。\n\n" + _errorMsg);
+	}
+
+	function getOperationModeSuccess(_result)
+	{
+		//取得した動作モードを変数に格納します。
+		var operationMode = _result.getValue();
+		Tenken.Storage.OperationMode.set(operationMode);
+
+		//サーバ通信モードの場合は強制読み込み
+		var mode = ("serverMode" == operationMode) ? true : false;
+
+		// シナリオデータダウンロード
+		TenkenData.AllGet.downloadScenario(mode, downloadSuccess.bind(this), downloadError.bind(this));
+
+	}
+	function getOperationModeError(_result)
+	{
+		var message = "動作モードの取得に失敗しました。\n";
+		var detail = _result.getStatus() + "\n"+ _result.getValue();
+		Tenken.Util.logerr(message, detail);
+	}
+
+	function downloadResource()
+	{
+		try
+		{
+			if ( Tenken.Storage.ScenarioId.get() ) 
+			{
+				if ( confirm("There is a working scenario. Do you discard all the data?\n") != true ) 
+				{
+					return;
+				}
+			}
+			if ( TenkenData.AllGet.getPhaseScenario() == true )
+			{
+				alert("現在データを取得中です。\n時間を置いて再度実行してください。");
+				return;
+			}
+
+			Tenken.Storage.clear();
+			document.getElementById("lastdownload").innerHTML="";
+			document.getElementById("lastscenario").innerHTML="";
+
+			// シナリオ名の選択状態を更新表示
+			updateSelectScenario();
+
+			//動作モードを取得してローカルストレージに保存します。 
+			//動作モード取得が成功した場合、そのままデータのダウンロードを
+			//コールバックで行います。
+			Tenken.Util.getOperationMode(getOperationModeSuccess.bind(this), getOperationModeError.bind(this));
+		}
+		catch (e)
+		{
+			alert("Exception: index.html:downloadResource\n" + e );
+		}
+	}
+	function nextPage()
+	{
+		try {
+			if ( TenkenData.AllGet.getPhaseScenario() == true )
+			{
+				alert("現在データを取得中です。\n時間を置いて再度実行してください。");
+				return;
+			}
+
+			var savedScenarioId = Tenken.Storage.ScenarioId.get();
+			var setScenarioId = document.getElementById("selectScenarioId").value;
+
+			if("" == setScenarioId ) {
+				alert("Select inspection scenario.");
+				return;
+			}
+
+			if ( null != setScenarioId && "" != setScenarioId && savedScenarioId != setScenarioId )
+			{
+				var nameScenario = TenkenData.Scenario.getScenarioNameFromId(savedScenarioId);
+
+				var strCnf="The selected scenario is different from the last one.\nPrevious scenario=" +  nameScenario + "\n\nDo you discard the working data?";
+				if ( null != nameScenario && confirm(strCnf) != true ) 
+				{
+					return;
+				}
+				// シナリオデータ以外をクリアします。
+				Tenken.Storage.clearWithOutScenario();
+			}
+
+			// 選択中のシナリオIDを保存します。
+			Tenken.Storage.ScenarioId.set(setScenarioId);
+
+			location.href = TenkenConst.PageName.pre;
+		}
+		catch (e)
+		{
+			alert(e);
+		}
+	}
+
+	function showScenarioSelect()
+	{
+		var str="";
+		if ( AR.Native.isWindows() == true )
+		{
+			str += '<select id="selectScenarioId" name="selectScenarioId" size="3">';
+		}
+		else
+		{
+			str += '<select id="selectScenarioId" name="selectScenarioId">';
+		}
+		str += '<option value="">Select</option>';
+		str += '</select>';
+		return(str);
+	}
+
+	// 指定したシナリオIDに対応したシナリオ名を選択した状態して表示します
+	function selectChangeScenario(_senarioid)
+	{
+		var elmSel = document.getElementById("selectScenarioId");
+		if ( elmSel )
+		{
+			if ( null == _senarioid || "" == _senarioid )
+			{
+				elmSel.options[0].selected = true;
+				return;
+			}
+			for ( var i=0 ; i < elmSel.length ; i++ )
+			{
+				if ( elmSel.options[i].value == _senarioid )
+				{
+					elmSel.options[i].selected = true;
+					break;
+				}
+			}
+		}
+	}
+
+	// 作業中のシナリオ名を表示します。
+	function getLastScenario()
+	{
+		var str="";
+		var savedScenario = Tenken.Storage.ScenarioId.get();
+		if ( null != savedScenario )
+		{
+			str += "Working scenario:";
+			var nameScenario = TenkenData.Scenario.getScenarioNameFromId(savedScenario);
+			if ( null != nameScenario )
+			{
+				str += nameScenario;
+			}
+		}
+		selectChangeScenario(savedScenario);
+		return(str);
+	}
+
+	 // ページを初期化します。
+	function init() {
+		//オフラインストレージをONに設定します。
+		AR.Data.useOfflineStorage(true, function(_result){},useOfflineStorageError);
+
+		// シナリオ名の選択状態を更新表示
+		updateSelectScenario();
+	}
+
+	</script>
+
+</head>
+
+<body>
+
+	<div id="popmenu">
+
+		<form name="formScenaio">
+		<label>
+			(1) Download inspection scenario information.<br>
+			<div style="text-align:center;">
+				<input id="btndwnld" type="button" value="Download scenario information" onclick="downloadResource()"  data-ar-eventtype="SCENARIO_PREDOWNLOAD">
+				<br>
+				<b id="lastdownload"><script>document.write(getDownloadScenarioDatetime());</script> </b>
+			</div>
+		</label>
+		<hr>
+		<label>
+			(2) Select scenario<br>
+			<div style="text-align:center;">
+				<section>
+					<script>document.write(showScenarioSelect());</script>
+					<br>
+					<b id="lastscenario"><script>document.write(getLastScenario());</script> </b>
+				</section>
+			</div>
+		</label>
+		<hr>
+		<div style="text-align:center;">
+			<input id="btnnext" type="button" value="Next" onclick="nextPage()"  data-ar-eventtype="SCENARIO_START">
+			<br>
+		</div>
+
+		</form>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+﻿<!DOCTYPE HTML>
+<html lang="ja" manifest="tenken.appcache">
+
+<head>
+
+	<meta charset="UTF-8"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="copyright" content="Copyright 2014 FUJITSU LIMITED">
+
+	<title>AR</title>
+
+	<link rel="stylesheet" href="tenkengui.css">
+
+	<script src="ar/ar.js"></script>
+	<script src="tenkenconst.js"></script>
+	<script src="tenkenARdata.js"></script>
+	<script src="tenken.js"></script>
+	<script src="tenkenstorage.js"></script>
+	<script src="tenkenchecklistform.js"></script>
+	<script src="tenkenrendering.js"></script>
+	<script src="tenkendata.js"></script>
+	<script src="tenkengui.js"></script>
+
+	<script>
+
+	</script>
+
+</head>
+<body data-ar-content="0">
+	<section id="header">
+		<ul id="header_title">
+			<li id="header_title_1" class="ellipsislabel"><span class="iconlabel"><script>document.write(Tenken.GUI.escapeHTML(Tenken.GUI.TenkenValue.instance.name))</script></span>
+			<li id="header_title_2" class="ellipsislabel">
+			<li id="header_title_3" class="ellipsislabel"><span class="iconlabel"><script>document.write(Tenken.GUI.escapeHTML(Tenken.GUI.TenkenValue.instance.operator))</script></span>
+			<li id="header_title_4" class="ellipsislabel"><span class="iconlabel"><script>document.write(Tenken.GUI.escapeHTML(Tenken.GUI.TenkenValue.instance.datetime.toString()))</script> Start</span><!-- アイコンはないが、iconlabelスタイルを適用したい -->
+		</ul>
+		<ul id="header_menu">
+			<li id="header_menu_1"><a href="javascript:Tenken.GUI.Page.changePage(1)" class="ellipsislabel" data-ar-eventtype="AR_MENU_SUBMIT"><span class="iconlabel">Send result</span></a>
+			<li id="header_menu_2"><a href="javascript:Tenken.GUI.Page.changePage(2)" class="ellipsislabel" data-ar-eventtype="AR_MENU_CHECKLIST"><span class="iconlabel">Check list</span></a>
+			<li id="header_menu_3"><a href="javascript:Tenken.GUI.Page.changePage(3)" class="ellipsislabel" data-ar-eventtype="AR_MENU_MESSAGELIST"><span class="iconlabel">Message list</span></a>
+			<!-- <li id="header_menu_4"><a href="javascript:Tenken.GUI.Page.changePage(4)" class="ellipsislabel"><span class="iconlabel">申し送り追加</span></a> 非メニューページ -->
+		</ul>
+		<ul id="header_inputmsg">
+			<li id="heheader_inputmsg_1" class="ellipsislabel" >Input message
+			
+		</ul>
+		<ul id="header_completemsg">
+			<li id="header_completemsg_1" class="ellipsislabel" Input message completion report
+			
+		</ul>
+	</section>
+	<section id="summary"></section>
+	<section id="content">
+		<section id="content_1"><script>document.write(Tenken.GUI.SubmitPage.getContentHTML());</script></section>
+		<section id="content_2"><script>document.write(Tenken.GUI.ChecklistPage.getContentHTML());</script></section>
+		<section id="content_3"></section>
+		<section id="content_4"><script>document.write(Tenken.GUI.AddingMessagePage.getContentHTML());</script></section> 
+		<section id="content_5"><script>document.write(Tenken.GUI.completeMessagePage.getContentHTML());</script></section> 
+	</section>
+	<section id="footer">
+		<a href="javascript:Tenken.GUI.Page.changePage(0)"><span class="iconlabel">Close</span></a>
+	</section>
+
+	<script>
+	document.write(Tenken.GUI.changeSceneButtonWidgetCreator.getHTML("changescene"));
+	</script>
+	<input type="button" id="stopcamera" value="" onclick="Tenken.GUI.stopCamera()">
+	<input type="button" id="startcamera" value="" onclick="Tenken.GUI.startCamera()">
+
+</body>
+</html>

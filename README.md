@@ -2,9 +2,11 @@
 OSS AR Javascript Library 4 Browser
 
 # Install & Run Tenken Application
-## Install InterstageAR
-1. Install following apk into Android device
-applications/Tenken/mobile_nativeclient/Android/OSSFJAR_20160808.apk
+## Install InterstageAR (to Android or Windows)
+1. (for Android) Install following apk into Android device
+applications/Tenken/ar_nativeclient/Android/OSSFJAR_20160808.apk
+1. (for Windows) Install using following msi into any Windows computer that has a camera
+applications/Tenken/ar_nativeclient/Windows/ARClientSetupForTopcoderWindows.msi
 2. Start application, and Click on "AR Custom Web Application"
 
 ## Setup InterstageAR
@@ -21,9 +23,9 @@ applications/Tenken/mobile_nativeclient/Android/OSSFJAR_20160808.apk
 Note: Although it should not be necessay to understand details of Tenken application, entire manual of Tenken is at applications/Tenken/arapptenken.pdf
 
 # Developing Tenken Application
-Tenken application is pure html/css/js web application that needs to be hosted on some web server. Source code is located at applications/Tenken/mobile_browsersource/
+Tenken application is pure html/css/js web application that needs to be hosted on some web server. Source code is located at applications/Tenken/ar_browsersource/
 
-1. Download entire directory of applications/Tenken/mobile_browsersource/
+1. Download entire directory of applications/Tenken/ar_browsersource/
 2. With your favorite web server, host the above files (we'll assume http://localhost:8080/tenken)
 3. Start mobile application. In the first dialog to specify "Server URL", put http://localhost:8080/tenken
 4. Change html/css/js files with your favorite editor

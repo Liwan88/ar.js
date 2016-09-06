@@ -1,0 +1,475 @@
+﻿<!DOCTYPE HTML>
+<html lang="ja" manifest="tenken.appcache">
+<head>
+
+	<meta charset="UTF-8"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="copyright" content="Copyright 2014 FUJITSU LIMITED">
+
+	<title>AR</title>
+
+	<style>
+	* {
+		font-size:103%;
+	}
+	html, body {
+		width:100%;
+		height:100%;
+	}
+	body {
+		padding:0px;
+		margin:0px;
+		background:dimgray url(image/slash.png);
+		display: -webkit-box;
+		-webkit-box-align: center;
+		-webkit-box-pack: center;
+	}
+	input, select {
+		width:100%;
+		margin:0.3em 0px 0px 0px;
+		line-height:150%;
+		font-size:125%;
+	}
+	hr {
+		margin:1em 0em 1em 0em;
+	}
+	#popup {
+		width:32em;
+		height:28em;
+		border:10px solid #333333;
+		border-radius:20px;
+		background:Snow;
+		display: -webkit-box;
+		-webkit-box-align: center;
+		-webkit-box-pack: center;
+	}
+	#operator {
+		width:80%;
+		padding:1% ;
+	}
+	#start {
+		width:60%;
+		height:2em;
+	}
+	#btnback {
+		width:20%;
+		height:2em;
+	}
+	#btndwnld {
+		width:80%;
+		height:2em;
+	}
+	#lastoperator, #lastdownload {
+		font-size:80%;
+		align: left;
+		color:red;
+	}
+	#lastscenario {
+		font-size:120%;
+		align: left;
+		color:orange;
+	}
+	.menustep {
+		text-align:center;
+	}
+	#idNameScenario {
+		text-align:left;
+		padding-left:1em;
+	}
+	</style>
+
+	<script src="ar/ar.js"></script>
+	<script src="tenkenconst.js"></script>
+	<script src="tenkenARdata.js"></script>
+	<script src="tenken.js"></script>
+	<script src="tenkenstorage.js"></script>
+	<script src="tenkenchecklistform.js"></script>
+	<script src="tenkendata.js"></script>
+	<script src="tenkenrendering.js"></script>
+
+	<script>
+	Tenken.traceEvent(null, Tenken.traceEvent.Type.TENKEN_SHOW, null, null, null);
+
+	// 作業域: 作業開始日時。
+	var startDatetime = -1;
+	// 作業域: 作業者
+	var setoperator = null;
+
+	// キャッシュされたpre.htmlの場合onLoadイベントが呼ばれないため、
+	// DOMContentLoadedイベントを利用する
+	window.addEventListener("DOMContentLoaded", function() {init();}, false);
+
+	// ウィンドウアンロード前イベントリスナの登録。
+	window.addEventListener("beforeunload", function(e) {
+		try
+		{
+			if ( TenkenData.AllGet.getPhase() == true  )
+			{
+				return("現在データを取得中です。\n時間を置いて再度実行してください。\n\n画面を強制移動しますか？")
+			}
+		}
+		catch(e)
+		{
+			// 多重呼び出し回避用のcatch。処理は無しです。
+			// レンダリングエンジンによっては効果が無い場合があります。
+		}
+	});
+
+	// オフラインストレージ設定のonErrorに設定するコールバック関数です。
+	useOfflineStorageError = function(_result)
+	{
+		var message = "オフラインストレージの設定に失敗しました。";
+		var detail = _result.getStatus() + "\n"+ _result.getValue();
+		Tenken.Util.logerr(message, detail);
+	};
+
+	 // ページを初期化します。
+	function init() {
+
+		//動作モードを取得してローカルストレージに保存します。 
+		Tenken.Util.getOperationMode(null, null);
+
+
+		// 選択されたシナリオIDを設定します。
+		// 設定されていない場合には、デフォルトのままです。
+		var idSenario=Tenken.Storage.ScenarioId.get();
+		if ( null != idSenario )
+		{
+			Tenken.config.ScenarioId = idSenario;
+		}
+
+		// 作業者名を表示します。
+		updateSelectOperator();
+	}
+
+	// 作業中と異なる作業者が選択された場合の継続の問い合わせ結果を返します。
+	// @param {String} _operator 作業者
+	// @param {String} _selectoperator 新たに選択された作業者
+	// @return {Boolean} 新たなユーザで継続する場合はtrue、それ以外はfalse
+	function comfirmContinue1(_operator, _selectoperator)
+	{
+		var strOper="There is the working data of operator [" + _operator + "].\nDo you work as selected operator [" + _selectoperator + "]\n(The working data is discarded)\n\n[OK] / [Yes] = Start working as [" + _selectoperator + "].\n[Cancel] / [No] = Back";
+		if ( confirm(strOper) == true )
+		{
+			// 作業中のデータをクリアする
+			Tenken.Storage.clearCurrent();
+			return(true);
+		}
+		else
+		{
+			// キャンセルして選択画面に戻る
+			return(false);
+		}
+	}
+
+	// 継続するか否かを問い合わせ、結果を返します。
+	// @param {Number} _startDatetime 作業開始時間
+	// @param {String} _operator 作業者
+	// @return {Boolean} 継続する場合はtrue、それ以外はfalse
+	function comfirmContinue2(_startDatetime, _operator)
+	{
+		var str = new Tenken.DatetimeValue(_startDatetime).toString() + " " + _operator;
+		if(confirm("There is the working data of "+ str +". Do you resume this work?\n\n[OK] = Resume work.\n[Cancel] = Discard working data and start new work.")) return true;
+		if ( confirm("Do you discard the working data?\n[OK] / {Yes] = Discard working data and start new work.\n[Canel] / [No] = Back") == true )
+		{
+			// 作業中のデータをクリアする
+			Tenken.Storage.clearCurrent();
+
+			// 作業者選択一覧・前回のダウンロードと作業者の更新
+			updateSelectOperator();
+			document.getElementById("lastdownload").innerHTML=getdownloadDateTime();
+			document.getElementById("lastoperator").innerHTML=getLastOperator();
+			return(true);
+		}
+		return(false);
+	}
+
+	// 点検開始ボタン押下の処理をします。
+	function performStart() {
+
+		// (1)保存域の点検データを、判定域にコピー
+		var savedStartDatetime = Tenken.Storage.startDatetime.get();
+		var savedOperator = Tenken.Storage.operator.get();
+		var savedScenarioId = Tenken.Storage.ScenarioId.get();
+
+		// (2)GUIの値を作業域にコピー
+		startDatetime = new Date().getTime();
+		setoperator = document.getElementById("operator").value;
+
+		// (3)作業中のデータがあるかチェック＆メインページ遷移。
+		if((null == savedStartDatetime) && (null == savedOperator) )
+		{
+			moveNextPage();
+		}
+		if((null != savedStartDatetime) && (null != savedOperator) )
+		{
+			if ( null != setoperator && "" != setoperator && savedOperator != setoperator )
+			{
+				if ( true == comfirmContinue1(savedOperator, setoperator) )
+				{
+					Tenken.traceEvent(setoperator, Tenken.traceEvent.Type.TENKEN_CONTINUESTART, null, null, {"startdatetiime":startDatetime, "operator":setoperator});
+					moveNextPage();
+				}
+			}
+			else if ( true == comfirmContinue2(savedStartDatetime, savedOperator))
+
+			{
+				startDatetime = savedStartDatetime;
+				setoperator = savedOperator;
+				Tenken.traceEvent(setoperator, Tenken.traceEvent.Type.TENKEN_CONTINUESTART, null, null, {"startdatetiime":startDatetime, "operator":setoperator});
+				moveNextPage();
+			}
+		}
+
+	}
+	
+	// ページを遷移します。
+	function moveNextPage() {
+		// (1)作業域の値をチェック
+		if("" == setoperator) {
+			alert("Select operator");
+			return;
+		}
+
+		if ( TenkenData.AllGet.getPhase() == true )
+		{
+			alert("Data is being obtained now.\nPlease execute it again after a while.");
+			return;
+		}
+		else
+		{
+			if ( Tenken.Storage.AllDownloadIsExist() == true )
+			{
+				// (2)作業域の値を保存域にコピー
+				Tenken.Storage.startDatetime.set(startDatetime);
+				Tenken.Storage.operator.set(setoperator);
+				// (3)ページ遷移
+				location.href = TenkenConst.PageName.main;
+			}
+			else
+			{
+				alert("Data has not been obtained.\nPlease download data.");
+				return;
+			}
+		}
+	}
+
+	// ダウンロード成功
+	function downloadSuccess()
+	{
+		Tenken.traceEvent(null, Tenken.traceEvent.Type.TENKEN_PREDOWNLOAD, null, null, null);
+		if(  "serverMode" == Tenken.Storage.OperationMode.get() )
+		{
+			alert("Data was obtained.");
+		}
+		else
+		{
+			alert("Data was obtained. \n\nData might have be obtained from off-line storage because of standalone mode.");
+		}
+
+		// 作業者名を更新して表示します。
+		updateSelectOperator();
+
+		// ダウンロード日時を保存・表示します。
+		downloadDatetime = new Date().getTime();
+		Tenken.Storage.DownloadDate.set(downloadDatetime);
+		document.getElementById("lastdownload").innerHTML=getdownloadDateTime();
+
+	}
+
+	// ダウンロード失敗
+	function downloadError(_errorMsg)
+	{
+		alert("AR実行サーバのデータ取得に失敗しました。\n動作モードとネットワーク状況を確認して再度お試しください。\nネットワークがオンライン状態の場合には、AR重畳表示アプリケーションを再起動してください。\n\n" + _errorMsg);
+	}
+	function getOperationModeSuccess(_result)
+	{
+		//取得した動作モードを変数に格納します。
+		var operationMode = _result.getValue();
+		Tenken.Storage.OperationMode.set(operationMode);
+
+		//サーバ通信モードの場合は強制読み込み
+		var mode = ("serverMode" == operationMode) ? true : false;
+
+		// 全データダウンロード
+		TenkenData.AllGet.download(mode, downloadSuccess, downloadError);
+	}
+	function getOperationModeError(_result)
+	{
+		var message = "動作モードの取得に失敗しました。\n";
+		var detail = _result.getStatus() + "\n"+ _result.getValue();
+		Tenken.Util.logerr(message, detail);
+	}
+
+	function downloadResource() {
+		if ( Tenken.Storage.operator.get() ) 
+		{
+			if ( confirm("There is a working data. Do you discard data?\n") != true ) 
+			{
+				return;
+			}
+		}
+		else if (Tenken.Storage.DownloadDate.get() )
+		{
+			if ( confirm("There is a downloaded data. Do you discard data?\n") != true ) 
+			{
+				return;
+			}
+		}
+		if ( TenkenData.AllGet.getPhase() == true )
+		{
+			alert("Data is being obtained now.\nPlease execute it again after a while.");
+			return;
+		}
+
+		Tenken.Storage.clearWithOutScenario();
+		document.getElementById("lastdownload").innerHTML="";
+		document.getElementById("lastoperator").innerHTML="";
+
+		// 作業者名を更新して表示します。
+		updateSelectOperator();
+
+		//動作モードを取得してローカルストレージに保存します。 
+		//動作モード取得が成功した場合、そのままデータのダウンロードを
+		//コールバックで行います。
+		Tenken.Util.getOperationMode(getOperationModeSuccess, getOperationModeError);
+	}
+
+	function getdownloadDateTime()
+	{
+		var str="";
+		var downloadDatetime = Tenken.Storage.DownloadDate.get();
+		if ( null != downloadDatetime )
+		{
+			str += "Last download date and time: ";
+			str += new Tenken.DatetimeValue(downloadDatetime).toString();
+		}
+		return(str);
+	}
+	function updateSelectOperator()
+	{
+		TenkenData.UserData.selectUserNameHTML(document.operselform.operator);
+		selectChangeOperator(Tenken.Storage.operator.get());
+	}
+	function getLastOperator()
+	{
+		var str="";
+		var savedOperator = Tenken.Storage.operator.get();
+		if ( null != savedOperator )
+		{
+			str += "Working operator: ";
+			str += savedOperator;
+		}
+		selectChangeOperator(savedOperator);
+		return(str);
+	}
+
+
+	// 指定した作業者を選択した状態して表示します
+	function selectChangeOperator(_operator)
+	{
+		var elmSel = document.getElementById("operator");
+		if ( elmSel )
+		{
+			if ( null == _operator || "" == _operator )
+			{
+				elmSel.options[0].selected = true;
+				return;
+			}
+			for ( var i=0 ; i < elmSel.length ; i++ )
+			{
+				if ( elmSel.options[i].value == _operator )
+				{
+					elmSel.options[i].selected = true;
+					break;
+				}
+			}
+		}
+	}
+
+	function showOperatorSelect()
+	{
+		var str="";
+		if ( AR.Native.isWindows() == true )
+		{
+			str += '<select id="operator" name="operator" size="3">';
+		}
+		else
+		{
+			str += '<select id="operator" name="operator">';
+		}
+		str += '<option value="">Select</option>';
+		str += '</select>';
+		return(str);
+	}
+
+	function getLastScenario()
+	{
+		var str="";
+		var savedScenario = Tenken.Storage.ScenarioId.get();
+		var nameScenario=TenkenData.Scenario.getScenarioNameFromId(savedScenario);
+		if ( null != savedScenario  )
+		{
+			str += nameScenario;
+		}
+		return(str);
+	}
+
+	function backPage()
+	{
+		if ( TenkenData.AllGet.getPhaseScenario() == true )
+		{
+			if ( confirm("データのダウンロード中です。\n「戻る」を続行しますか？") != true ) 
+			{
+				return;
+			}
+		}
+		location.href = TenkenConst.PageName.top;
+	}
+	
+	</script>
+
+</head>
+<body>
+
+	<div id="popup">
+
+		<form name="operselform">
+		<label>
+			<div id="idNameScenario">
+				<section>
+					<b>Selected scenario: </b><b id="lastscenario"><script>document.write(getLastScenario());</script> </b>
+				</section>
+			</div>
+		</label>
+		<hr>
+		<label>
+			(1) Download resouces before inspection<br>
+			<div class="menustep">
+				<input id="btndwnld" type="button" value="Download" onclick="downloadResource()"  data-ar-eventtype="TENKEN_PREDOWNLOAD">
+				<br>
+				<b id="lastdownload"><script>document.write(getdownloadDateTime());</script> </b>
+			</div>
+		</label>
+		<hr>
+		<label>
+			(2) Select operator and start inspection.<br>
+			<div class="menustep">
+				<section>
+					<script>document.write(showOperatorSelect());</script>
+					<br>
+					<b id="lastoperator"><script>document.write(getLastOperator());</script> </b>
+				</section>
+			</div>
+		</label>
+		<hr>
+		<div class="menustep">
+			<input id="btnback" type="button" value="Back" onclick="backPage()">
+			<input id="start" type="button" value="Start" onclick="performStart()"  data-ar-eventtype="TENKEN_START">
+		</div>
+			<br>
+
+	</div>
+
+</body>
+</html>
